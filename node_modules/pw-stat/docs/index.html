@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#cov">cov</a></li><li><a href="global.html#mean">mean</a></li></ul>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1>pw-stat</h1><p>Statistics in JavaScript</p>
+<h2>Installation</h2><pre class="prettyprint source lang-bash"><code>npm install pw-stat</code></pre><h2>Getting Started</h2><pre class="prettyprint source lang-javascript"><code>var stat = require('pw-stat');
+
+var a = [
+    [19, 28],
+    [63, 32],
+    [56, 96]
+];
+
+// Compute the mean of each column
+var mean = stat.mean(a);
+
+// Compute the covariance matrix
+var cov = stat.cov(a);
+
+console.log(mean); // [ 46, 52 ]
+console.log(cov); // [ [ 559, 374 ], [ 374, 1456 ] ]</code></pre></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated at Thu Nov 16 2017 22:37:17 GMT-0600 (Central Standard Time)
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

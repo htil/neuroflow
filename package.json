@@ -1,0 +1,30 @@
+{
+  "name": "neuroflow",
+  "version": "1.0.0",
+  "description": "A flow-based web programming tool for prototyping BCI applications",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "author": "Ajay Mehul <ajaymehul2013@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bcijs": "^1.5.1",
+    "rete": "^1.1.0",
+    "rete-area-plugin": "^0.2.1",
+    "rete-comment-plugin": "^0.2.1",
+    "rete-connection-plugin": "^0.4.1",
+    "rete-context-menu-plugin": "^0.3.3",
+    "rete-history-plugin": "^0.1.2",
+    "rete-vue-render-plugin": "^0.2.6"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.5",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "css-loader": "^2.1.0",
+    "style-loader": "^0.23.1"
+  }
+}

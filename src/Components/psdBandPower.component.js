@@ -43,8 +43,8 @@ export default class PsdBandPowerComponent extends Rete.Component {
     }
 
     worker(node, inputs, outputs) {
-        console.log(inputs['num_in1']);
-        console.log(inputs['arr_in1']);
+      //  console.log(inputs['num_in1']);
+     //   console.log(inputs['arr_in1']);
         if(inputs['arr_in1'].length === 1 && inputs['num_in1'].length === 1){
         var psd = inputs['arr_in1'][0];
         var sampleRate = inputs['num_in1'][0];

@@ -14,7 +14,7 @@ export default class Muse{
         this.editor.addNode(this.node);
         window.node = this.node;
         this.bci_device = new BCIDevice((sample) => {
-            // This is here to only read data from AF7
+            //Select Control Name based on electrode
             console.log(sample.electrode);
             var arr_name = '-1';
             if (sample.electrode === ScalpElectrodes.AF7) {
@@ -43,7 +43,7 @@ export default class Muse{
             this.temperature = status.temperature;
         });
 
-    this.node.vueContext.$el.getElementsByClassName('btn')[0].onclick = async ()=>{this.bci_device.connect();}
+    this.node.vueContext.$el.getElementsByClassName('bt_btn')[0].onclick = async ()=>{this.bci_device.connect();}
      }
    
      static async create(editor,engine,window) {

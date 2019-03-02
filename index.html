@@ -3,13 +3,11 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Rete.js (dataflow, node editor)</title>
-  
-  
-  
-      
+  <title>NeuroSqaure</title>
+  <link rel="icon" href="src/fonts/favicon.png">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
       <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-      <link rel="stylesheet" href="css/style.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/bcijs@1.5.1/dist/bci.min.js"></script>
       <script src="src/BCIDevice.pack.js" type="text/javascript"></script>
       <script src='https://cdn.jsdelivr.net/npm/rete@1.0.0/build/rete.debug.js'></script>
@@ -22,17 +20,145 @@
       <script src='https://cdn.jsdelivr.net/npm/rete-area-plugin@0.2.0/build/area-plugin.min.js'></script>
       <script src='https://cdn.jsdelivr.net/npm/rete-comment-plugin@0.2.0/build/comment-plugin.min.js'></script>
       <script src='https://cdn.jsdelivr.net/npm/rete-history-plugin@0.1.0/build/history-plugin.min.js'></script>
+      <script src='src/bootstrap.min.js'></script>
+       <link rel="stylesheet" href="css/style.css">
   
 </head>
 
 <body>
 
-  <div id="rete" class="node-editor"></div>
+<nav class="navbar ">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+        <a class="navbar-brand" href="#">
+          <img alt="Brand" src="src/img/neurosquare.png" style="height: 100%;">
+        </a>
+      </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" >
+    
+      
+      <ul class="nav navbar-nav navbar-right" style="height: 100%;">
+        <li><a href="#">GET STARTED</a></li>
+
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">EXAMPLES <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#">Example 1</a></li>
+              <li><a href="#">Example 2</a></li>
+              <li><a href="#">Example 3</a></li>
+         
+            </ul>
+          </li>
+
+        <li><a href="#">ABOUT</a></li>
+        <li><a href="#">CONTACT</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<!-- Tool menu-->
+  <div id="rete" class="node-editor">
+    <div id="tools"> 
+        <button id="tool_btn" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="material-icons">
+                add
+            </i>
+        </button>
+
+
+   
+        <div class="dropdown tool_menu">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              DEVICES
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <li><a href="#">Muse</a></li>
+              <li><a href="#">OpenBCI Ganglion</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="#">Fake Data</a></li>
+            </ul>
+        </div>
+
+        <div class="dropdown tool_menu">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              BCI.JS
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <li><a href="#">Muse</a></li>
+              <li><a href="#">OpenBCI Ganglion</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="#">Fake Data</a></li>
+            </ul>
+        </div>
+
+        <div class="dropdown tool_menu">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              VARIABLE
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <li><a href="#">Number</a></li>
+              <li><a href="#">Array</a></li>
+              <li><a href="#">String</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="#">Random Number</a></li>
+            </ul>
+        </div>  
+
+        <div class="dropdown tool_menu">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              MATH
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <li><a href="#">Operator</a></li>
+              <li><a href="#">Average</a></li>
+              <li><a href="#">Moving Average</a></li>
+            </ul>
+        </div>
+
+        <div class="dropdown tool_menu">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              PLOT.LY
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <li><a href="#">Time-Series</a></li>
+            </ul>
+        </div>
+
+        <div class="dropdown tool_menu">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              GAMES
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <li><a href="#">Pong</a></li>
+            </ul>
+        </div>
+<!-- CLear button-->
+  <button id="clr_btn" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <i class="material-icons">
+          clear
+      </i>
+  </button>
+
+</div>
+
+
+</div>
+ 
 
   <template id="MuseNode">
     <div class="node" :class="[selected(), node.name] | kebab">
     <div class="title">
-      <button id="Muse_BT" class="btn" onclick="myFunction()">
+      <button id="Muse_BT" class="bt_btn" onclick="myFunction()">
         <i class="material-icons">
             settings_bluetooth
         </i>
@@ -86,13 +212,31 @@
     </div>
     </template>
 
+    <template id="OperatorNode">
+      <div class="node" :class="[selected(), node.name] | kebab">
+      <div class="content">
+        <div class="col" v-if="node.controls.size&gt;0 || node.inputs.size&gt;0">
+          <div class="input" v-for="input in inputs()" :key="input.key" style="text-align: left">
+            <Socket v-socket:input="input" type="input" :socket="input.socket" :used="() => input.connections.length"></Socket>
+         </div>
+        </div>
+        <div class="col" style="vertical-align: middle">
+        <div class="control" v-for="control in controls()" v-control="control" ></div>
+        </div>
+        <div class="col"  style="vertical-align: middle">
+          <div class="output" v-for="output in outputs()" :key="output.key">
+            <Socket v-socket:output="output" type="output" :socket="output.socket" :used="() => output.connections.length"></Socket>
+          </div>
+        </div>
+      </div> 
+    </div>
+    </template>
+
 
 
   
 
   <script  src="dist/bundle.js"></script>
-
-
 
 
 </body>

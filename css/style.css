@@ -2,6 +2,7 @@
 html, body {
   height: 100%;
   margin: 0;
+  position: relative;
 }
 
 #rete {
@@ -9,7 +10,7 @@ html, body {
 }
 
 /* Style buttons */
-.btn {
+.bt_btn {
   background-color: transparent; /* Blue background */
   border: none; /* Remove borders */
   color: white; /* White text */
@@ -203,4 +204,133 @@ html, body {
 }
 .context-menu .item:hover {
   background-color: rgba(45, 45, 45, 0.7);
+}
+
+option { 
+  /* Whatever color  you want */
+  background-color: #000000;
+}
+select {
+  /* for Firefox */
+  -moz-appearance: none;
+  /* for Chrome */
+  -webkit-appearance: none;
+  text-align-last: center;
+}
+
+
+/* For IE10 */
+select::-ms-expand {
+  display: none;
+}
+select::-ms-expand {
+  display: none;
+}
+
+.trigger_set{
+  background-color: rgb(14, 138, 253); /* Green */
+  border: none;
+  color: white;
+  padding: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+  margin: 4px 2px;
+  cursor: pointer;
+  outline:0;
+  border-radius: 8px;
+}
+
+.trigger_ready{
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+  margin: 4px 2px;
+  cursor: pointer;
+  outline:0;
+  border-radius: 8px;
+}
+.svg{
+  overflow: visible;
+}
+.navbar-brand {
+  position: relative;
+  width: 170px;
+  height: 50px;
+  padding: 0px;
+  padding-left: 150px;
+  background-size: contain;
+}
+
+.navbar{
+  background-color: #000000;
+  margin-bottom: 0px;
+  border: 0px;
+  border-radius: 0px;
+  padding-right: 150px;
+}
+.navbar-brand,
+.navbar-nav li a {
+    line-height: 50px;
+    height: 50px;
+    padding-top: 0;
+    padding-right: 30px;
+    font-size: 18px;
+    font-family: 'Lucida Console';
+    color: #aaa;
+    font: bold;
+}
+.navbar-nav li  {
+  
+  color: #aaa;
+}
+
+#tools{
+  position: relative;
+  z-index: 10000;
+  width: 100%;
+}
+
+.tool_menu{
+  float: left;
+  margin-top: 25px;
+  margin-right: 25px;
+  font-family: 'Lucida Console';
+  font: bold;
+}
+
+#tool_btn{
+  background-color: rgb(71, 105, 253); /* Blue background */
+  border: none; /* Remove borders */
+  color: #fff; /* White text */
+  border-radius: 30px;
+  width: 35px;
+  height: 35px;
+  float: left;
+  padding: 5px 5px; /* Some padding */
+  font-size: 8px; /* Set a font size */
+  cursor: pointer; /* Mouse pointer on hover */
+  margin: 25px;
+
+}
+
+#clr_btn{
+  background-color: rgb(253, 71, 71); /* Blue background */
+  border: none; /* Remove borders */
+  color: #fff; /* White text */
+  border-radius: 30px;
+  width: 35px;
+  height: 35px;
+  float: right;
+  padding: 5px 5px; /* Some padding */
+  font-size: 8px; /* Set a font size */
+  cursor: pointer; /* Mouse pointer on hover */
+  margin: 25px;
+
 }

@@ -1,4 +1,4 @@
-import NumControl from '../Controls/Num.control';
+import PongControl from '../Controls/pong.control';
 import sockets from './sockets.rete';
 
 var template = document.querySelector('#OperatorNode').innerHTML;
@@ -23,25 +23,24 @@ var CustomNode = {
     }
   }
 
-export default class NumComponent extends Rete.Component {
+export default class PongComponent extends Rete.Component {
 
     constructor(){
-        super("Number");
+        super("Pong");
         this.data.component = CustomNode;
     }
 
     builder(node) {
-        var out1 = new Rete.Output('num_out', "Number", sockets.Number);
         var input1 = new Rete.Input('num_in',"Number",sockets.Number);
-        return node.addControl(new NumControl(this.editor, 'num')).addOutput(out1).addInput(input1);
+        return node.addControl(new PongControl(this.editor, 'pong')).addInput(input1);
     }
 
     worker(node, inputs, outputs) {
       //  console.log(inputs['num_in']);
         if(inputs['num_in'].length === 1)
-        node.data.num = inputs['num_in'][0];
-        this.editor.nodes.find(n => n.id == node.id).controls.get('num').setValue(node.data.num);
-        outputs['num_out'] = node.data.num;
+        var spd = inputs['num_in'][0];
+        if(spd != null)
+        this.editor.nodes.find(n => n.id == node.id).controls.get('pong').setValue(spd);
 
     }
 }

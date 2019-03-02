@@ -36,7 +36,7 @@ export default class LogComponent extends Rete.Component{
     }
     
     worker(node, inputs, outputs) {
-        console.log(inputs['arr1']);
+        console.log(inputs['arr1'][0]);
     }
 
 }

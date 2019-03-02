@@ -24,7 +24,36 @@ import PongGame from './pongGame';
     var op2 = Operator.create(editor.getEditor(),engine,window);
     var ifttt = Ifttt.create(editor.getEditor(),engine,window);
     var pong = PongGame.create(editor.getEditor(),engine,window);
+
+
+
+
+
+    //Tool Menu Wiring-----------------------------------------------------------------------------------------------------------------------------------------------
+
+    var btn = document.getElementById('tool_btn');
+    btn.onclick = function(){
+        
+        var state = btn.dataset.toggle;
+        if(state == 'open'){
+            btn.dataset.toggle = 'closed';
+            var i;
+            var menu = document.getElementsByClassName('tool_menu');
+            for(i =0; i<menu.length;i++){
+                menu[i].style.display = "none";
+            }
+            btn.innerHTML =`<i class="material-icons">add</i>`;
+        }
+        else{
+            btn.dataset.toggle = 'open';
+            var i;
+            var menu = document.getElementsByClassName('tool_menu');
+            for(i =0; i<menu.length;i++){
+                menu[i].style.display = "block";
+            }
+            btn.innerHTML= `<i class="material-icons">keyboard_arrow_left</i>`;
+        }
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
     
-
-
 

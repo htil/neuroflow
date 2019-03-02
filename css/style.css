@@ -303,6 +303,7 @@ select::-ms-expand {
   margin-right: 25px;
   font-family: 'Lucida Console';
   font: bold;
+  display: none;
 }
 
 #tool_btn{

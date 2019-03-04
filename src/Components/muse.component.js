@@ -31,16 +31,16 @@ export default class MuseComponent extends Rete.Component{
         this.data.component = CustomNode;
     }
     builder(node){
-        var out1 = new Rete.Output('arr1',"AF7",sockets.Array);
-        var out2 = new Rete.Output('arr2',"AF8",sockets.Array);
-        var out3 = new Rete.Output('arr3',"TP9",sockets.Array);
-        var out4 = new Rete.Output('arr4',"TP10",sockets.Array);
+        var out1 = new Rete.Output('arr1',"AF7",sockets.Number);
+        var out2 = new Rete.Output('arr2',"AF8",sockets.Number);
+        var out3 = new Rete.Output('arr3',"TP9",sockets.Number);
+        var out4 = new Rete.Output('arr4',"TP10",sockets.Number);
         var out5 = new Rete.Output('num1',"Sample Rate",sockets.Number);
 
-        node.addControl(new ArrayControl(this.editor, 'arr1',0))
-        .addControl(new ArrayControl(this.editor, 'arr2',0))
-        .addControl(new ArrayControl(this.editor, 'arr3',0))
-        .addControl(new ArrayControl(this.editor, 'arr4',0))
+        node.addControl(new NumberControl(this.editor, 'arr1',0))
+        .addControl(new NumberControl(this.editor, 'arr2',0))
+        .addControl(new NumberControl(this.editor, 'arr3',0))
+        .addControl(new NumberControl(this.editor, 'arr4',0))
         .addControl(new NumberControl(this.editor, 'num1'))
         .addOutput(out1).addOutput(out2).addOutput(out3).addOutput(out4).addOutput(out5);     
    

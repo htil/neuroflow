@@ -21,6 +21,9 @@
       <script src='https://cdn.jsdelivr.net/npm/rete-comment-plugin@0.2.0/build/comment-plugin.min.js'></script>
       <script src='https://cdn.jsdelivr.net/npm/rete-history-plugin@0.1.0/build/history-plugin.min.js'></script>
       <script src='src/bootstrap.min.js'></script>
+      <script src="https://d3js.org/d3.v3.min.js"></script>
+      <script src="src/rickshaw.min.js"></script>      
+      <link rel="stylesheet" href="css/rickshaw.min.css">
        <link rel="stylesheet" href="css/style.css">
   
 </head>
@@ -61,99 +64,95 @@
 </nav>
 
 <!-- Tool menu-->
-  <div id="rete" class="node-editor">
-    <div id="tools"> 
-        <button id="tool_btn" type="button" class="btn btn-default dropdown-toggle" data-toggle="closed">
-            <i class="material-icons">
-                add
-            </i>
+    <button id="tool_btn" type="button" class="btn btn-default dropdown-toggle" data-toggle="closed">
+        <i class="material-icons" >
+            add
+        </i>
+    </button>
+
+
+    <div class="dropside">
+    <div class="dropdown tool_menu">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-id="1">
+          DEVICES
+          <span class="caret"></span>
         </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          <li><a href="#" id="muse">Muse</a></li>
+          <li><a href="#">OpenBCI Ganglion</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#">Fake Data</a></li>
+        </ul>
+    </div>
+
+    <div class="dropdown tool_menu">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-id="2">
+          BCI.JS
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          <li><a href="#" id="psd">Power Spectral Density</a></li>
+          <li><a href="#" id="psd_bp">PSD Band Power</a></li>
+        </ul>
+    </div>
+
+    <div class="dropdown tool_menu">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-id="3">
+          VARIABLE
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          <li><a href="#" id="number">Number</a></li>
+          <li><a href="#">Array</a></li>
+          <li><a href="#">String</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#">Random Number</a></li>
+        </ul>
+    </div>  
+
+    <div class="dropdown tool_menu">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-id="4">
+          MATH
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          <li><a href="#" id="operator">Operator</a></li>
+          <li><a href="#">Average</a></li>
+          <li><a href="#">Moving Average</a></li>
+        </ul>
+    </div>
+
+    <div class="dropdown tool_menu">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-id="5">
+          GRAPH
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          <li><a href="#" id="plot_ts">Time-Series</a></li>
+        </ul>
+    </div>
+
+    <div class="dropdown tool_menu">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-id="6">
+          Other
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          <li><a href="#" id="pong">Pong</a></li>
+          <li><a href="#" id="ifttt">IFTTT Trigger</a></li>
+          <li><a href="#" id="logconsole">Log to Console</a></li>
+        </ul>
+    </div>
+
+  </div>
+<button id="clr_btn" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <i class="material-icons" >
+      clear
+  </i>
+</button>
 
 
-        <div class="dropside">
-        <div class="dropdown tool_menu">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-              DEVICES
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-              <li><a href="#">Muse</a></li>
-              <li><a href="#">OpenBCI Ganglion</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="#">Fake Data</a></li>
-            </ul>
-        </div>
-
-        <div class="dropdown tool_menu">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-              BCI.JS
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-              <li><a href="#">Muse</a></li>
-              <li><a href="#">OpenBCI Ganglion</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="#">Fake Data</a></li>
-            </ul>
-        </div>
-
-        <div class="dropdown tool_menu">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-              VARIABLE
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-              <li><a href="#">Number</a></li>
-              <li><a href="#">Array</a></li>
-              <li><a href="#">String</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="#">Random Number</a></li>
-            </ul>
-        </div>  
-
-        <div class="dropdown tool_menu">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-              MATH
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-              <li><a href="#">Operator</a></li>
-              <li><a href="#">Average</a></li>
-              <li><a href="#">Moving Average</a></li>
-            </ul>
-        </div>
-
-        <div class="dropdown tool_menu">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-              PLOT.LY
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-              <li><a href="#">Time-Series</a></li>
-            </ul>
-        </div>
-
-        <div class="dropdown tool_menu">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-              GAMES
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-              <li><a href="#">Pong</a></li>
-            </ul>
-        </div>
-
-      </div>
-<!-- CLear button-->
-  <button id="clr_btn" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <i class="material-icons">
-          clear
-      </i>
-  </button>
-
-</div>
-
-
+  <div id="rete" class="node-editor">
 </div>
  
 
@@ -233,6 +232,26 @@
       </div> 
     </div>
     </template>
+
+    <template id="PlotNode">
+        <div class="node" :class="[selected(), node.name] | kebab">
+        <div class="content">
+          <div class="col" v-if="node.controls.size&gt;0 || node.inputs.size&gt;0">
+            <div class="input" v-for="input in inputs()" :key="input.key" style="text-align: left; margin-left: auto; margin-right: auto;">
+              <Socket v-socket:input="input" type="input" :socket="input.socket" :used="() => input.connections.length"></Socket>
+           </div>
+          </div>
+          <div class="col" style="vertical-align: middle">
+          <div class="control" v-for="control in controls()" v-control="control" ></div>
+          </div>
+          <div class="col"  style="vertical-align: middle">
+            <div class="output" v-for="output in outputs()" :key="output.key">
+              <Socket v-socket:output="output" type="output" :socket="output.socket" :used="() => output.connections.length"></Socket>
+            </div>
+          </div>
+        </div> 
+      </div>
+      </template>
 
 
 

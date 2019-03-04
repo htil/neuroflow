@@ -10,12 +10,11 @@ export default class Muse{
         var component = new MuseComponent();
         this.editor.register(component);
         this.engine.register(component);
-        this.node = await component.createNode({arr1: [],arr2 : [],arr3 : [],arr4: [],num1: 0});
+        this.node = await component.createNode({arr1: 0,arr2 : 0,arr3 : 0,arr4: 0,num1: 0});
         this.editor.addNode(this.node);
         window.node = this.node;
         this.bci_device = new BCIDevice((sample) => {
             //Select Control Name based on electrode
-            console.log(sample.electrode);
             var arr_name = '-1';
             if (sample.electrode === ScalpElectrodes.AF7) {
                 arr_name = 'arr1';
@@ -33,7 +32,8 @@ export default class Muse{
             if(arr_name !== '-1'){
                 // Add to the buffer
                 sample.data.forEach(el => {
-                    this.node['controls'].get(arr_name).push_sample(el);
+                    this.node.data[arr_name] = el;
+                    this.editor.trigger('process');
                 });
                 this.node.data.num1 = sample.sampleRate;
             }

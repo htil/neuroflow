@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>NeuroSqaure</title>
+  <title>NeuroSquare</title>
   <link rel="icon" href="src/fonts/favicon.png">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
       <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -22,7 +22,7 @@
       <script src='https://cdn.jsdelivr.net/npm/rete-history-plugin@0.1.0/build/history-plugin.min.js'></script>
       <script src='src/bootstrap.min.js'></script>
       <script src="https://d3js.org/d3.v3.min.js"></script>
-      <script src="src/rickshaw.min.js"></script>      
+      <script src="src/rickshaw.min.js"></script>
       <link rel="stylesheet" href="css/rickshaw.min.css">
        <link rel="stylesheet" href="css/style.css">
   
@@ -81,7 +81,7 @@
           <li><a href="#" id="muse">Muse</a></li>
           <li><a href="#">OpenBCI Ganglion</a></li>
           <li role="separator" class="divider"></li>
-          <li><a href="#">Fake Data</a></li>
+          <li><a href="#" id="simsig">Simulate Signal</a></li>
         </ul>
     </div>
 
@@ -91,8 +91,20 @@
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-          <li><a href="#" id="psd">Power Spectral Density</a></li>
-          <li><a href="#" id="psd_bp">PSD Band Power</a></li>
+          <li><a href="#" id="avg_bp">averageBandPower</a></li>
+          <li><a href="#" id="conf_mat">confusionMatrix</a></li>
+          <li><a href="#" id="cspLearn">cspLearn</a></li>
+          <li><a href="#" id="cspProject">cspLearn</a></li>
+          <li><a href="#" id="f1">f1</a></li>
+          <li><a href="#" id="fastICA">fastICA</a></li>
+          <li><a href="#" id="ldaLearn">ldaLearn</a></li>
+          <li><a href="#" id="ldaProject">ldaProject</a></li>
+          <li><a href="#" id="mcc">mcc</a></li>
+          <li><a href="#" id="psd">psd</a></li>
+          <li><a href="#" id="psd_bp">psdBandPower</a></li>
+          <li><a href="#" id="sig_bp">signalBandPower</a></li>
+          <li><a href="#" id="specificity">specificity</a></li>
+          <li><a href="#" id="transpose">transpose</a></li>
         </ul>
     </div>
 
@@ -103,7 +115,7 @@
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
           <li><a href="#" id="number">Number</a></li>
-          <li><a href="#">Array</a></li>
+          <li><a href="#" id='buffer'>Buffer</a></li>
           <li><a href="#">String</a></li>
           <li role="separator" class="divider"></li>
           <li><a href="#">Random Number</a></li>
@@ -141,6 +153,7 @@
           <li><a href="#" id="pong">Pong</a></li>
           <li><a href="#" id="ifttt">IFTTT Trigger</a></li>
           <li><a href="#" id="logconsole">Log to Console</a></li>
+          <li><a href="#" id="csv">Load CSV</a></li>
         </ul>
     </div>
 
@@ -158,19 +171,20 @@
 
   <template id="MuseNode">
     <div class="node" :class="[selected(), node.name] | kebab">
-    <div class="title">
+    <div class="title" >
       <button id="Muse_BT" class="bt_btn" onclick="myFunction()">
         <i class="material-icons">
             settings_bluetooth
         </i>
       </button>
-      {{node.name}} 
+      <div style="display: inline-block; width: 100%; text-align: center;">{{node.name}}</div>   
+       
     </div>
     <div class="content">
       <div class="col" v-if="node.controls.size&gt;0 || node.inputs.size&gt;0">
         <div class="input" v-for="input in inputs()" :key="input.key" style="text-align: left">
           <Socket v-socket:input="input" type="input" :socket="input.socket" :used="() => input.connections.length"></Socket>
-          <div class="input-title" v-show="!input.showControl()">{{input.name}}</div>
+          <div class="input-title" v-show="!input.showControl()"  >{{input.name}}</div>
           <div class="input-control" v-show="input.showControl()" v-control="input.control"></div>
        </div>
       </div>
@@ -178,7 +192,7 @@
       <div class="col">
         <div class="output" v-for="output in outputs()" :key="output.key">
           
-          <div class="output-title">{{output.name}}</div>
+          <div class="output-title" >{{output.name}}</div>
           <Socket v-socket:output="output" type="output" :socket="output.socket" :used="() => output.connections.length" class="output-socket"></Socket>
         
         </div>
@@ -191,13 +205,13 @@
       <div class="node" :class="[selected(), node.name] | kebab">
       <div class="title">
        
-        {{node.name}} 
+        <div style="display: inline-block; width: 100%; text-align: center;">{{node.name}}</div>  
       </div>
       <div class="content">
         <div class="col" v-if="node.controls.size&gt;0 || node.inputs.size&gt;0">
           <div class="input" v-for="input in inputs()" :key="input.key" style="text-align: left">
             <Socket v-socket:input="input" type="input" :socket="input.socket" :used="() => input.connections.length"></Socket>
-            <div class="input-title" v-show="!input.showControl()">{{input.name}}</div>
+            <div class="input-title" v-show="!input.showControl()" style="margin-right: 10px">{{input.name}}</div>
             <div class="input-control" v-show="input.showControl()" v-control="input.control"></div>
          </div>
         </div>
@@ -205,7 +219,7 @@
         <div class="col">
           <div class="output" v-for="output in outputs()" :key="output.key">
             
-            <div class="output-title">{{output.name}}</div>
+            <div class="output-title" style="margin-left: 10px">{{output.name}}</div>
             <Socket v-socket:output="output" type="output" :socket="output.socket" :used="() => output.connections.length"></Socket>
           </div>
         </div>
@@ -246,6 +260,32 @@
           </div>
           <div class="col"  style="vertical-align: middle">
             <div class="output" v-for="output in outputs()" :key="output.key">
+              <Socket v-socket:output="output" type="output" :socket="output.socket" :used="() => output.connections.length"></Socket>
+            </div>
+          </div>
+        </div> 
+      </div>
+      </template>
+
+      <template id="SimSigNode">
+        <div class="node" :class="[selected(), node.name] | kebab">
+        <div class="title">
+         
+          <div style="display: inline-block; width: 100%; text-align: center;">{{node.name}}</div>  
+        </div>
+        <div class="content">
+          <div class="col" v-if="node.controls.size&gt;0 || node.inputs.size&gt;0">
+            <div class="input" v-for="input in inputs()" :key="input.key" style="text-align: left">
+              <Socket v-socket:input="input" type="input" :socket="input.socket" :used="() => input.connections.length"></Socket>
+              <div class="input-title" v-show="!input.showControl()">{{input.name}}</div>
+              <div class="input-control" v-show="input.showControl()" v-control="input.control"></div>
+           </div>
+          </div>
+          <div class="control" v-for="control in controls()" v-control="control"></div> 
+          <div class="col">
+            <div class="output" v-for="output in outputs()" :key="output.key">
+              
+              <div class="output-title">{{output.name}}</div>
               <Socket v-socket:output="output" type="output" :socket="output.socket" :used="() => output.connections.length"></Socket>
             </div>
           </div>

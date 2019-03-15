@@ -23,7 +23,7 @@ var CustomNode = {
     }
   }
 
-export default class PsdComponent extends Rete.Component {
+class PsdComponent extends Rete.Component {
 
     constructor(){
         super("Power Spectral Density");
@@ -43,4 +43,31 @@ export default class PsdComponent extends Rete.Component {
         outputs['arr_out'] = psd;
 
     }
+}
+export default class psd{
+    constructor(editor,engine){
+        this.editor = editor;
+        this.engine = engine;
+        
+      
+    }
+    async initialize() {
+        var component = new PsdComponent();
+        this.editor.register(component);
+        this.engine.register(component);
+        this.node = await component.createNode({arr_out: [],arr_in: []});
+        this.editor.addNode(this.node);
+        
+     }
+   
+     static async create(editor,engine,window) {
+        const o = new psd(editor,engine);
+        await o.initialize(window);
+        return o;
+     }
+    setPosition(x,y){
+        this.node.position = [x,y];
+    }
+
+
 }

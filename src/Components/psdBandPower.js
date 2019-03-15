@@ -22,11 +22,10 @@ var CustomNode = {
       Socket: /*VueRenderPlugin.Socket*/CustomSocket
     }
   }
-
-export default class PsdBandPowerComponent extends Rete.Component {
+class PsdBandPowerComponent extends Rete.Component {
 
     constructor(){
-        super("PSD Band Power");
+        super("psdBandPower");
         this.data.component = CustomNode;
     }
 
@@ -36,8 +35,8 @@ export default class PsdBandPowerComponent extends Rete.Component {
         var out3 = new Rete.Output('num_out3', "Theta", sockets.Number);
         var out4 = new Rete.Output('num_out4', "Delta", sockets.Number);
         var out5 = new Rete.Output('num_out5', "Gamma", sockets.Number);
-        var input1 = new Rete.Input('arr_in1',"PSD",sockets.Array);
-        var input2 = new Rete.Input('num_in1',"Sample Rate",sockets.Number);
+        var input1 = new Rete.Input('arr_in1',"psd",sockets.Array);
+        var input2 = new Rete.Input('num_in1',"sampleRate",sockets.Number);
         return node.addOutput(out1).addOutput(out2).addOutput(out3)
         .addOutput(out4).addOutput(out5).addInput(input1).addInput(input2);
     }
@@ -56,4 +55,31 @@ export default class PsdBandPowerComponent extends Rete.Component {
     }
 
     }
+}
+export default class psdBandPower{
+    constructor(editor,engine){
+        this.editor = editor;
+        this.engine = engine;
+        
+      
+    }
+    async initialize() {
+        var component = new PsdBandPowerComponent();
+        this.editor.register(component);
+        this.engine.register(component);
+        this.node = await component.createNode({num_out1: 0, num_out2: 0,num_out3: 0,num_out4: 0,num_out5: 0, arr_in1: [], num_in1: 0});
+        this.editor.addNode(this.node);
+
+     }
+   
+     static async create(editor,engine,window) {
+        const o = new psdBandPower(editor,engine);
+        await o.initialize(window);
+        return o;
+     }
+    setPosition(x,y){
+        this.node.position = [x,y];
+    }
+
+
 }

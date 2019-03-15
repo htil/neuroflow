@@ -1,18 +1,19 @@
-var BUFFER_SIZE = 200;
 
 var VueArrayControl = {
     props: ['readonly', 'emitter', 'ikey', 'getData', 'putData'],
     data() {
       return {
-        buffer: [0]
+        buffer: [0],
+        size: 0
       }
     },
     methods: {
       push_sample(el){
-        if (this.buffer.length > BUFFER_SIZE) 
+        if(isNaN(el)) return;
+        if (this.buffer.length > this.size) 
         this.buffer.shift();
         this.buffer.push(el);
-        if (this.buffer.length > BUFFER_SIZE)
+        if (this.buffer.length > this.size)
         this.update();
       },
       update() {
@@ -21,7 +22,8 @@ var VueArrayControl = {
       }
     },
     mounted() {
-      this.buffer = this.getData(this.ikey);
+      this.buffer = this.getData(this.ikey).buffer;
+      this.size = this.getData(this.ikey).size;
     }
   }
   

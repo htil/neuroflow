@@ -1,48 +1,24 @@
 require('babel-polyfill');
-import Muse from './Muse';
 import ReteEditor from './ReteEditor';
-import Log from './Log';
-import Num from './Num';
-import Psd from './Psd';
-import PsdBandPower from './PsdBandPower';
-import Operator from './Operator';
-import Ifttt from './Ifttt';
-import PongGame from './pongGame';
-import Plot_ts from './Plot_ts';
+import components from './Components/components';
 
     var editor = new ReteEditor();
     var engine = new Rete.Engine('demo@0.1.0');
     editor.start(engine,'process nodecreated noderemoved connectioncreated connectionremoved');
+    window.editor = editor;
+    window.engine = engine;
     
+    //Component Menu wiring------------------------------------------------------------------------------------------------------------------------------------------------------
     
-    document.getElementById('muse').onclick = function (){
-        var muse = Muse.create(editor.getEditor(),engine,window);
-    }
-    document.getElementById('logconsole').onclick = function (){
-        var log = Log.create(editor.getEditor(),engine,window);
-    }
-    document.getElementById('number').onclick = function (){
-        var num1 = Num.create(editor.getEditor(),engine,window);
-    }
-    document.getElementById('psd').onclick = function (){
-        var psd = Psd.create(editor.getEditor(),engine,window);
-    }
-    document.getElementById('psd_bp').onclick = function (){
-        var psdb = PsdBandPower.create(editor.getEditor(),engine,window);
-    }
-    document.getElementById('operator').onclick = function (){
-        var op = Operator.create(editor.getEditor(),engine,window);
-    }
-    document.getElementById('ifttt').onclick = function (){
-        var ifttt = Ifttt.create(editor.getEditor(),engine,window);
-    }
-    document.getElementById('plot_ts').onclick = function (){
-        var plot = Plot_ts.create(editor.getEditor(),engine,window);
-    }
-    
+    for(var i in components){
 
-
-
+        let className = components[i].class;
+        let button = components[i].id;
+        document.getElementById(button).onclick = function (){
+            var box = className.create(editor.getEditor(),engine,window);
+        }
+    }
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
     //Tool Menu Wiring-----------------------------------------------------------------------------------------------------------------------------------------------

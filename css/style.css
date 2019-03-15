@@ -57,14 +57,19 @@ html, body {
 .node-editor .node .title {
   border-top: 1px solid #ccc;
   color: white;
-  text-align: center;
   font-weight: bold;
-  font-family: sans-serif;
-  font-size: 18px;
+  font-family: 'Lucida Console';
+  font-size: 16px;
   border-radius: 10px 10px 0 0;
   padding: 8px;
   overflow: hidden;
-  background: linear-gradient(to top, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0.19) 100%), radial-gradient(70% 40px at center, rgba(0, 255, 0, 0.5) 0%, rgba(0, 255, 0, 0) 60%);
+  display: -webkit-flex;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+ /* background: linear-gradient(to top, rgba(252, 145, 4, 0.192) 0%, rgba(255, 102, 0, 0.123) 40%, rgba(248, 121, 2, 0.315) 100%);*/
+  background: #e03e32;
 }
 .node-editor .node .content {
   display: table;

@@ -47,11 +47,18 @@ class PsdBandPowerComponent extends Rete.Component {
         if(inputs['arr_in1'].length === 1 && inputs['num_in1'].length === 1){
         var psd = inputs['arr_in1'][0];
         var sampleRate = inputs['num_in1'][0];
-        outputs['num_out1'] =  bci.psdBandPower(psd, sampleRate, "alpha");
-	    outputs['num_out2'] =  bci.psdBandPower(psd, sampleRate, "beta");
-	    outputs['num_out3'] =  bci.psdBandPower(psd, sampleRate, "theta");
-	    outputs['num_out4'] =  bci.psdBandPower(psd, sampleRate, "delta");
-        outputs['num_out5'] =  bci.psdBandPower(psd, sampleRate, "gamma");
+        var alpha =  bci.psdBandPower(psd, sampleRate, "alpha");
+        var beta = bci.psdBandPower(psd, sampleRate, "beta");
+        var theta =  bci.psdBandPower(psd, sampleRate, "theta");
+        var gamma = bci.psdBandPower(psd, sampleRate, "gamma");
+        var delta = bci.psdBandPower(psd, sampleRate, "delta");
+        var sum = alpha + beta + delta + gamma + theta;
+        outputs['num_out1'] = alpha / sum;
+	    outputs['num_out2'] =  beta / sum;
+	    outputs['num_out3'] = theta / sum;
+	    outputs['num_out4'] = delta / sum;
+        outputs['num_out5'] =  gamma / sum;
+        
     }
 
     }

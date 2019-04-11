@@ -32,7 +32,7 @@ class f1Component extends Rete.Component {
 
     builder(node) {
         var in1 = new Rete.Input('in1', "confusionMatrix", sockets.Object);
-        var out1 = new Rete.Output('out1','Matrix',sockets.Object);
+        var out1 = new Rete.Output('out1','f1 score',sockets.Object);
         return node.addOutput(out1).addInput(in1);
     }
 

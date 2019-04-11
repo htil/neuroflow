@@ -22,6 +22,8 @@ import mcc from './mcc';
 import signalBandPower from './signalBandPower';
 import specificity from './specificity';
 import transpose from './transpose';
+import graph from './graph';
+import video from './video';
 
 var components = [
     {class: muse, id:'muse'},
@@ -47,7 +49,9 @@ var components = [
     {class: mcc, id:'mcc'},
     {class: signalBandPower, id: 'sig_bp'},
     {class: specificity, id:'specificity'},
-    {class: transpose, id: 'transpose'}
+    {class: transpose, id: 'transpose'},
+    {class: graph, id: 'graph'},
+    {class: video, id: 'video'}
 ];
 
 export default components;

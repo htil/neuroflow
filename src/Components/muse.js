@@ -1,4 +1,5 @@
 import NumberControl from '../Controls/Num.control';
+import ArrayControl from '../Controls/Array.control';
 import sockets from './sockets.rete';
 
 var template = document.querySelector('#MuseNode').innerHTML;
@@ -29,16 +30,16 @@ class MuseComponent extends Rete.Component{
         this.data.component = CustomNode;
     }
     builder(node){
-        var out1 = new Rete.Output('arr1',"AF7",sockets.Number);
-        var out2 = new Rete.Output('arr2',"AF8",sockets.Number);
-        var out3 = new Rete.Output('arr3',"TP9",sockets.Number);
-        var out4 = new Rete.Output('arr4',"TP10",sockets.Number);
-        var out5 = new Rete.Output('num1',"sampleRate",sockets.Number);
+        var out1 = new Rete.Output('arr1',"AF7",sockets.Array);
+        var out2 = new Rete.Output('arr2',"AF8",sockets.Array);
+        var out3 = new Rete.Output('arr3',"TP9",sockets.Array);
+        var out4 = new Rete.Output('arr4',"TP10",sockets.Array);
+        var out5 = new Rete.Output('num1',"Sample Rate",sockets.Number);
 
-        node.addControl(new NumberControl(this.editor, 'arr1',0))
-        .addControl(new NumberControl(this.editor, 'arr2',0))
-        .addControl(new NumberControl(this.editor, 'arr3',0))
-        .addControl(new NumberControl(this.editor, 'arr4',0))
+        node.addControl(new ArrayControl(this.editor, 'arr1',0))
+        .addControl(new ArrayControl(this.editor, 'arr2',0))
+        .addControl(new ArrayControl(this.editor, 'arr3',0))
+        .addControl(new ArrayControl(this.editor, 'arr4',0))
         .addControl(new NumberControl(this.editor, 'num1'))
         .addOutput(out1).addOutput(out2).addOutput(out3).addOutput(out4).addOutput(out5);     
    
@@ -69,11 +70,12 @@ export default class muse{
         var component = new MuseComponent();
         this.editor.register(component);
         this.engine.register(component);
-        this.node = await component.createNode({arr1: 0,arr2 : 0,arr3 : 0,arr4: 0,num1: 0});
+        this.node = await component.createNode({arr1: [],arr2 : [],arr3 : [],arr4: [],num1: 0});
         this.editor.addNode(this.node);
         window.node = this.node;
         this.bci_device = new BCIDevice((sample) => {
             //Select Control Name based on electrode
+            console.log(sample.electrode);
             var arr_name = '-1';
             if (sample.electrode === ScalpElectrodes.AF7) {
                 arr_name = 'arr1';
@@ -91,8 +93,7 @@ export default class muse{
             if(arr_name !== '-1'){
                 // Add to the buffer
                 sample.data.forEach(el => {
-                    this.node.data[arr_name] = el;
-                    this.editor.trigger('process');
+                    this.node['controls'].get(arr_name).push_sample(el);
                 });
                 this.node.data.num1 = sample.sampleRate;
             }

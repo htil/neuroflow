@@ -20,6 +20,7 @@
       <script src='https://cdn.jsdelivr.net/npm/rete-area-plugin@0.2.0/build/area-plugin.min.js'></script>
       <script src='https://cdn.jsdelivr.net/npm/rete-comment-plugin@0.2.0/build/comment-plugin.min.js'></script>
       <script src='https://cdn.jsdelivr.net/npm/rete-history-plugin@0.1.0/build/history-plugin.min.js'></script>
+      <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
       <script src='src/bootstrap.min.js'></script>
       <script src="https://d3js.org/d3.v3.min.js"></script>
       <script src="src/rickshaw.min.js"></script>
@@ -82,6 +83,7 @@
           <li><a href="#">OpenBCI Ganglion</a></li>
           <li role="separator" class="divider"></li>
           <li><a href="#" id="simsig">Simulate Signal</a></li>
+          <li><a href="#" id="csv">Load CSV</a></li>
         </ul>
     </div>
 
@@ -141,19 +143,21 @@
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
           <li><a href="#" id="plot_ts">Time-Series</a></li>
+          <li><a href="#" id="graph">Graph</a></li>
         </ul>
     </div>
 
     <div class="dropdown tool_menu">
         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-id="6">
-          OTHER
+          FEEDBACK
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
           <li><a href="#" id="pong">Pong</a></li>
           <li><a href="#" id="ifttt">IFTTT Trigger</a></li>
+          <li><a href="#" id="video">Video</a></li>
+          <li role="separator" class="divider"></li>
           <li><a href="#" id="logconsole">Log to Console</a></li>
-          <li><a href="#" id="csv">Load CSV</a></li>
         </ul>
     </div>
 

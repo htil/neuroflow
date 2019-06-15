@@ -1,3 +1,11 @@
-## Neuroflow
-A flow-based web programming tool for developing BCI applications
+# NeuroFlow
 
+## Building
+
+```bash
+yarn build # or npm run build
+```
+
+## Running
+
+After building, open the file `public/index.html` in a web browser.

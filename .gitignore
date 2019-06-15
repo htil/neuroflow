@@ -1,1 +1,11 @@
+.vscode/
+*.lock
+*.log
 node_modules/
+
+public/js
+public/index.html
+
+src/Components/*
+src/components.ts
+!src/Components/README.md

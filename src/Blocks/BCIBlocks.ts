@@ -1,4 +1,4 @@
-import { BCIDevice, ScalpElectrodes } from "../BCIDevice";
+import { BCIDevice, BCIDeviceSample, ScalpElectrodes } from "bci-device";
 import { Category } from "../Utility/Toolbox";
 import { CustomBlock } from "../Utility/CustomBlock";
 import * as bci from "bcijs/browser";
@@ -40,51 +40,54 @@ let temperature = WindowManager.declare("temperature", -1);
  * signals to the window. Also, if the BCI device supports telemetry, it will
  * subscribe to it as well.
  */
-export let Device: BCIDevice = new BCIDevice((sample) => {
-	if (sample.electrode !== ScalpElectrodes.AF7) return;
+export let Device: BCIDevice = new BCIDevice({
+	dataHandler: (sample: BCIDeviceSample) => {
+		if (sample.electrode !== ScalpElectrodes.AF7) return;
 
-	sample.data.forEach(el => {
-		if (buffer.length > BUFFER_SIZE) buffer.shift();
-		buffer.push(el);
-	});
+		sample.data.forEach((el: number) => {
+			if (buffer.length > BUFFER_SIZE) buffer.shift();
+			buffer.push(el);
+		});
 
-	if (buffer.length < BUFFER_SIZE) return;
+		if (buffer.length < BUFFER_SIZE) return;
 
-	let psd = bci.psd(buffer);
+		let psd = bci.psd(buffer);
 
-	let al = bci.psdBandPower(psd, sample.sampleRate, "alpha");
-	let be = bci.psdBandPower(psd, sample.sampleRate, "beta");
-	let th = bci.psdBandPower(psd, sample.sampleRate, "theta");
-	let de = bci.psdBandPower(psd, sample.sampleRate, "delta");
-	let ga = bci.psdBandPower(psd, sample.sampleRate, "gamma");
-	let sum = al + be + th + de + ga;
+		let al = bci.psdBandPower(psd, sample.sampleRate, "alpha");
+		let be = bci.psdBandPower(psd, sample.sampleRate, "beta");
+		let th = bci.psdBandPower(psd, sample.sampleRate, "theta");
+		let de = bci.psdBandPower(psd, sample.sampleRate, "delta");
+		let ga = bci.psdBandPower(psd, sample.sampleRate, "gamma");
+		let sum = al + be + th + de + ga;
 
-	let w_alpha = al / sum;
-	let w_beta = be / sum;
-	let w_theta = th / sum;
-	let w_delta = de / sum;
-	let w_gamma = ga / sum;
-	let w_engagement = be / (al + th);
+		let w_alpha = al / sum;
+		let w_beta = be / sum;
+		let w_theta = th / sum;
+		let w_delta = de / sum;
+		let w_gamma = ga / sum;
+		let w_engagement = be / (al + th);
 
-	let weighted_avg = (original: number, next: number) =>
-		original * WEIGHT + (next || 0) * (1 - WEIGHT);
+		let weighted_avg = (original: number, next: number) =>
+			original * WEIGHT + (next || 0) * (1 - WEIGHT);
 
-	weight[0] = weighted_avg(weight[0], w_alpha);
-	weight[1] = weighted_avg(weight[1], w_beta);
-	weight[2] = weighted_avg(weight[2], w_theta);
-	weight[3] = weighted_avg(weight[3], w_delta);
-	weight[4] = weighted_avg(weight[4], w_gamma);
-	weight[5] = weighted_avg(weight[5], w_engagement);
+		weight[0] = weighted_avg(weight[0], w_alpha);
+		weight[1] = weighted_avg(weight[1], w_beta);
+		weight[2] = weighted_avg(weight[2], w_theta);
+		weight[3] = weighted_avg(weight[3], w_delta);
+		weight[4] = weighted_avg(weight[4], w_gamma);
+		weight[5] = weighted_avg(weight[5], w_engagement);
 
-	alpha.set(Math.max(weight[0], 0));
-	beta.set(Math.max(weight[1], 0));
-	theta.set(Math.max(weight[2], 0));
-	delta.set(Math.max(weight[3], 0));
-	gamma.set(Math.max(weight[4], 0));
-	engagement.set(Math.max(weight[5], 0));
-}, (status: TelemetryData) => {
-	battery.set(status.batteryLevel);
-	temperature.set(status.temperature);
+		alpha.set(Math.max(weight[0], 0));
+		beta.set(Math.max(weight[1], 0));
+		theta.set(Math.max(weight[2], 0));
+		delta.set(Math.max(weight[3], 0));
+		gamma.set(Math.max(weight[4], 0));
+		engagement.set(Math.max(weight[5], 0));
+	},
+	statusHandler: (status: TelemetryData) => {
+		battery.set(status.batteryLevel);
+		temperature.set(status.temperature);
+	}
 });
 
 /**

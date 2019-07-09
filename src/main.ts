@@ -21,7 +21,7 @@ import config from "./config";
 
 // Import language
 import * as i18n from "./i18n/i18n";
-import { DeviceState } from "./BCIDevice";
+import { DeviceState } from "bci-device";
 let locale = i18n.set_locale(config.LOCALE);
 
 // Charting

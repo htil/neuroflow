@@ -12,6 +12,7 @@
 	"dependencies": {
 		"@types/chart.js": "^2.7.35",
 		"JS-Interpreter": "https://github.com/NeilFraser/JS-Interpreter",
+		"bci-device": "https://github.com/htil/BCIDevice",
 		"bcijs": "^1.6.2",
 		"blockly": "https://github.com/google/blockly#develop",
 		"chart.js": "^2.7.2",

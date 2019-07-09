@@ -1,0 +1,23 @@
+mixin nav-item(title, icon)
+	li(class="nav-item hover-click hover-nav")
+		div(id=`${icon}_handler`, title=title, aria-label=title)
+			i(id=`${icon}_icon`, class="menu-btn material-icons")= icon
+
+nav(class="navbar navbar-expand-lg")
+	span(class="navbar-brand mb-0 h1") NeuroBlock
+	button(class="navbar-toggler", type="button", data-toggle="collapse", data-target="#navbarNav", aria-controls="navbarNav", aria-expanded="false", aria-label="Toggle navigation")
+		span(class="navbar-toggler-icon")
+	div(class="collapse navbar-collapse justify-content-end", id="navbarNav")
+		ul(class="navbar-nav")
+			+nav-item("Run Program", "play_arrow")
+			+nav-item("Connect Bluetooth Device", "bluetooth")
+			+nav-item("Save Program", "save")
+			+nav-item("Load Program", "open_in_browser")
+
+			//- Hidden input for selecting a file to load
+			input(id="load_file_input", style="display: none;", type="file")
+
+			//- Battery info
+			li(class="nav-item")
+				div(class="header-text", id="battery")
+					i(id="battery_icon", class="material-icons") battery_unknown

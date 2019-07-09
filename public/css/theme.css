@@ -1,0 +1,169 @@
+/* NeuroBlock Components */
+body {
+	display: flex;
+	flex-direction: column;
+
+	height: 100vh;
+}
+
+.blink {
+	animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+	50% {
+		opacity: 0.2;
+	}
+}
+
+#canvas-trash {
+	position: absolute;
+	display: block;
+	
+	right: -1em;
+	bottom: 0;
+	text-align: right;
+	pointer-events: none;
+	
+	padding: 0.1em;
+	color: white;
+
+	transition: right 0.5s, color 0.2s, transform 0.2s;
+}
+
+#codeText {
+	background: lightgrey;
+	max-width: 490px;
+}
+
+.correct-size {
+	width: 490px;
+	height: 367.5px;
+}
+
+.drawer {
+	display: flex;
+	flex-direction: column;
+
+	align-items: stretch;
+}
+
+.fill-remaining {
+	flex: 1 1 auto;
+}
+
+.hover-click {
+	cursor: pointer;
+}
+
+.hover-click:hover {
+	cursor: pointer;
+	background: #333;
+}
+
+.hover-nav:hover {
+	background: #666 !important;
+}
+
+.nav-item > div > i, .no-select-icon {
+	padding: 0.5em;
+	color: white;
+
+	-webkit-touch-callout: none; /* iOS Safari */
+	  -webkit-user-select: none; /* Safari */
+	   -khtml-user-select: none; /* Konqueror HTML */
+		 -moz-user-select: none; /* Firefox */
+		  -ms-user-select: none; /* Internet Explorer/Edge */
+			  user-select: none; /* Non-prefixed version, currently
+									supported by Chrome and Opera */
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.min-width {
+	width: 490px;
+}
+
+.no-select {
+	-webkit-touch-callout: none; /* iOS Safari */
+	  -webkit-user-select: none; /* Safari */
+	   -khtml-user-select: none; /* Konqueror HTML */
+		 -moz-user-select: none; /* Firefox */
+		  -ms-user-select: none; /* Internet Explorer/Edge */
+			  user-select: none; /* Non-prefixed version, currently
+									supported by Chrome and Opera */
+}
+
+.player-img {
+	margin: 0 1em;
+	padding: 0.25em;
+	width: 4em;
+	height: 4em;
+	border: 1px solid grey;
+	border-radius: 5px;
+
+	transition: box-shadow 0.2s, transform 0.2s, border-color 0.5s;
+	cursor: pointer;
+}
+
+.player-img:hover {
+	box-shadow: 5px 5px 8px #888888;
+	transform: scale(1.05, 1.05);
+	border-color: black;
+}
+
+.submenu {
+	height: 50px;
+	background: #334771;
+}
+
+.submenu > div {
+	height: 50px;
+	padding: 0.2em;
+}
+
+#workspace {
+	height: 0px;
+	width: 0px;
+	position: relative;
+}
+
+/* Bootstrap Components */
+.navbar {
+	background: #2B3643;
+	color: white;
+}
+
+/* Blockly Components */
+.blocklyFlyoutBackground {
+	fill: #2A3A5B !important;
+}
+
+.blocklyFlyoutLabelText {
+	fill: white !important;
+}
+
+.blocklyMainBackground {
+	fill: #334771 !important;
+	stroke-width: 0 !important;
+}
+
+.blocklyToolboxDiv {
+	background: #2A3A5B;
+	color: white;
+	border: 0;
+}
+
+.blocklyTreeRow:not(.blocklyTreeSelected):hover {
+	color: #2A3A5B;
+}
+
+/* Material Icons */
+/* Rules for sizing the icon. */
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }

@@ -1,0 +1,51 @@
+//- Notice: Paths here are under the 'public' directory
+<!DOCTYPE html>
+html(lang="en")
+	head
+		meta(charset="UTF-8")
+		meta(name="viewport", content="width=device-width, initial-scale=1.0")
+		meta(http-equiv="X-UA-Compatible", content="ie=edge")
+		title NeuroBlock
+
+		//- Bootstrap
+		link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css", integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4", crossorigin="anonymous")
+
+		//- Material Icons
+		link(rel="stylesheet", href="https://fonts.googleapis.com/icon?family=Material+Icons")
+
+		//- Styles
+		link(rel="stylesheet", href="css/theme.css")
+		link(rel="stylesheet", href="css/style.css")
+	body
+		//- NavBar
+		include navbar.pug
+
+		//- Main Content
+		include workspace.pug
+
+		//- Flow components
+		template(id="rete_buttons")
+			div(class="toolbar")
+				include rete_components.pug
+
+		//- Flow templates
+		include node_templates.pug
+
+	//- Scripts
+	//- Blockly
+	script(type="text/javascript", src="js/blockly_compressed.js")
+	script(type="text/javascript", src="js/javascript_compressed.js")
+	script(type="text/javascript", src="js/blocks_compressed.js")
+	script(type="text/javascript", src="js/en.js")
+
+	//- Bootstrap
+	script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js", integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo", crossorigin="anonymous")
+	script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js", integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49", crossorigin="anonymous")
+	script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js", integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy", crossorigin="anonymous")
+
+	//- JS Interpretor
+	script(type="text/javascript", src="js/acorn_interpreter.js")
+
+	//- NeuroBlock
+	script(type="text/javascript", src="js/vendors~neuroblock.pack.js")
+	script(type="text/javascript", src="js/neuroblock.pack.js")

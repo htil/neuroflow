@@ -1,0 +1,73 @@
+template(id="MuseNode")
+	div(class="node", :class="[selected(), node.name] | kebab")
+		div(class="title")
+			button(id="Muse_BT", class="bt_btn", onclick="myFunction()")
+				i(class="material-icons") settings_bluetooth
+			div(style="display: inline-block; width: 100%; text-align: center;") {{ node.name }}
+		div(class="content")
+			div(class="col", v-if!="node.controls.size > 0 || node.inputs.size > 0")
+				div(class="input", v-for="input in inputs()", :key="input.key", style="text-align: left")
+					Socket(v-socket:input="input", type="input", :socket="input.socket", :used!="() => input.connections.length")
+					div(class="input-title", v-show="!input.showControl()") {{ input.name }}
+					div(class="input-control", v-show="input.showControl()", v-control="input.control")
+			div(class="control", v-for="control in controls()", v-control="control", style="display: none;")
+			div(class="col")
+				div(class="output", v-for="output in outputs()", :key="output.key")
+					div(class="output-title") {{ output.name }}
+					Socket(v-socket:output="output", type="output", :socket="output.socket", :used!="() => output.connections.length", class="output-socket")
+
+template(id="CustomNode")
+	div(class="node", :class="[selected(), node.name] | kebab")
+		div(class="title")
+			div(style="display: inline-block; width: 100%; text-align: center;") {{ node.name }}
+		div(class="content")
+			div(class="col", v-if!="node.controls.size > 0 || node.inputs.size > 0")
+				div(class="input", v-for="input in inputs()", :key="input.key", style="text-align: left")
+					Socket(v-socket:input="input", type="input", :socket="input.socket", :used!="() => input.connections.length")
+					div(class="input-title", v-show="!input.showControl()", style="margin-right: 10px") {{ input.name }}
+					div(class="input-control", v-show="input.showControl()", v-control="input.control")
+			div(class="control", v-for="control in controls()", v-control="control")
+			div(class="col")
+				div(class="output", v-for="output in outputs()", :key="output.key")
+					div(class="output-title", style="margin-left: 10px") {{ output.name }}
+					Socket(v-socket:output="output", type="output", :socket="output.socket", :used!="() => output.connections.length")
+
+template(id="OperatorNode")
+	div(class="node", :class="[selected(), node.name] | kebab")
+		div(class="content")
+			div(class="col", v-if!="node.controls.size > 0 || node.inputs.size > 0")
+				div(class="input", v-for="input in inputs()", :key="input.key", style="text-align: left")
+					Socket(v-socket:input="input", type="input", :socket="input.socket", :used!="() => input.connections.length")
+			div(class="col", style="vertical-align: middle")
+				div(class="control", v-for="control in controls()", v-control="control")
+			div(class="col", style="vertical-align: middle")
+				div(class="output", v-for="output in outputs()", :key="output.key")
+					Socket(v-socket:output="output", type="output", :socket="output.socket", :used!="() => output.connections.length")
+
+template(id="PlotNode")
+	div(class="node", :class="[selected(), node.name] | kebab")
+		div(class="content")
+			div(class="col", v-if!="node.controls.size > 0 || node.inputs.size > 0")
+				div(class="input", v-for="input in inputs()", :key="input.key", style="text-align: left; margin-left: auto; margin-right: auto;")
+					Socket(v-socket:input="input", type="input", :socket="input.socket", :used!="() => input.connections.length")
+			div(class="col", style="vertical-align: middle")
+				div(class="control", v-for="control in controls()", v-control="control")
+			div(class="col",  style="vertical-align: middle")
+				div(class="output", v-for="output in outputs()", :key="output.key")
+					Socket(v-socket:output="output", type="output", :socket="output.socket", :used!="() => output.connections.length")
+
+template(id="SimSigNode")
+	div(class="node", :class="[selected(), node.name] | kebab")
+		div(class="title")
+			div(style="display: inline-block; width: 100%; text-align: center;") {{ node.name }}
+		div(class="content")
+			div(class="col", v-if!="node.controls.size > 0 || node.inputs.size > 0")
+				div(class="input", v-for="input in inputs()", :key="input.key", style="text-align: left")
+					Socket(v-socket:input="input", type="input", :socket="input.socket", :used!="() => input.connections.length")
+					div(class="input-title", v-show="!input.showControl()") {{ input.name }}
+					div(class="input-control", v-show="input.showControl()", v-control="input.control")
+			div(class="control", v-for="control in controls()", v-control="control")
+			div(class="col")
+				div(class="output", v-for="output in outputs()", :key="output.key")
+					div(class="output-title") {{ output.name }}
+					Socket(v-socket:output="output", type="output", :socket="output.socket", :used!="() => output.connections.length")

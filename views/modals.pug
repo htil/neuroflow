@@ -1,0 +1,41 @@
+//- Character add model
+div(class="modal fade", id="character-select-modal", tabindex="-1", role="dialog", aria-labelledby="characterSelectModal", aria-hidden="true")
+	div(class="modal-dialog", role="document")
+		div(class="modal-content")
+			div(class="modal-header")
+				h5(class="modal-title", id="exampleModalLongTitle") Select a Player
+				button(type="button", class="close", data-dismiss="modal", aria-label="Close")
+					span(aria-hidden="true") &times;
+			div(class="modal-body")
+				div(class="container-fluid")
+					div(class="d-flex flex-row justify-content-center")
+						div(class="d-flex flex-column")
+							img(id="add_amoeba", class="player-img")
+							span(class="mt-1 align-self-center") Amoeba
+
+						div(class="d-flex flex-column")
+							img(id="add_bacteria", class="player-img")
+							span(class="mt-1 align-self-center") Bacteria
+
+						div(class="d-flex flex-column")
+							img(id="add_shrimp", class="player-img")
+							span(class="mt-1 align-self-center") Shrimp
+			div(class="modal-footer")
+				button(type="button", class="btn btn-secondary", data-dismiss="modal") Close
+
+//- Character delete modal
+//- Button needed for triggering the modal
+button(id="delete-modal", style="display: none;", type="button", class="btn btn-primary", data-toggle="modal", data-target="#character-delete-modal")
+div(class="modal fade", id="character-delete-modal", tabindex="-1", role="dialog", aria-labelledby="characterDeleteModal", aria-hidden="true")
+	div(class="modal-dialog", role="document")
+		div(class="modal-content")
+			div(class="modal-header")
+				h5(class="modal-title", id="exampleModalLongTitle") Delete Player
+				button(type="button", class="close", data-dismiss="modal", aria-label="Close")
+					span(aria-hidden="true") &times;
+			div(class="modal-body")
+				div(class="container-fluid")
+					p Delete player #[span(id="selected-player") _]?
+			div(class="modal-footer")
+				button(type="button", class="btn btn-secondary", data-dismiss="modal") Close
+				button(id="delete-character", type="button", class="btn btn-danger", data-dismiss="modal") Delete

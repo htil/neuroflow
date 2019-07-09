@@ -10,10 +10,25 @@ let locale = i18n.set_locale(config.LOCALE);
 // Set the color for blockly
 Blockly.Msg.PLAYER_HUE = 10;
 
+/**
+ * Player List Type
+ *
+ * The type of the player list stored in the window.
+ */
 export type player_list_type = Array<Array<string | number>>;
 
+/**
+ * Player Window List
+ *
+ * The list of currently active players, stored in the window.
+ */
 export let player_window_list = WindowManager.declare("player_list", []);
 
+/**
+ * Player Point
+ *
+ * A custom block that represents the X and Y position of a player.
+ */
 export let PlayerPoint = new CustomBlock("player_point", {
 	message0: "X %1 Y %2",
 	args0: [
@@ -37,6 +52,11 @@ export let PlayerPoint = new CustomBlock("player_point", {
 	return ["{x: " + x + ", y: " + y + "}", Blockly.JavaScript.ORDER_MEMBER];
 });
 
+/**
+ * Player Get
+ *
+ * A custom block used for fetching the X or Y position of a player.
+ */
 export let PlayerGet = new CustomBlock("player_get", (b: Blockly.Block) => {
 	b.appendDummyInput("player_select")
 		.appendField(new Blockly.FieldDropdown((): (Blockly.field_options_type) => {
@@ -58,6 +78,12 @@ export let PlayerGet = new CustomBlock("player_get", (b: Blockly.Block) => {
 	return [code, Blockly.JavaScript.ORDER_MEMBER];
 });
 
+/**
+ * Player Set
+ *
+ * A custom block used for setting the position of a player. Requires a {@link PlayerGet} block
+ * as its input.
+ */
 export let PlayerSet = new CustomBlock("player_set", (b: Blockly.Block) => {
 	b.appendDummyInput("player_select")
 		.appendField("set")
@@ -87,6 +113,13 @@ export let PlayerSet = new CustomBlock("player_set", (b: Blockly.Block) => {
 	return WindowDeclaration.asSetterBinding(player_handle) + "JSON.stringify(" + new_value + "));\n";
 });
 
+/**
+ * Player Blockly Category
+ *
+ * Creates a category for use in Blockly with the specified title.
+ *
+ * @param title The title to use in the flyout menu in Blockly.
+ */
 export let PlayerCategory = (title: string): Category => {
 	return {
 		name: title,
@@ -97,6 +130,15 @@ export let PlayerCategory = (title: string): Category => {
 	};
 };
 
+/**
+ * Player Category Callback
+ *
+ * This is a callback that runs every time the category is opened in Blockly.
+ * For more info, see
+ * {@link https://developers.google.com/blockly/guides/configure/web/toolbox#dynamic_categories | the official Blockly docs}.
+ *
+ * @param ws The workspace to link to.
+ */
 export let PlayerCategoryCallback = (ws: Blockly.Workspace): Array<Node> => {
 	let res: Array<Node> = [];
 	let pl = <player_list_type>player_window_list.get();

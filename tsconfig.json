@@ -1,25 +1,39 @@
 {
-  "compilerOptions": {
-    "module": "es6",
-    "target": "es5",
-    "allowJs": true,
-    "noImplicitAny": true,
-    "removeComments": true,
-    "preserveConstEnums": true,
-    "sourceMap": true,
-    "outDir": "dist",
-    "moduleResolution": "node",
-    "lib": [
-      "es2018",
-      "dom"
-    ],
-    "allowSyntheticDefaultImports": true
-  },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+	"compilerOptions": {
+		"module": "es6",
+		"target": "es5",
+		"allowJs": true,
+		"noImplicitAny": true,
+		"removeComments": true,
+		"preserveConstEnums": true,
+		"sourceMap": true,
+		"outDir": "dist",
+		"moduleResolution": "node",
+		"lib": [
+			"es2018",
+			"dom"
+		],
+		"allowSyntheticDefaultImports": true
+	},
+	"include": [
+		"src/**/*.ts"
+	],
+	"exclude": [
+		"node_modules",
+		"**/*.spec.ts"
+	],
+	"typedocOptions": {
+		"out": "docs",
+		"mode": "modules",
+		"exclude": [
+			"src/config.ts",
+			"src/main.ts",
+
+			"src/components.ts",
+			"src/Components/*.component.ts",
+			"src/Components/*.types.ts",
+
+			"src/i18n/*.i18n.ts"
+		]
+	}
 }

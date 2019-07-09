@@ -1,6 +1,6 @@
-import LocaleType from "./type_def";
+import { locale } from "./type_def";
 
-let messages: LocaleType = {
+let messages: locale = {
 	bci: {
 		block: "BCI",
 		tooltip: "The corresponding brain frequency.",

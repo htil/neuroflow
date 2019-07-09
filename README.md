@@ -69,6 +69,16 @@ In order to save the contents of the current workspace (including all players an
 the floppy disk icon located next to the bluetooth icon. In order to load a saved workspace, click the load icon
 next to the save icon and select a file containing a valid workspace.
 
+## Docs
+
+Documentation can be generted using:
+
+```bash
+yarn docs # or npm run docs
+```
+
+The generated documentation will then be placed in `docs/index.html`.
+
 ## TODO
 
 - Add a way to delete flow blocks after creation.

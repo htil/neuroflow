@@ -659,11 +659,11 @@ var BCIDevice = (function () {
 
 /***/ }),
 
-/***/ "./src/Blocks/BCIData.ts":
-/*!*******************************!*\
-  !*** ./src/Blocks/BCIData.ts ***!
-  \*******************************/
-/*! exports provided: Device, Alpha, Beta, Theta, Delta, Gamma, Engagement, BCIData */
+/***/ "./src/Blocks/BCIBlocks.ts":
+/*!*********************************!*\
+  !*** ./src/Blocks/BCIBlocks.ts ***!
+  \*********************************/
+/*! exports provided: Device, Alpha, Beta, Theta, Delta, Gamma, Engagement, BCICategory */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -675,7 +675,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Delta", function() { return Delta; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Gamma", function() { return Gamma; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Engagement", function() { return Engagement; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BCIData", function() { return BCIData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BCICategory", function() { return BCICategory; });
 /* harmony import */ var _BCIDevice__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../BCIDevice */ "./src/BCIDevice.ts");
 /* harmony import */ var _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Utility/CustomBlock */ "./src/Utility/CustomBlock.ts");
 /* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bcijs/browser */ "./node_modules/bcijs/browser.js");
@@ -806,7 +806,7 @@ var Engagement = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_1__["CustomBl
 }, function (block) {
     return [engagement.toGetterBinding(), Blockly.JavaScript.ORDER_MEMBER];
 });
-var BCIData = function (title) {
+var BCICategory = function (title) {
     return {
         name: title,
         colour: Blockly.Msg.BCI_HUE,
@@ -903,6 +903,7 @@ var flow_final_result = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["Win
 var flow_data = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowManager"].declare("flow_data", []);
 ;
 var AddFlowBlock = function (name) {
+    name = name.replace(" ", "_");
     var editor_name = name + "_editor@0.0.1";
     var block = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["CustomBlock"]("flow_block_" + name, {
         message0: name + " (Flow)",
@@ -1254,10 +1255,10 @@ var PlayerCategoryCallback = function (ws) {
 
 /***/ }),
 
-/***/ "./src/Components/averageBandPower.ts":
-/*!********************************************!*\
-  !*** ./src/Components/averageBandPower.ts ***!
-  \********************************************/
+/***/ "./src/Components/averageBandPower.component.ts":
+/*!******************************************************!*\
+  !*** ./src/Components/averageBandPower.component.ts ***!
+  \******************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1354,10 +1355,10 @@ var averageBandPowerComponent = (function (_super) {
 
 /***/ }),
 
-/***/ "./src/Components/averageBandPowerRange.ts":
-/*!*************************************************!*\
-  !*** ./src/Components/averageBandPowerRange.ts ***!
-  \*************************************************/
+/***/ "./src/Components/averageBandPowerRange.component.ts":
+/*!***********************************************************!*\
+  !*** ./src/Components/averageBandPowerRange.component.ts ***!
+  \***********************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1444,10 +1445,10 @@ var averageBandPowerRangeComponent = (function (_super) {
 
 /***/ }),
 
-/***/ "./src/Components/blocklyEnd.ts":
-/*!**************************************!*\
-  !*** ./src/Components/blocklyEnd.ts ***!
-  \**************************************/
+/***/ "./src/Components/blocklyEnd.component.ts":
+/*!************************************************!*\
+  !*** ./src/Components/blocklyEnd.component.ts ***!
+  \************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1530,10 +1531,10 @@ var blocklyEndComponent = (function (_super) {
 
 /***/ }),
 
-/***/ "./src/Components/blocklyStart.ts":
-/*!****************************************!*\
-  !*** ./src/Components/blocklyStart.ts ***!
-  \****************************************/
+/***/ "./src/Components/blocklyStart.component.ts":
+/*!**************************************************!*\
+  !*** ./src/Components/blocklyStart.component.ts ***!
+  \**************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1610,10 +1611,10 @@ var blocklyStartComponent = (function (_super) {
 
 /***/ }),
 
-/***/ "./src/Components/buffer.ts":
-/*!**********************************!*\
-  !*** ./src/Components/buffer.ts ***!
-  \**********************************/
+/***/ "./src/Components/buffer.component.ts":
+/*!********************************************!*\
+  !*** ./src/Components/buffer.component.ts ***!
+  \********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1706,10 +1707,10 @@ var bufferComponent = (function (_super) {
 
 /***/ }),
 
-/***/ "./src/Components/confusionMatrix.ts":
-/*!*******************************************!*\
-  !*** ./src/Components/confusionMatrix.ts ***!
-  \*******************************************/
+/***/ "./src/Components/confusionMatrix.component.ts":
+/*!*****************************************************!*\
+  !*** ./src/Components/confusionMatrix.component.ts ***!
+  \*****************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1793,10 +1794,10 @@ var confusionMatrixComponent = (function (_super) {
 
 /***/ }),
 
-/***/ "./src/Components/cspLearn.ts":
-/*!************************************!*\
-  !*** ./src/Components/cspLearn.ts ***!
-  \************************************/
+/***/ "./src/Components/cspLearn.component.ts":
+/*!**********************************************!*\
+  !*** ./src/Components/cspLearn.component.ts ***!
+  \**********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1880,10 +1881,10 @@ var cspLearnComponent = (function (_super) {
 
 /***/ }),
 
-/***/ "./src/Components/display.ts":
-/*!***********************************!*\
-  !*** ./src/Components/display.ts ***!
-  \***********************************/
+/***/ "./src/Components/display.component.ts":
+/*!*********************************************!*\
+  !*** ./src/Components/display.component.ts ***!
+  \*********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1969,10 +1970,10 @@ var displayComponent = (function (_super) {
 
 /***/ }),
 
-/***/ "./src/Components/graph.ts":
-/*!*********************************!*\
-  !*** ./src/Components/graph.ts ***!
-  \*********************************/
+/***/ "./src/Components/graph.component.ts":
+/*!*******************************************!*\
+  !*** ./src/Components/graph.component.ts ***!
+  \*******************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -2052,10 +2053,10 @@ var graphComponent = (function (_super) {
 
 /***/ }),
 
-/***/ "./src/Components/number.ts":
-/*!**********************************!*\
-  !*** ./src/Components/number.ts ***!
-  \**********************************/
+/***/ "./src/Components/number.component.ts":
+/*!********************************************!*\
+  !*** ./src/Components/number.component.ts ***!
+  \********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -2146,10 +2147,10 @@ var numberComponent = (function (_super) {
 
 /***/ }),
 
-/***/ "./src/Components/signalBandPower.ts":
-/*!*******************************************!*\
-  !*** ./src/Components/signalBandPower.ts ***!
-  \*******************************************/
+/***/ "./src/Components/signalBandPower.component.ts":
+/*!*****************************************************!*\
+  !*** ./src/Components/signalBandPower.component.ts ***!
+  \*****************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -2275,10 +2276,10 @@ SocketTypes["Any"] = any_t;
 
 /***/ }),
 
-/***/ "./src/Components/string.ts":
-/*!**********************************!*\
-  !*** ./src/Components/string.ts ***!
-  \**********************************/
+/***/ "./src/Components/string.component.ts":
+/*!********************************************!*\
+  !*** ./src/Components/string.component.ts ***!
+  \********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -3114,18 +3115,18 @@ var WindowManager = (function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Components_averageBandPowerRange__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Components/averageBandPowerRange */ "./src/Components/averageBandPowerRange.ts");
-/* harmony import */ var _Components_averageBandPower__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Components/averageBandPower */ "./src/Components/averageBandPower.ts");
-/* harmony import */ var _Components_confusionMatrix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components/confusionMatrix */ "./src/Components/confusionMatrix.ts");
-/* harmony import */ var _Components_cspLearn__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Components/cspLearn */ "./src/Components/cspLearn.ts");
-/* harmony import */ var _Components_signalBandPower__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Components/signalBandPower */ "./src/Components/signalBandPower.ts");
-/* harmony import */ var _Components_blocklyStart__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Components/blocklyStart */ "./src/Components/blocklyStart.ts");
-/* harmony import */ var _Components_blocklyEnd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Components/blocklyEnd */ "./src/Components/blocklyEnd.ts");
-/* harmony import */ var _Components_display__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Components/display */ "./src/Components/display.ts");
-/* harmony import */ var _Components_graph__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Components/graph */ "./src/Components/graph.ts");
-/* harmony import */ var _Components_buffer__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Components/buffer */ "./src/Components/buffer.ts");
-/* harmony import */ var _Components_number__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Components/number */ "./src/Components/number.ts");
-/* harmony import */ var _Components_string__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Components/string */ "./src/Components/string.ts");
+/* harmony import */ var _Components_averageBandPowerRange_component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Components/averageBandPowerRange.component */ "./src/Components/averageBandPowerRange.component.ts");
+/* harmony import */ var _Components_averageBandPower_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Components/averageBandPower.component */ "./src/Components/averageBandPower.component.ts");
+/* harmony import */ var _Components_confusionMatrix_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components/confusionMatrix.component */ "./src/Components/confusionMatrix.component.ts");
+/* harmony import */ var _Components_cspLearn_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Components/cspLearn.component */ "./src/Components/cspLearn.component.ts");
+/* harmony import */ var _Components_signalBandPower_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Components/signalBandPower.component */ "./src/Components/signalBandPower.component.ts");
+/* harmony import */ var _Components_blocklyStart_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Components/blocklyStart.component */ "./src/Components/blocklyStart.component.ts");
+/* harmony import */ var _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Components/blocklyEnd.component */ "./src/Components/blocklyEnd.component.ts");
+/* harmony import */ var _Components_display_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Components/display.component */ "./src/Components/display.component.ts");
+/* harmony import */ var _Components_graph_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Components/graph.component */ "./src/Components/graph.component.ts");
+/* harmony import */ var _Components_buffer_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Components/buffer.component */ "./src/Components/buffer.component.ts");
+/* harmony import */ var _Components_number_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Components/number.component */ "./src/Components/number.component.ts");
+/* harmony import */ var _Components_string_component__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Components/string.component */ "./src/Components/string.component.ts");
 
 
 
@@ -3139,18 +3140,18 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var components = {
-    averageBandPowerRangeComponent: _Components_averageBandPowerRange__WEBPACK_IMPORTED_MODULE_0__["default"],
-    averageBandPowerComponent: _Components_averageBandPower__WEBPACK_IMPORTED_MODULE_1__["default"],
-    confusionMatrixComponent: _Components_confusionMatrix__WEBPACK_IMPORTED_MODULE_2__["default"],
-    cspLearnComponent: _Components_cspLearn__WEBPACK_IMPORTED_MODULE_3__["default"],
-    signalBandPowerComponent: _Components_signalBandPower__WEBPACK_IMPORTED_MODULE_4__["default"],
-    blocklyStartComponent: _Components_blocklyStart__WEBPACK_IMPORTED_MODULE_5__["default"],
-    blocklyEndComponent: _Components_blocklyEnd__WEBPACK_IMPORTED_MODULE_6__["default"],
-    displayComponent: _Components_display__WEBPACK_IMPORTED_MODULE_7__["default"],
-    graphComponent: _Components_graph__WEBPACK_IMPORTED_MODULE_8__["default"],
-    bufferComponent: _Components_buffer__WEBPACK_IMPORTED_MODULE_9__["default"],
-    numberComponent: _Components_number__WEBPACK_IMPORTED_MODULE_10__["default"],
-    stringComponent: _Components_string__WEBPACK_IMPORTED_MODULE_11__["default"],
+    averageBandPowerRangeComponent: _Components_averageBandPowerRange_component__WEBPACK_IMPORTED_MODULE_0__["default"],
+    averageBandPowerComponent: _Components_averageBandPower_component__WEBPACK_IMPORTED_MODULE_1__["default"],
+    confusionMatrixComponent: _Components_confusionMatrix_component__WEBPACK_IMPORTED_MODULE_2__["default"],
+    cspLearnComponent: _Components_cspLearn_component__WEBPACK_IMPORTED_MODULE_3__["default"],
+    signalBandPowerComponent: _Components_signalBandPower_component__WEBPACK_IMPORTED_MODULE_4__["default"],
+    blocklyStartComponent: _Components_blocklyStart_component__WEBPACK_IMPORTED_MODULE_5__["default"],
+    blocklyEndComponent: _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_6__["default"],
+    displayComponent: _Components_display_component__WEBPACK_IMPORTED_MODULE_7__["default"],
+    graphComponent: _Components_graph_component__WEBPACK_IMPORTED_MODULE_8__["default"],
+    bufferComponent: _Components_buffer_component__WEBPACK_IMPORTED_MODULE_9__["default"],
+    numberComponent: _Components_number_component__WEBPACK_IMPORTED_MODULE_10__["default"],
+    stringComponent: _Components_string_component__WEBPACK_IMPORTED_MODULE_11__["default"],
 };
 /* harmony default export */ __webpack_exports__["default"] = (components);
 
@@ -3254,10 +3255,10 @@ var Graph = (function () {
 
 /***/ }),
 
-/***/ "./src/i18n/en.ts":
-/*!************************!*\
-  !*** ./src/i18n/en.ts ***!
-  \************************/
+/***/ "./src/i18n/en.i18n.ts":
+/*!*****************************!*\
+  !*** ./src/i18n/en.i18n.ts ***!
+  \*****************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -3321,12 +3322,12 @@ var messages = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set_locale", function() { return set_locale; });
-/* harmony import */ var _en__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./en */ "./src/i18n/en.ts");
+/* harmony import */ var _en_i18n__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./en.i18n */ "./src/i18n/en.i18n.ts");
 
 function set_locale(locale_code) {
     switch (locale_code.toLocaleLowerCase()) {
         case "en":
-            return _en__WEBPACK_IMPORTED_MODULE_0__["default"];
+            return _en_i18n__WEBPACK_IMPORTED_MODULE_0__["default"];
         default:
             throw new Error("Locale not found: " + locale_code);
     }
@@ -3349,7 +3350,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Playground__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Playground */ "./src/Playground.ts");
 /* harmony import */ var JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! JS-Interpreter/acorn_interpreter */ "./node_modules/JS-Interpreter/acorn_interpreter.js");
 /* harmony import */ var JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _Blocks_BCIData__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Blocks/BCIData */ "./src/Blocks/BCIData.ts");
+/* harmony import */ var _Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Blocks/BCIBlocks */ "./src/Blocks/BCIBlocks.ts");
 /* harmony import */ var _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Blocks/FlowBlocks */ "./src/Blocks/FlowBlocks.ts");
 /* harmony import */ var _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Blocks/PlayerBlocks */ "./src/Blocks/PlayerBlocks.ts");
 /* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./config */ "./src/config.ts");
@@ -3517,7 +3518,7 @@ var toolbox = new _Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["Toolbox"]([
     cat_math,
     cat_vars,
     { gap: 0 },
-    Object(_Blocks_BCIData__WEBPACK_IMPORTED_MODULE_4__["BCIData"])(locale.category.bci),
+    Object(_Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__["BCICategory"])(locale.category.bci),
     Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_5__["FlowCategory"])(locale.category.flow),
     Object(_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["PlayerCategory"])(locale.category.players)
 ]);
@@ -3770,8 +3771,8 @@ connector.onclick = function () { return __awaiter(_this, void 0, void 0, functi
         switch (_a.label) {
             case 0:
                 connector.setAttribute("disabled", "true");
-                if (!(_Blocks_BCIData__WEBPACK_IMPORTED_MODULE_4__["Device"].state == _BCIDevice__WEBPACK_IMPORTED_MODULE_9__["DeviceState"].CONNECTED)) return [3, 2];
-                return [4, _Blocks_BCIData__WEBPACK_IMPORTED_MODULE_4__["Device"].disconnect()];
+                if (!(_Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__["Device"].state == _BCIDevice__WEBPACK_IMPORTED_MODULE_9__["DeviceState"].CONNECTED)) return [3, 2];
+                return [4, _Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__["Device"].disconnect()];
             case 1:
                 _a.sent();
                 connector_icon.innerText = "bluetooth";
@@ -3780,7 +3781,7 @@ connector.onclick = function () { return __awaiter(_this, void 0, void 0, functi
                 _a.trys.push([2, 4, , 5]);
                 connector_icon.classList.add("blink");
                 connector_icon.innerText = "bluetooth_searching";
-                return [4, _Blocks_BCIData__WEBPACK_IMPORTED_MODULE_4__["Device"].connect()];
+                return [4, _Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__["Device"].connect()];
             case 3:
                 _a.sent();
                 console.log("Connected device.");

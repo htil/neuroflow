@@ -186,9 +186,9 @@ function generate_blocks(schemas) {
 		`;
 
 		let formatted_source = formatter.format(source);
-		fs.writeFileSync(path.join(components_dir, `${block.name}.ts`), formatted_source, 'utf-8');
+		fs.writeFileSync(path.join(components_dir, `${block.name}.component.ts`), formatted_source, 'utf-8');
 
-		master_include += `import ${block.name}Component from "./Components/${block.name}";\n`;
+		master_include += `import ${block.name}Component from "./Components/${block.name}.component";\n`;
 		master_components += `${block.name}Component: ${block.name}Component,\n`;
 	}
 

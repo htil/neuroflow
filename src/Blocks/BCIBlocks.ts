@@ -30,6 +30,16 @@ let engagement = WindowManager.declare("engagement", 0);
 let battery = WindowManager.declare("battery", -1);
 let temperature = WindowManager.declare("temperature", -1);
 
+/**
+ * Device
+ *
+ * This is the global device handle used for any connected BCI device.
+ *
+ * By default, it is set up to accept samples only from AF7, buffer BUFFER_SIZE
+ * amount of samples, and then extract alpha, beta, theta, delta, and gamma
+ * signals to the window. Also, if the BCI device supports telemetry, it will
+ * subscribe to it as well.
+ */
 export let Device: BCIDevice = new BCIDevice((sample) => {
 	if (sample.electrode !== ScalpElectrodes.AF7) return;
 
@@ -77,6 +87,11 @@ export let Device: BCIDevice = new BCIDevice((sample) => {
 	temperature.set(status.temperature);
 });
 
+/**
+ * Alpha Block
+ *
+ * A Blockly block that reports the current value of alpha.
+ */
 export let Alpha = new CustomBlock("Alpha", {
 	message0: locale.bci.alpha,
 	args0: [],
@@ -88,6 +103,11 @@ export let Alpha = new CustomBlock("Alpha", {
 	return [alpha.toGetterBinding(), Blockly.JavaScript.ORDER_MEMBER];
 });
 
+/**
+ * Beta Block
+ *
+ * A blockly block that reports the current value of beta.
+ */
 export let Beta = new CustomBlock("Beta", {
 	message0: locale.bci.beta,
 	args0: [],
@@ -99,6 +119,11 @@ export let Beta = new CustomBlock("Beta", {
 	return [beta.toGetterBinding(), Blockly.JavaScript.ORDER_MEMBER];
 });
 
+/**
+ * Theta Block
+ *
+ * A blockly block that reports the current value of theta.
+ */
 export let Theta = new CustomBlock("Theta", {
 	message0: locale.bci.theta,
 	args0: [],
@@ -110,6 +135,11 @@ export let Theta = new CustomBlock("Theta", {
 	return [theta.toGetterBinding(), Blockly.JavaScript.ORDER_MEMBER];
 });
 
+/**
+ * Delta Block
+ *
+ * A blockly block that reports the current value of delta.
+ */
 export let Delta = new CustomBlock("Delta", {
 	message0: locale.bci.delta,
 	args0: [],
@@ -121,6 +151,11 @@ export let Delta = new CustomBlock("Delta", {
 	return [delta.toGetterBinding(), Blockly.JavaScript.ORDER_MEMBER];
 });
 
+/**
+ * Gamma Block
+ *
+ * A blockly block that reports the current value of gamma.
+ */
 export let Gamma = new CustomBlock("Gamma", {
 	message0: locale.bci.gamma,
 	args0: [],
@@ -132,6 +167,11 @@ export let Gamma = new CustomBlock("Gamma", {
 	return [gamma.toGetterBinding(), Blockly.JavaScript.ORDER_MEMBER];
 });
 
+/**
+ * Engagement Block
+ *
+ * A blockly block that reports the current value of engagement, as defined by `beta / (alpha + theta)`.
+ */
 export let Engagement = new CustomBlock("Engagement", {
 	message0: locale.bci.engagement,
 	args0: [],
@@ -143,7 +183,14 @@ export let Engagement = new CustomBlock("Engagement", {
 	return [engagement.toGetterBinding(), Blockly.JavaScript.ORDER_MEMBER];
 });
 
-export let BCIData = (title: string): Category => {
+/**
+ * BCI Blockly Category
+ *
+ * Creates a Blockly Category with the specified title.
+ *
+ * @param title The title to use in the flyout menu in Blockly.
+ */
+export let BCICategory = (title: string): Category => {
 	return {
 		name: title,
 		// FIXME: Figure out why %{Blockly.Msg.BCI_HUE} doesn't work here

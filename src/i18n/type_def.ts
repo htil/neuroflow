@@ -1,4 +1,11 @@
-declare interface LocaleType {
+/**
+ * Locale
+ *
+ * This interface contains all of the needed strings in order to fully translate
+ * this application into a different language. Simply create a file in this folder
+ * that exports the necessary fields and add it to `src/i18n/i18n.ts`.
+ */
+export interface locale {
 	bci: {
 		block: string,
 		tooltip: string,
@@ -44,5 +51,3 @@ declare interface LocaleType {
 		no_players: string
 	}
 };
-
-export default LocaleType;

@@ -12,7 +12,7 @@ import { Sprite, Point } from "./Sprite";
 import { Interpreter } from "JS-Interpreter/acorn_interpreter";
 
 // Custom blocks
-import { BCIData, Device } from "./Blocks/BCIData";
+import { Device, BCICategory } from "./Blocks/BCIBlocks";
 import { FlowCategory, AddFlowBlock, FlowCategoryCallback, flow_window_list, flow_window_type, FlowMutator, flow_block, flow_block_data } from "./Blocks/FlowBlocks";
 import { PlayerCategory, player_window_list, player_list_type, PlayerCategoryCallback, PlayerSet } from "./Blocks/PlayerBlocks";
 
@@ -191,7 +191,7 @@ let toolbox = new Toolbox([
 
 	<Separator>{gap: 0},
 
-	BCIData(locale.category.bci),
+	BCICategory(locale.category.bci),
 	FlowCategory(locale.category.flow),
 	PlayerCategory(locale.category.players)
 ]);

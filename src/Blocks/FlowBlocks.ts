@@ -15,25 +15,96 @@ let locale = i18n.set_locale(config.LOCALE);
 // Set the color for blockly
 Blockly.Msg.FLOW_HUE = 140;
 
-// All flow blocks currently in play
+/**
+ * Flow Window Item
+ *
+ * The structure of a flow item stored in the window.
+ */
 export interface flow_window_item {
 	name: string,
 	data: string
 }
+
+/**
+ * Flow Block Data
+ *
+ * The structure of the data stored in a flow block. Here, editor is the JSON representation
+ * of the Rete editor's components.
+ */
 export interface flow_block_data {
 	name: string,
 	editor: Data
 }
+
+/**
+ * Flow Window Type
+ *
+ * The type of the value stored in the window which keeps track of all currently loaded flow
+ * blocks.
+ */
 export type flow_window_type = Blockly.dictionary<flow_window_item>;
+
+/**
+ * Flow Window List
+ *
+ * The handle to the currently loaded flow blocks.
+ */
 export let flow_window_list = WindowManager.declare("flow_list", {});
+
+/**
+ * Flow Final Result
+ *
+ * The handle to the output values of the various flow blocks currently loaded. The key
+ * to these values is the name of the editor itself.
+ */
 export let flow_final_result = WindowManager.declare("blockly_final", {});
+
+/**
+ * Flow Graph Data
+ *
+ * The handle to the data displayed on the main graph. Accessible to flow component workers.
+ *
+ * @example
+ * In order to access the graph from within a flow component, do something similar to the following
+ * within the worker of the {@link component_schema}. Make sure to list {@link WindowManager}
+ * as a dependency!
+ *
+ * ```ts
+ * let component = {
+ *     dependencies: [{
+ *         names: ["WindowManager", "WindowDeclaration"],
+ *         path: "../Utility/WindowManager"
+ *     }],
+ *
+ *     worker: `
+ *         let data: Array<number> = ...; // Whatever it may be...
+ *         let graph = WindowManager.fetch("flow_data");
+ *         graph.set(data);
+ *     `
+ * };
+ * ```
+ */
 export let flow_data = WindowManager.declare("flow_data", []);
 
+/**
+ * Flow Block
+ *
+ * A Blockly custom block used for flow applications.
+ */
 export interface flow_block extends Blockly.Block {
 	editor_?: ReteEditor,
 	container_?: SVGElement
 };
 
+
+/**
+ * Add Flow Block
+ *
+ * Creates a new unique flow block with the specified name. Each block also stores a {@link ReteEditor} and
+ * the container used for showing the Rete components.
+ *
+ * @param name The name of the flow block shown on the created blockly block. Cannot have spaces.
+ */
 export let AddFlowBlock = (name: string) => {
 	let editor_name = `${name}_editor@0.0.1`;
 
@@ -96,7 +167,7 @@ export let AddFlowBlock = (name: string) => {
 	inner_block.editor_ = editor;
 	inner_block.data = JSON.stringify({ name: name, editor: {} });
 
-	// Save the editor and the block in the window
+	// Save the editor and its serialization in the window
 	let ls = flow_window_list.get() as flow_window_type;
 	ls[name] = {
 		name: name,
@@ -121,11 +192,19 @@ export let AddFlowBlock = (name: string) => {
 		}
 	}
 
+	// Start the editor
 	editor.start();
 
 	return block;
 }
 
+/**
+ * Flow Blockly Category
+ *
+ * Creates a category for use in Blockly with the specified title.
+ *
+ * @param title The title to use in the flyout menu in Blockly.
+ */
 export let FlowCategory = (title: string): Category => {
 	return {
 		name: title,
@@ -136,6 +215,15 @@ export let FlowCategory = (title: string): Category => {
 	};
 };
 
+/**
+ * Flow Category Callback
+ *
+ * This is a callback that runs every time the category is opened in Blockly.
+ * For more info, see
+ * {@link https://developers.google.com/blockly/guides/configure/web/toolbox#dynamic_categories | the official Blockly docs}.
+ *
+ * @param ws The Blockly workspace to link to.
+ */
 export let FlowCategoryCallback = (ws: Blockly.Workspace): Array<Node> => {
 	let res: Array<Node> = [];
 	let fl = <flow_window_type>flow_window_list.get();
@@ -146,7 +234,7 @@ export let FlowCategoryCallback = (ws: Blockly.Workspace): Array<Node> => {
 
 	res.push(button);
 
-	// Add blocks if players are available
+	// Add the flow blocks, as needed
 	let keys = Object.keys(fl);
 	for (let i = 0; i != keys.length; ++i) {
 		let flow_text = unwind([`flow_block_${fl[keys[i]].name}`], true);
@@ -158,29 +246,53 @@ export let FlowCategoryCallback = (ws: Blockly.Workspace): Array<Node> => {
 	return res;
 };
 
+/**
+ * Flow Mutator
+ *
+ * This is a custom {@link https://developers.google.com/blockly/guides/create-custom-blocks/web/mutators | Blockly Mutator}
+ * used in order to nest {@link ReteEditor.ReteEditor | Rete Editors} in blockly custom blocks. This is somewhat complicated,
+ * as Blockly does not provide ample documentation on this. Based on the
+ * {@link https://github.com/google/blockly/blob/master/core/mutator.js | stock Blockly mutator}.
+ */
 export class FlowMutator extends Blockly.Mutator {
-	// Static methods needed for serializing
+	/**
+	 * Get Serialize
+	 *
+	 * Returns a the minimum options needed for linking a new Mutator with serialization to text (for saving).
+	 */
 	static get_serialize(): Blockly.mixin_object {
 		return {
 			mutationToDom: function () {
 				let container = document.createElement("flow_mutation");
 
-				// TODO: Save flow info
-
 				return container;
 			},
 
 			domToMutation: function (e: XMLDocument) {
-				// TODO: Link saved flow info to block
+				//
 			}
 		};
 	}
 
+	/**
+	 * Constructor
+	 *
+	 * Does nothing but call the original mutator constructor.
+	 */
 	constructor() {
 		super([]);
 	}
 
 	// Member methods
+	/**
+	 * Draw Icon
+	 *
+	 * Draws the edit icon on flow blocks.
+	 *
+	 * @param group The parent element that should contain this icon.
+	 *
+	 * @internal
+	 */
 	drawIcon_(group: Element) {
 		// Square with rounded corners.
 		Blockly.utils.createSvgElement(
@@ -224,12 +336,28 @@ export class FlowMutator extends Blockly.Mutator {
 		);
 	};
 
+	/**
+	 * Create Editor
+	 *
+	 * Creates the entire HTML layout that houses the ReteEditor. Generated layout looks as follows:
+	 *
+	 * ```html
+	 * <svg>
+	 *     <g>
+	 *         <rect>
+	 *             <!-- Background -->
+	 *         </rect>
+	 *         <foreignBody>
+	 *             <!-- The editor -->
+	 *         </foreignBody>
+	 *     </g>
+	 * </svg>
+	 * ```
+	 *
+	 * @internal
+	 */
 	createEditor_() {
-		/* Create the editor.  Here's the markup that will be generated:
-		<svg>
-		  [Workspace]
-		</svg>
-		*/
+		// Create the overall container
 		this.svgDialog_ = Blockly.utils.createSvgElement(
 			'svg',
 			{
@@ -255,7 +383,6 @@ export class FlowMutator extends Blockly.Mutator {
 			throw "INVALID FLOW BLOCK";
 
 		// Initialize RETE.js in this container
-		// FIXME: This is kind of dirty.
 		let editor = block.editor_;
 		let container = block.container_;
 		if (block_info.editor.id != undefined)
@@ -266,6 +393,14 @@ export class FlowMutator extends Blockly.Mutator {
 		return this.svgDialog_;
 	};
 
+	/**
+	 * Resize Bubble
+	 *
+	 * This is overloaded in order to make sure that the Rete Editor resizes as well. Most of
+	 * this is taken directly from the original mutator.js.
+	 *
+	 * @internal
+	 */
 	resizeBubble_() {
 		let doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
 		let workspaceSize = {
@@ -314,6 +449,17 @@ export class FlowMutator extends Blockly.Mutator {
 		}
 	}
 
+	/**
+	 * Set Visible
+	 *
+	 * Set the visibility of the editor. This has been slightly edited from the original
+	 * in order to save the Rete Editor container. As such, this method will create the container
+	 * if it has not been yet created, and then toggle its `display`.
+	 *
+	 * Closing the editor will also trigger a save of the editor's state to the block.
+	 *
+	 * @param visible Should the editor be visible.
+	 */
 	setVisible(visible: boolean) {
 		// If no change, do nothing
 		if (visible == this.isVisible())
@@ -324,11 +470,11 @@ export class FlowMutator extends Blockly.Mutator {
 			new Blockly.Events.Ui(this.block_, 'mutatorOpen', !visible, visible)
 		);
 
-		// If we should show, show...
 		if (this.svgDialog_ == undefined) {
 			let container = this.createEditor_();
 		}
 
+		// If we should show, show...
 		if (visible) {
 			this.svgDialog_.style.display = "block";
 
@@ -380,6 +526,13 @@ export class FlowMutator extends Blockly.Mutator {
 	}
 
 	// Icon overrides
+	/**
+	 * Icon Click
+	 *
+	 * Method that runs when the edit icon is clicked.
+	 *
+	 * @internal
+	 */
 	iconClick_(e: MouseEvent) {
 		if (!this.block_.isInFlyout && !Blockly.utils.isRightButton(e)) {
 			this.setVisible(!this.isVisible());

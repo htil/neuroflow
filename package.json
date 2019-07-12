@@ -6,7 +6,7 @@
 	"author": "Chris Crawford",
 	"license": "MIT",
 	"scripts": {
-		"build": "node views/compile.js && node GenerateReteBlocks && webpack",
+		"build": "node GenerateReteBlocks && node views/compile.js && webpack",
 		"docs": "typedoc"
 	},
 	"dependencies": {

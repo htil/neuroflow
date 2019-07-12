@@ -853,8 +853,8 @@ var FlowMutator = (function (_super) {
     FlowMutator.prototype.resizeBubble_ = function () {
         var doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
         var workspaceSize = {
-            width: 600,
-            height: 200,
+            width: 1200,
+            height: 400,
             x: 2,
             y: 2
         };
@@ -935,7 +935,7 @@ var FlowMutator = (function (_super) {
 /*!************************************!*\
   !*** ./src/Blocks/PlayerBlocks.ts ***!
   \************************************/
-/*! exports provided: player_window_list, PlayerPoint, PlayerGet, PlayerSet, PlayerCategory, PlayerCategoryCallback */
+/*! exports provided: player_window_list, PlayerPoint, PlayerGet, PlayerSet, PlayerCollidesWith, PlayerCategory, PlayerCategoryCallback */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -944,6 +944,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerPoint", function() { return PlayerPoint; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerGet", function() { return PlayerGet; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerSet", function() { return PlayerSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerCollidesWith", function() { return PlayerCollidesWith; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerCategory", function() { return PlayerCategory; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerCategoryCallback", function() { return PlayerCategoryCallback; });
 /* harmony import */ var _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Utility/CustomBlock */ "./src/Utility/CustomBlock.ts");
@@ -1014,6 +1015,47 @@ var PlayerSet = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["CustomBlo
         "JSON.parse(" + _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowDeclaration"].asGetterBinding(player_handle) + ")";
     return _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowDeclaration"].asSetterBinding(player_handle) + "JSON.stringify(" + new_value + "));\n";
 });
+var PlayerCollidesWith = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["CustomBlock"]("player_collides", function (b) {
+    b.appendDummyInput("player_lhs")
+        .appendField(new Blockly.FieldDropdown(function () {
+        var res = player_window_list.get();
+        return (res && res.length > 0 ? res : [[locale.player.none, "PLAYER_NONE"]]);
+    }), "PLAYER_LHS")
+        .appendField(" collides with ")
+        .appendField(new Blockly.FieldDropdown(function () {
+        var res = player_window_list.get();
+        return (res && res.length > 0 ? res : [[locale.player.none, "PLAYER_NONE"]]);
+    }), "PLAYER_RHS");
+    b.setOutput(true);
+    b.setColour(Blockly.Msg.PLAYER_HUE);
+}, function (b) {
+    var player_lhs = b.getFieldValue("PLAYER_LHS") || "''";
+    var player_rhs = b.getFieldValue("PLAYER_RHS") || "''";
+    if (player_lhs.length == 0 || player_rhs.length == 0 || player_lhs == "PLAYER_NONE" || player_rhs == "PLAYER_NONE")
+        return '';
+    if (player_lhs == player_rhs)
+        return ["true", Blockly.JavaScript.ORDER_MEMBER];
+    console.log("PLAYER:", player_lhs, player_rhs);
+    var players = player_window_list.get();
+    var find_player = function (id) {
+        for (var i = 0; i != players.length; ++i) {
+            console.log(players[i]);
+            if (players[i][1] == id)
+                return players[i];
+        }
+        throw "PLAYER NOT FOUND: " + name;
+    };
+    var lhs = find_player(player_lhs)[2];
+    var rhs = find_player(player_rhs)[2];
+    var length = 0.2;
+    return [
+        lhs.x + " < " + rhs.x + " + " + length + " && " +
+            (lhs.x + " + " + length + " > " + rhs.x + " && ") +
+            (lhs.y + " < " + rhs.y + " + " + length + " && ") +
+            (rhs.y + " + " + length + " > " + rhs.y),
+        Blockly.JavaScript.ORDER_NONE
+    ];
+});
 var PlayerCategory = function (title) {
     return {
         name: title,
@@ -1028,6 +1070,7 @@ var PlayerCategoryCallback = function (ws) {
     if (pl.length > 0) {
         res.push(Blockly.Xml.textToDom(Object(_Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["unwind"])([PlayerGet.name], true)).firstChild);
         res.push(Blockly.Xml.textToDom(Object(_Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["unwind"])([PlayerSet.name], true)).firstChild);
+        res.push(Blockly.Xml.textToDom(Object(_Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["unwind"])([PlayerCollidesWith.name], true)).firstChild);
         res.push(Blockly.Xml.textToDom(Object(_Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["unwind"])([PlayerPoint.name], true)).firstChild);
     }
     else {
@@ -1035,106 +1078,6 @@ var PlayerCategoryCallback = function (ws) {
     }
     return res;
 };
-
-
-/***/ }),
-
-/***/ "./src/Components/averageBandPower.component.ts":
-/*!******************************************************!*\
-  !*** ./src/Components/averageBandPower.component.ts ***!
-  \******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var rete__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rete */ "./node_modules/rete/build/rete.esm.js");
-/* harmony import */ var _socket_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./socket.types */ "./src/Components/socket.types.ts");
-/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rete-vue-render-plugin */ "./node_modules/rete-vue-render-plugin/build/vue-render-plugin.min.js");
-/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bcijs/browser */ "./node_modules/bcijs/browser.js");
-/* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(bcijs_browser__WEBPACK_IMPORTED_MODULE_3__);
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-
-var template = document.querySelector("#CustomNode").innerHTML;
-var CustomSocket = {
-    template: "<div class=\"socket\" :class=\"[type, socket.name, used()?'used':''] | kebab\" :title=\"socket.name\"></div>",
-    props: ['type', 'socket', 'used']
-};
-var as_any = rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default.a;
-var CustomNode = {
-    template: template,
-    mixins: [as_any.mixin],
-    methods: {
-        used: function (io) {
-            return io.connections.length;
-        }
-    },
-    components: {
-        Socket: CustomSocket
-    }
-};
-;
-;
-var averageBandPowerComponent = (function (_super) {
-    __extends(averageBandPowerComponent, _super);
-    function averageBandPowerComponent() {
-        var _this = _super.call(this, "Average Band Power") || this;
-        _this.data = {
-            component: CustomNode,
-            controls: {}
-        };
-        return _this;
-    }
-    averageBandPowerComponent.prototype.builder = function (node) {
-        var in0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in1", "Samples", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
-        var in1 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in2", "Sample Rate", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var in2 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in3", "(FFT Size)", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var out0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out1", "Average Delta", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var out1 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out2", "Average Theta", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var out2 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out3", "Average Alpha", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var out3 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out4", "Average Beta", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var out4 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out5", "Average Gamma", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        this.data.controls = {};
-        return node
-            .addInput(in0)
-            .addInput(in1)
-            .addInput(in2)
-            .addOutput(out0)
-            .addOutput(out1)
-            .addOutput(out2)
-            .addOutput(out3)
-            .addOutput(out4);
-    };
-    averageBandPowerComponent.prototype.worker = function (node, inputs, outputs) {
-        if (!(inputs["in1"].length && inputs["in2"].length))
-            return;
-        var psd = bcijs_browser__WEBPACK_IMPORTED_MODULE_3__["averageBandPowers"](inputs['in1'][0], inputs['in2'][0], ['delta', 'theta', 'alpha', 'beta', 'gamma'], inputs['in3'][0]);
-        for (var i = 0; i < 5; ++i) {
-            outputs['out' + (i + 1)] = psd[i];
-        }
-    };
-    averageBandPowerComponent.get_group = function () {
-        return "BCI.JS";
-    };
-    return averageBandPowerComponent;
-}(rete__WEBPACK_IMPORTED_MODULE_0__["Component"]));
-/* harmony default export */ __webpack_exports__["default"] = (averageBandPowerComponent);
 
 
 /***/ }),
@@ -1283,7 +1226,7 @@ var CustomNode = {
 var blocklyEndComponent = (function (_super) {
     __extends(blocklyEndComponent, _super);
     function blocklyEndComponent() {
-        var _this = _super.call(this, "Block End") || this;
+        var _this = _super.call(this, "Output") || this;
         _this.data = {
             component: CustomNode,
             controls: {}
@@ -1311,86 +1254,6 @@ var blocklyEndComponent = (function (_super) {
     return blocklyEndComponent;
 }(rete__WEBPACK_IMPORTED_MODULE_0__["Component"]));
 /* harmony default export */ __webpack_exports__["default"] = (blocklyEndComponent);
-
-
-/***/ }),
-
-/***/ "./src/Components/blocklyStart.component.ts":
-/*!**************************************************!*\
-  !*** ./src/Components/blocklyStart.component.ts ***!
-  \**************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var rete__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rete */ "./node_modules/rete/build/rete.esm.js");
-/* harmony import */ var _socket_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./socket.types */ "./src/Components/socket.types.ts");
-/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rete-vue-render-plugin */ "./node_modules/rete-vue-render-plugin/build/vue-render-plugin.min.js");
-/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__);
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-var template = document.querySelector("#CustomNode").innerHTML;
-var CustomSocket = {
-    template: "<div class=\"socket\" :class=\"[type, socket.name, used()?'used':''] | kebab\" :title=\"socket.name\"></div>",
-    props: ['type', 'socket', 'used']
-};
-var as_any = rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default.a;
-var CustomNode = {
-    template: template,
-    mixins: [as_any.mixin],
-    methods: {
-        used: function (io) {
-            return io.connections.length;
-        }
-    },
-    components: {
-        Socket: CustomSocket
-    }
-};
-;
-;
-var blocklyStartComponent = (function (_super) {
-    __extends(blocklyStartComponent, _super);
-    function blocklyStartComponent() {
-        var _this = _super.call(this, "Block Start") || this;
-        _this.data = {
-            component: CustomNode,
-            controls: {}
-        };
-        return _this;
-    }
-    blocklyStartComponent.prototype.builder = function (node) {
-        var out0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("blockly_enter", "Start!", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Any, false);
-        this.data.controls = {};
-        return node
-            .addOutput(out0);
-    };
-    blocklyStartComponent.prototype.worker = function (node, inputs, outputs) {
-        if (false)
-            {}
-        console.log("Starting custom block with input...", "TODO");
-    };
-    blocklyStartComponent.get_group = function () {
-        return "BLOCKLY";
-    };
-    return blocklyStartComponent;
-}(rete__WEBPACK_IMPORTED_MODULE_0__["Component"]));
-/* harmony default export */ __webpack_exports__["default"] = (blocklyStartComponent);
 
 
 /***/ }),
@@ -1491,180 +1354,6 @@ var bufferComponent = (function (_super) {
 
 /***/ }),
 
-/***/ "./src/Components/confusionMatrix.component.ts":
-/*!*****************************************************!*\
-  !*** ./src/Components/confusionMatrix.component.ts ***!
-  \*****************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var rete__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rete */ "./node_modules/rete/build/rete.esm.js");
-/* harmony import */ var _socket_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./socket.types */ "./src/Components/socket.types.ts");
-/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rete-vue-render-plugin */ "./node_modules/rete-vue-render-plugin/build/vue-render-plugin.min.js");
-/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bcijs/browser */ "./node_modules/bcijs/browser.js");
-/* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(bcijs_browser__WEBPACK_IMPORTED_MODULE_3__);
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-
-var template = document.querySelector("#CustomNode").innerHTML;
-var CustomSocket = {
-    template: "<div class=\"socket\" :class=\"[type, socket.name, used()?'used':''] | kebab\" :title=\"socket.name\"></div>",
-    props: ['type', 'socket', 'used']
-};
-var as_any = rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default.a;
-var CustomNode = {
-    template: template,
-    mixins: [as_any.mixin],
-    methods: {
-        used: function (io) {
-            return io.connections.length;
-        }
-    },
-    components: {
-        Socket: CustomSocket
-    }
-};
-;
-;
-var confusionMatrixComponent = (function (_super) {
-    __extends(confusionMatrixComponent, _super);
-    function confusionMatrixComponent() {
-        var _this = _super.call(this, "Confusion Matrix") || this;
-        _this.data = {
-            component: CustomNode,
-            controls: {}
-        };
-        return _this;
-    }
-    confusionMatrixComponent.prototype.builder = function (node) {
-        var in0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in1", "Predicted Class", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
-        var in1 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in2", "Actual Class", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
-        var out0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out1", "Matrix", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
-        this.data.controls = {};
-        return node
-            .addInput(in0)
-            .addInput(in1)
-            .addOutput(out0);
-    };
-    confusionMatrixComponent.prototype.worker = function (node, inputs, outputs) {
-        if (!(inputs["in1"].length && inputs["in2"].length))
-            return;
-        outputs["out1"] = bcijs_browser__WEBPACK_IMPORTED_MODULE_3__["confusionMatrix"](inputs['in1'], inputs['in2']);
-    };
-    confusionMatrixComponent.get_group = function () {
-        return "BCI.JS";
-    };
-    return confusionMatrixComponent;
-}(rete__WEBPACK_IMPORTED_MODULE_0__["Component"]));
-/* harmony default export */ __webpack_exports__["default"] = (confusionMatrixComponent);
-
-
-/***/ }),
-
-/***/ "./src/Components/cspLearn.component.ts":
-/*!**********************************************!*\
-  !*** ./src/Components/cspLearn.component.ts ***!
-  \**********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var rete__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rete */ "./node_modules/rete/build/rete.esm.js");
-/* harmony import */ var _socket_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./socket.types */ "./src/Components/socket.types.ts");
-/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rete-vue-render-plugin */ "./node_modules/rete-vue-render-plugin/build/vue-render-plugin.min.js");
-/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bcijs/browser */ "./node_modules/bcijs/browser.js");
-/* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(bcijs_browser__WEBPACK_IMPORTED_MODULE_3__);
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-
-var template = document.querySelector("#CustomNode").innerHTML;
-var CustomSocket = {
-    template: "<div class=\"socket\" :class=\"[type, socket.name, used()?'used':''] | kebab\" :title=\"socket.name\"></div>",
-    props: ['type', 'socket', 'used']
-};
-var as_any = rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default.a;
-var CustomNode = {
-    template: template,
-    mixins: [as_any.mixin],
-    methods: {
-        used: function (io) {
-            return io.connections.length;
-        }
-    },
-    components: {
-        Socket: CustomSocket
-    }
-};
-;
-;
-var cspLearnComponent = (function (_super) {
-    __extends(cspLearnComponent, _super);
-    function cspLearnComponent() {
-        var _this = _super.call(this, "CSP Learn") || this;
-        _this.data = {
-            component: CustomNode,
-            controls: {}
-        };
-        return _this;
-    }
-    cspLearnComponent.prototype.builder = function (node) {
-        var in0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in1", "Class 1", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
-        var in1 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in2", "Class 2", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
-        var out0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out1", "CSP Params", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Object, true);
-        this.data.controls = {};
-        return node
-            .addInput(in0)
-            .addInput(in1)
-            .addOutput(out0);
-    };
-    cspLearnComponent.prototype.worker = function (node, inputs, outputs) {
-        if (!(inputs["in1"].length && inputs["in2"].length))
-            return;
-        outputs['out1'] = bcijs_browser__WEBPACK_IMPORTED_MODULE_3__["cspLearn"](inputs['in1'], inputs['in2']);
-    };
-    cspLearnComponent.get_group = function () {
-        return "BCI.JS";
-    };
-    return cspLearnComponent;
-}(rete__WEBPACK_IMPORTED_MODULE_0__["Component"]));
-/* harmony default export */ __webpack_exports__["default"] = (cspLearnComponent);
-
-
-/***/ }),
-
 /***/ "./src/Components/display.component.ts":
 /*!*********************************************!*\
   !*** ./src/Components/display.component.ts ***!
@@ -1719,7 +1408,7 @@ var CustomNode = {
 var displayComponent = (function (_super) {
     __extends(displayComponent, _super);
     function displayComponent() {
-        var _this = _super.call(this, "Display String") || this;
+        var _this = _super.call(this, "Print String") || this;
         _this.data = {
             component: CustomNode,
             controls: {}
@@ -1745,7 +1434,7 @@ var displayComponent = (function (_super) {
         str_control.setValue(as_string);
     };
     displayComponent.get_group = function () {
-        return "DISPLAY";
+        return "PRINT";
     };
     return displayComponent;
 }(rete__WEBPACK_IMPORTED_MODULE_0__["Component"]));
@@ -1931,107 +1620,6 @@ var numberComponent = (function (_super) {
 
 /***/ }),
 
-/***/ "./src/Components/signalBandPower.component.ts":
-/*!*****************************************************!*\
-  !*** ./src/Components/signalBandPower.component.ts ***!
-  \*****************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var rete__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rete */ "./node_modules/rete/build/rete.esm.js");
-/* harmony import */ var _socket_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./socket.types */ "./src/Components/socket.types.ts");
-/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rete-vue-render-plugin */ "./node_modules/rete-vue-render-plugin/build/vue-render-plugin.min.js");
-/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bcijs/browser */ "./node_modules/bcijs/browser.js");
-/* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(bcijs_browser__WEBPACK_IMPORTED_MODULE_3__);
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-
-var template = document.querySelector("#CustomNode").innerHTML;
-var CustomSocket = {
-    template: "<div class=\"socket\" :class=\"[type, socket.name, used()?'used':''] | kebab\" :title=\"socket.name\"></div>",
-    props: ['type', 'socket', 'used']
-};
-var as_any = rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default.a;
-var CustomNode = {
-    template: template,
-    mixins: [as_any.mixin],
-    methods: {
-        used: function (io) {
-            return io.connections.length;
-        }
-    },
-    components: {
-        Socket: CustomSocket
-    }
-};
-;
-;
-var signalBandPowerComponent = (function (_super) {
-    __extends(signalBandPowerComponent, _super);
-    function signalBandPowerComponent() {
-        var _this = _super.call(this, "Signal Bands Power") || this;
-        _this.data = {
-            component: CustomNode,
-            controls: {}
-        };
-        return _this;
-    }
-    signalBandPowerComponent.prototype.builder = function (node) {
-        var in0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in1", "Samples", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
-        var in1 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in2", "Sample Rate", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var in2 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in3", "Options", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Object, true);
-        var out0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out1", "Delta Band Power", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var out1 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out2", "Theta Band Power", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var out2 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out3", "Alpha Band Power", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var out3 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out4", "Beta Band Power", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var out4 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out5", "Gamma Band Power", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        this.data.controls = {};
-        return node
-            .addInput(in0)
-            .addInput(in1)
-            .addInput(in2)
-            .addOutput(out0)
-            .addOutput(out1)
-            .addOutput(out2)
-            .addOutput(out3)
-            .addOutput(out4);
-    };
-    signalBandPowerComponent.prototype.worker = function (node, inputs, outputs) {
-        if (!(inputs["in1"].length && inputs["in2"].length))
-            return;
-        var psd = bcijs_browser__WEBPACK_IMPORTED_MODULE_3__["signalBandPower"](inputs['in1'][0], inputs['in2'][0], ['delta', 'theta', 'alpha', 'beta', 'gamma'], inputs['in3'][0]);
-        var psd_as_array = psd;
-        for (var i = 0; i < 5; ++i) {
-            outputs['out' + (i + 1)] = psd_as_array[i];
-        }
-    };
-    signalBandPowerComponent.get_group = function () {
-        return "BCI.JS";
-    };
-    return signalBandPowerComponent;
-}(rete__WEBPACK_IMPORTED_MODULE_0__["Component"]));
-/* harmony default export */ __webpack_exports__["default"] = (signalBandPowerComponent);
-
-
-/***/ }),
-
 /***/ "./src/Components/socket.types.ts":
 /*!****************************************!*\
   !*** ./src/Components/socket.types.ts ***!
@@ -2047,7 +1635,6 @@ __webpack_require__.r(__webpack_exports__);
 var SocketTypes = {
     Number: new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Socket("Number"),
     Array: new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Socket("Array"),
-    Object: new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Socket("Object"),
     String: new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Socket("String")
 };
 var any_t = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Socket("Any");
@@ -2900,22 +2487,12 @@ var WindowManager = (function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_averageBandPowerRange_component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Components/averageBandPowerRange.component */ "./src/Components/averageBandPowerRange.component.ts");
-/* harmony import */ var _Components_averageBandPower_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Components/averageBandPower.component */ "./src/Components/averageBandPower.component.ts");
-/* harmony import */ var _Components_confusionMatrix_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components/confusionMatrix.component */ "./src/Components/confusionMatrix.component.ts");
-/* harmony import */ var _Components_cspLearn_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Components/cspLearn.component */ "./src/Components/cspLearn.component.ts");
-/* harmony import */ var _Components_signalBandPower_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Components/signalBandPower.component */ "./src/Components/signalBandPower.component.ts");
-/* harmony import */ var _Components_blocklyStart_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Components/blocklyStart.component */ "./src/Components/blocklyStart.component.ts");
-/* harmony import */ var _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Components/blocklyEnd.component */ "./src/Components/blocklyEnd.component.ts");
-/* harmony import */ var _Components_display_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Components/display.component */ "./src/Components/display.component.ts");
-/* harmony import */ var _Components_graph_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Components/graph.component */ "./src/Components/graph.component.ts");
-/* harmony import */ var _Components_buffer_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Components/buffer.component */ "./src/Components/buffer.component.ts");
-/* harmony import */ var _Components_number_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Components/number.component */ "./src/Components/number.component.ts");
-/* harmony import */ var _Components_string_component__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Components/string.component */ "./src/Components/string.component.ts");
-
-
-
-
-
+/* harmony import */ var _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Components/blocklyEnd.component */ "./src/Components/blocklyEnd.component.ts");
+/* harmony import */ var _Components_display_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components/display.component */ "./src/Components/display.component.ts");
+/* harmony import */ var _Components_graph_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Components/graph.component */ "./src/Components/graph.component.ts");
+/* harmony import */ var _Components_buffer_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Components/buffer.component */ "./src/Components/buffer.component.ts");
+/* harmony import */ var _Components_number_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Components/number.component */ "./src/Components/number.component.ts");
+/* harmony import */ var _Components_string_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Components/string.component */ "./src/Components/string.component.ts");
 
 
 
@@ -2925,17 +2502,12 @@ __webpack_require__.r(__webpack_exports__);
 
 var components = {
     averageBandPowerRangeComponent: _Components_averageBandPowerRange_component__WEBPACK_IMPORTED_MODULE_0__["default"],
-    averageBandPowerComponent: _Components_averageBandPower_component__WEBPACK_IMPORTED_MODULE_1__["default"],
-    confusionMatrixComponent: _Components_confusionMatrix_component__WEBPACK_IMPORTED_MODULE_2__["default"],
-    cspLearnComponent: _Components_cspLearn_component__WEBPACK_IMPORTED_MODULE_3__["default"],
-    signalBandPowerComponent: _Components_signalBandPower_component__WEBPACK_IMPORTED_MODULE_4__["default"],
-    blocklyStartComponent: _Components_blocklyStart_component__WEBPACK_IMPORTED_MODULE_5__["default"],
-    blocklyEndComponent: _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_6__["default"],
-    displayComponent: _Components_display_component__WEBPACK_IMPORTED_MODULE_7__["default"],
-    graphComponent: _Components_graph_component__WEBPACK_IMPORTED_MODULE_8__["default"],
-    bufferComponent: _Components_buffer_component__WEBPACK_IMPORTED_MODULE_9__["default"],
-    numberComponent: _Components_number_component__WEBPACK_IMPORTED_MODULE_10__["default"],
-    stringComponent: _Components_string_component__WEBPACK_IMPORTED_MODULE_11__["default"],
+    blocklyEndComponent: _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_1__["default"],
+    displayComponent: _Components_display_component__WEBPACK_IMPORTED_MODULE_2__["default"],
+    graphComponent: _Components_graph_component__WEBPACK_IMPORTED_MODULE_3__["default"],
+    bufferComponent: _Components_buffer_component__WEBPACK_IMPORTED_MODULE_4__["default"],
+    numberComponent: _Components_number_component__WEBPACK_IMPORTED_MODULE_5__["default"],
+    stringComponent: _Components_string_component__WEBPACK_IMPORTED_MODULE_6__["default"],
 };
 /* harmony default export */ __webpack_exports__["default"] = (components);
 
@@ -3235,6 +2807,19 @@ webgl_div.onmousemove = function (event) {
         if (selected === "")
             return;
         players[selected].set_position(mouse.point);
+        var windows_1 = _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["player_window_list"].get();
+        var find_player = function (id) {
+            for (var i = 0; i != windows_1.length; ++i) {
+                console.log(windows_1[i]);
+                if (windows_1[i][1] == id)
+                    return windows_1[i];
+            }
+            throw "PLAYER NOT FOUND: " + name;
+        };
+        console.log(selected);
+        var found = find_player(selected);
+        found[2] = mouse.point;
+        _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["player_window_list"].set(windows_1);
         __drawFrame();
         if (in_range(mouse.point.x, 0.9, 0.05) && in_range(mouse.point.y, -0.9, 0.06)) {
             trash.style.transform = "scale(1.1, 1.1)";
@@ -3371,7 +2956,7 @@ var addPlayer = function (type, init) {
     players[id] = playground.create_sprite(id, name, type, path, function () { return __drawFrame(); });
     players[id].set_scale({ x: 0.1, y: 0.1 });
     players[id].set_position(position);
-    _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["player_window_list"].set(_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["player_window_list"].get().concat([[name, id]]));
+    _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["player_window_list"].set(_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["player_window_list"].get().concat([[name, id, position]]));
     workspace.refreshToolboxSelection();
     __drawFrame();
 };

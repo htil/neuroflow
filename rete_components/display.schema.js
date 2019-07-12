@@ -1,4 +1,4 @@
-const group = "DISPLAY";
+const group = "PRINT";
 
 module.exports = [
 	{
@@ -6,7 +6,7 @@ module.exports = [
 		"group": group,
 
 		"name":          "display",
-		"friendly_name": "Display String",
+		"friendly_name": "Print String",
 
 		"controls": [{
 			"name": "StringControl",

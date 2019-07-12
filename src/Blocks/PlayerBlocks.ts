@@ -1,21 +1,34 @@
 import { CustomBlock } from "../Utility/CustomBlock";
 import { Label, unwind } from "../Utility/Toolbox";
+import { Sprite, Point } from "../Sprite";
 import { WindowDeclaration, WindowManager } from "../Utility/WindowManager";
 import * as i18n from "../i18n/i18n";
 
 import config from "../config";
 import { Category } from "../Utility/Toolbox";
+import { dictionary } from "../Playground";
 let locale = i18n.set_locale(config.LOCALE);
 
 // Set the color for blockly
 Blockly.Msg.PLAYER_HUE = 10;
 
 /**
+ * Player List Item
+ *
+ * The type of a player within the player list
+ */
+export type player_list_item = [
+	string, // name
+	string, // id
+	Point   // position
+];
+
+/**
  * Player List Type
  *
  * The type of the player list stored in the window.
  */
-export type player_list_type = Array<Array<string | number>>;
+export type player_list_type = Array<player_list_item>;
 
 /**
  * Player Window List
@@ -87,12 +100,12 @@ export let PlayerGet = new CustomBlock("player_get", (b: Blockly.Block) => {
 export let PlayerSet = new CustomBlock("player_set", (b: Blockly.Block) => {
 	b.appendDummyInput("player_select")
 		.appendField("set")
-		.appendField(new Blockly.FieldDropdown((): (Blockly.field_options_type) => {
-			let res = <player_list_type>player_window_list.get();
+		.appendField(new Blockly.FieldDropdown(
+			(): (Blockly.field_options_type) => {
+				let res = <player_list_type>player_window_list.get();
 
-			return (res && res.length > 0 ? res : [[locale.player.none, "PLAYER_NONE"]]);
-		}
-
+				return (res && res.length > 0 ? res : [[locale.player.none, "PLAYER_NONE"]]);
+			}
 		), "PLAYER_OPTIONS");
 
 	// Allow for a connection
@@ -111,6 +124,73 @@ export let PlayerSet = new CustomBlock("player_set", (b: Blockly.Block) => {
 		"JSON.parse(" + WindowDeclaration.asGetterBinding(player_handle) + ")";
 
 	return WindowDeclaration.asSetterBinding(player_handle) + "JSON.stringify(" + new_value + "));\n";
+});
+
+/**
+ * Player Collision Check
+ *
+ * A custom block used for setting the position of a player. Requires a {@link PlayerGet} block
+ * as its input.
+ */
+export let PlayerCollidesWith = new CustomBlock("player_collides", (b: Blockly.Block) => {
+	b.appendDummyInput("player_lhs")
+		.appendField(new Blockly.FieldDropdown(
+			(): (Blockly.field_options_type) => {
+				let res = <player_list_type>player_window_list.get();
+
+				return (res && res.length > 0 ? res : [[locale.player.none, "PLAYER_NONE"]]);
+			}
+		), "PLAYER_LHS")
+		.appendField(" collides with ")
+		.appendField(new Blockly.FieldDropdown(
+			(): (Blockly.field_options_type) => {
+				let res = <player_list_type>player_window_list.get();
+
+				return (res && res.length > 0 ? res : [[locale.player.none, "PLAYER_NONE"]]);
+			}
+		), "PLAYER_RHS");
+
+	// Allow for connecting
+	b.setOutput(true);
+	b.setColour(Blockly.Msg.PLAYER_HUE);
+}, (b: Blockly.Block) => {
+	let player_lhs = b.getFieldValue("PLAYER_LHS") || "''";
+	let player_rhs = b.getFieldValue("PLAYER_RHS") || "''";
+
+	// Short out if no player is selected
+	if (player_lhs.length == 0 || player_rhs.length == 0 || player_lhs == "PLAYER_NONE" || player_rhs == "PLAYER_NONE")
+		return '';
+
+	// if we are colliding with the same thing, always return true
+	if (player_lhs == player_rhs)
+		return ["true", Blockly.JavaScript.ORDER_MEMBER];
+
+	// Get the actual player coordinates
+	console.log("PLAYER:", player_lhs, player_rhs);
+	let players = <player_list_type>player_window_list.get();
+	let find_player = (id: string) => {
+		for (let i = 0; i != players.length; ++i) {
+			console.log(players[i]);
+			if (players[i][1] == id)
+				return players[i];
+		}
+
+		throw "PLAYER NOT FOUND: " + name;
+	};
+	let lhs = find_player(player_lhs)[2];
+	let rhs = find_player(player_rhs)[2];
+
+	// Use bounding box for collision detection
+	const length = 0.2;
+
+	// See MDN on Axis-Aligned Bounding Box
+	return [
+		`${lhs.x} < ${rhs.x} + ${length} && ` +
+			`${lhs.x} + ${length} > ${rhs.x} && ` +
+			`${lhs.y} < ${rhs.y} + ${length} && ` +
+			`${rhs.y} + ${length} > ${rhs.y}`,
+		Blockly.JavaScript.ORDER_NONE
+	];
 });
 
 /**
@@ -147,6 +227,7 @@ export let PlayerCategoryCallback = (ws: Blockly.Workspace): Array<Node> => {
 	if (pl.length > 0) {
 		res.push(Blockly.Xml.textToDom(unwind([PlayerGet.name], true)).firstChild);
 		res.push(Blockly.Xml.textToDom(unwind([PlayerSet.name], true)).firstChild);
+		res.push(Blockly.Xml.textToDom(unwind([PlayerCollidesWith.name], true)).firstChild);
 		res.push(Blockly.Xml.textToDom(unwind([PlayerPoint.name], true)).firstChild);
 	} else {
 		res.push(Blockly.Xml.textToDom(unwind([<Label>{text: locale.help.no_players}], true)).firstChild);

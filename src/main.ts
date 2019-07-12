@@ -14,7 +14,7 @@ import { Interpreter } from "JS-Interpreter/acorn_interpreter";
 // Custom blocks
 import { Device, BCICategory } from "./Blocks/BCIBlocks";
 import { FlowCategory, AddFlowBlock, FlowCategoryCallback, flow_window_list, flow_window_type, FlowMutator, flow_block, flow_block_data } from "./Blocks/FlowBlocks";
-import { PlayerCategory, player_window_list, player_list_type, PlayerCategoryCallback, PlayerSet } from "./Blocks/PlayerBlocks";
+import { PlayerCategory, player_window_list, player_list_type, PlayerCategoryCallback, PlayerSet, player_list_item } from "./Blocks/PlayerBlocks";
 
 // Configuration
 import config from "./config";
@@ -104,6 +104,22 @@ webgl_div.onmousemove = (event: MouseEvent) => {
 		if (selected === "") return;
 
 		players[selected].set_position(mouse.point);
+		let windows = <player_list_type>player_window_list.get();
+		let find_player = (id: string) => {
+			for (let i = 0; i != windows.length; ++i) {
+				console.log(windows[i]);
+				if (windows[i][1] == id)
+					return windows[i];
+			}
+
+			throw "PLAYER NOT FOUND: " + name;
+		};
+		console.log(selected);
+		let found = find_player(selected);
+		found[2] = mouse.point;
+		player_window_list.set(windows);
+
+		// Draw
 		__drawFrame();
 
 		// Define the trash region as being in [0.85, 0.95], [-0.85, -0.95]
@@ -307,7 +323,7 @@ let addPlayer = (type: string, init: {id: string, name: string, position: Point}
 	players[id] = playground.create_sprite(id, name, type, path, () => __drawFrame());
 	players[id].set_scale({x: 0.1, y: 0.1});
 	players[id].set_position(position);
-	player_window_list.set((<player_list_type>player_window_list.get()).concat([[name, id]]));
+	player_window_list.set((<player_list_type>player_window_list.get()).concat([[name, id, position]]));
 
 	// Redraw player toolbox
 	workspace.refreshToolboxSelection();

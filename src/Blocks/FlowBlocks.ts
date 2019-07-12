@@ -404,8 +404,8 @@ export class FlowMutator extends Blockly.Mutator {
 	resizeBubble_() {
 		let doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
 		let workspaceSize = {
-			width: 600,
-			height: 200,
+			width: 1200,
+			height: 400,
 			x: 2, // FIXME: This is a total guess
 			y: 2
 		};

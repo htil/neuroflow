@@ -20,6 +20,7 @@ let messages: locale = {
 	},
 	category: {
 		bci: "BCI",
+		events: "Events",
 		flow: "Flow",
 		loops: "Loops",
 		logic: "Logic",

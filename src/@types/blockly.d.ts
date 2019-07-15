@@ -28,6 +28,7 @@ declare module Blockly {
 		RTL?: boolean;
 		svgPath_?: SVGElement;
 
+		setStyle?(name: string) : void;
 		appendDummyInput?(name: string): Input;
 		appendStatementInput?(name: string): Input;
 		appendValueInput?(name: string): Input;
@@ -177,6 +178,7 @@ declare module Blockly {
 	module JavaScript {
 		function addReservedWords(words: string): void;
 		function valueToCode(block: Block, handle: string, order: number | boolean): string;
+		function statementToCode(block: Block, handle: string, order: number | boolean): string;
 		function workspaceToCode(workspace: Workspace): string;
 
 		let STATEMENT_PREFIX: string;

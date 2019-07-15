@@ -459,6 +459,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Engagement", function() { return Engagement; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BCICategory", function() { return BCICategory; });
 /* harmony import */ var bci_device__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bci-device */ "./node_modules/bci-device/dest/BCIDevice.js");
+/* harmony import */ var bci_device__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(bci_device__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Utility/CustomBlock */ "./src/Utility/CustomBlock.ts");
 /* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bcijs/browser */ "./node_modules/bcijs/browser.js");
 /* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(bcijs_browser__WEBPACK_IMPORTED_MODULE_2__);
@@ -596,6 +597,50 @@ var BCICategory = function (title) {
         name: title,
         colour: Blockly.Msg.BCI_HUE,
         modules: [Alpha.name, Beta.name, Theta.name, Delta.name, Gamma.name, Engagement.name]
+    };
+};
+
+
+/***/ }),
+
+/***/ "./src/Blocks/EventBlocks.ts":
+/*!***********************************!*\
+  !*** ./src/Blocks/EventBlocks.ts ***!
+  \***********************************/
+/*! exports provided: Keypress, EventCategory */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Keypress", function() { return Keypress; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventCategory", function() { return EventCategory; });
+/* harmony import */ var _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Utility/CustomBlock */ "./src/Utility/CustomBlock.ts");
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../config */ "./src/config.ts");
+/* harmony import */ var _i18n_i18n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../i18n/i18n */ "./src/i18n/i18n.ts");
+
+
+
+var locale = _i18n_i18n__WEBPACK_IMPORTED_MODULE_2__["set_locale"](_config__WEBPACK_IMPORTED_MODULE_1__["default"].LOCALE);
+Blockly.Msg.EVENT_HUE = 70;
+var Keypress = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["CustomBlock"]("keypress_input", function (b) {
+    console.log(b);
+    b.appendStatementInput("keypress_input")
+        .appendField("On Keypress")
+        .appendField(new Blockly.FieldDropdown([["W", "119"], ["A", "A"]]), "FIELDNAME");
+    b.setNextStatement(true, null);
+    b.setStyle("hat_blocks");
+    b.setColour(Blockly.Msg.EVENT_HUE);
+    b.setPreviousStatement(false);
+}, function (b) {
+    var event_handle = b.getFieldValue("PLAYER_OPTIONS") || "''";
+    var code = Blockly.JavaScript.statementToCode(b, "keypress_input", Blockly.JavaScript.ORDER_NONE);
+    return code;
+});
+var EventCategory = function (title) {
+    return {
+        name: title,
+        colour: Blockly.Msg.EVENT_HUE,
+        modules: [Keypress.name]
     };
 };
 
@@ -2638,6 +2683,7 @@ var messages = {
     },
     category: {
         bci: "BCI",
+        events: "Events",
         flow: "Flow",
         loops: "Loops",
         logic: "Logic",
@@ -2707,13 +2753,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! JS-Interpreter/acorn_interpreter */ "./node_modules/JS-Interpreter/acorn_interpreter.js");
 /* harmony import */ var JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Blocks/BCIBlocks */ "./src/Blocks/BCIBlocks.ts");
-/* harmony import */ var _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Blocks/FlowBlocks */ "./src/Blocks/FlowBlocks.ts");
-/* harmony import */ var _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Blocks/PlayerBlocks */ "./src/Blocks/PlayerBlocks.ts");
-/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./config */ "./src/config.ts");
-/* harmony import */ var _i18n_i18n__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./i18n/i18n */ "./src/i18n/i18n.ts");
-/* harmony import */ var bci_device__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! bci-device */ "./node_modules/bci-device/dest/BCIDevice.js");
-/* harmony import */ var _graph__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./graph */ "./src/graph.ts");
-/* harmony import */ var _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Utility/CustomBlock */ "./src/Utility/CustomBlock.ts");
+/* harmony import */ var _Blocks_EventBlocks__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Blocks/EventBlocks */ "./src/Blocks/EventBlocks.ts");
+/* harmony import */ var _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Blocks/FlowBlocks */ "./src/Blocks/FlowBlocks.ts");
+/* harmony import */ var _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Blocks/PlayerBlocks */ "./src/Blocks/PlayerBlocks.ts");
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./config */ "./src/config.ts");
+/* harmony import */ var _i18n_i18n__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./i18n/i18n */ "./src/i18n/i18n.ts");
+/* harmony import */ var bci_device__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! bci-device */ "./node_modules/bci-device/dest/BCIDevice.js");
+/* harmony import */ var bci_device__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(bci_device__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _graph__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./graph */ "./src/graph.ts");
+/* harmony import */ var _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Utility/CustomBlock */ "./src/Utility/CustomBlock.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -2760,10 +2808,11 @@ var _this = undefined;
 
 
 
-var locale = _i18n_i18n__WEBPACK_IMPORTED_MODULE_8__["set_locale"](_config__WEBPACK_IMPORTED_MODULE_7__["default"].LOCALE);
+
+var locale = _i18n_i18n__WEBPACK_IMPORTED_MODULE_9__["set_locale"](_config__WEBPACK_IMPORTED_MODULE_8__["default"].LOCALE);
 
 
-var g = new _graph__WEBPACK_IMPORTED_MODULE_10__["default"]("graph", ["flow_data"], ["#ffe119"]);
+var g = new _graph__WEBPACK_IMPORTED_MODULE_11__["default"]("graph", ["flow_data"], ["#ffe119"]);
 setInterval(function () { return g.update(); }, 100);
 var blockly_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("workspace");
 var code_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("codeText");
@@ -2772,7 +2821,7 @@ Blockly.JavaScript.STATEMENT_PREFIX = "__highlightBlock(%1);\n";
 Blockly.JavaScript.addReservedWords("__highlightBlock");
 var playground = new _Playground__WEBPACK_IMPORTED_MODULE_2__["Playground"](webgl_div);
 var players = {};
-var background = playground.create_sprite("__background", "__background", "background", _config__WEBPACK_IMPORTED_MODULE_7__["default"].paths.background, function () { return __drawFrame(); });
+var background = playground.create_sprite("__background", "__background", "background", _config__WEBPACK_IMPORTED_MODULE_8__["default"].paths.background, function () { return __drawFrame(); });
 players["__background"] = background;
 Blockly.JavaScript.addReservedWords("__drawFrame");
 function __drawFrame() {
@@ -2781,7 +2830,7 @@ function __drawFrame() {
         resolve("Drawn");
     });
 }
-_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["PlayerSet"].set_suffix("__drawFrame();\n");
+_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["PlayerSet"].set_suffix("__drawFrame();\n");
 var trash = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("canvas-trash");
 var mouse = { point: { x: 0, y: 0 }, down: false, shouldDelete: false };
 var selected = "";
@@ -2807,7 +2856,7 @@ webgl_div.onmousemove = function (event) {
         if (selected === "")
             return;
         players[selected].set_position(mouse.point);
-        var windows_1 = _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["player_window_list"].get();
+        var windows_1 = _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].get();
         var find_player = function (id) {
             for (var i = 0; i != windows_1.length; ++i) {
                 console.log(windows_1[i]);
@@ -2819,7 +2868,7 @@ webgl_div.onmousemove = function (event) {
         console.log(selected);
         var found = find_player(selected);
         found[2] = mouse.point;
-        _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["player_window_list"].set(windows_1);
+        _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].set(windows_1);
         __drawFrame();
         if (in_range(mouse.point.x, 0.9, 0.05) && in_range(mouse.point.y, -0.9, 0.06)) {
             trash.style.transform = "scale(1.1, 1.1)";
@@ -2886,10 +2935,11 @@ var toolbox = new _Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["Toolbox"]([
     cat_text,
     cat_math,
     cat_vars,
+    Object(_Blocks_EventBlocks__WEBPACK_IMPORTED_MODULE_5__["EventCategory"])(locale.category.events),
     { gap: 0 },
     Object(_Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__["BCICategory"])(locale.category.bci),
-    Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_5__["FlowCategory"])(locale.category.flow),
-    Object(_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["PlayerCategory"])(locale.category.players)
+    Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["FlowCategory"])(locale.category.flow),
+    Object(_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["PlayerCategory"])(locale.category.players)
 ]);
 var workspace = Blockly.inject(blockly_div, {
     toolbox: toolbox.toString(),
@@ -2907,27 +2957,27 @@ onresize();
 function __highlightBlock(id) {
     workspace.highlightBlock(id);
 }
-workspace.registerToolboxCategoryCallback("PLAYERS", _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["PlayerCategoryCallback"]);
-workspace.registerToolboxCategoryCallback("FLOWS", _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_5__["FlowCategoryCallback"]);
+workspace.registerToolboxCategoryCallback("PLAYERS", _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["PlayerCategoryCallback"]);
+workspace.registerToolboxCategoryCallback("FLOWS", _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["FlowCategoryCallback"]);
 workspace.addChangeListener(function (event) {
     var code = Blockly.JavaScript.workspaceToCode(workspace);
     code_div.innerHTML = code;
 });
-Blockly.Extensions.registerMutator("flow_mutator", _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_5__["FlowMutator"].get_serialize(), function () {
-    this.setMutator(new _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_5__["FlowMutator"]());
+Blockly.Extensions.registerMutator("flow_mutator", _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["FlowMutator"].get_serialize(), function () {
+    this.setMutator(new _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["FlowMutator"]());
 }, null);
 workspace.registerButtonCallback("add_flow", function (e) {
     var name = prompt(locale.flow.prompt);
     if (name == undefined || name.length == 0)
         return;
-    var fl = _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_5__["flow_window_list"].get();
+    var fl = _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["flow_window_list"].get();
     while (name != undefined && fl[name] != undefined) {
         alert(locale.flow.already_exists(name));
         name = prompt(locale.flow.prompt);
     }
     if (name == undefined || name.length == 0)
         return;
-    Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_5__["AddFlowBlock"])(name);
+    Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["AddFlowBlock"])(name);
     workspace.refreshToolboxSelection();
 });
 var player_count = {};
@@ -2951,12 +3001,12 @@ var addPlayer = function (type, init) {
         id = "PLAYER_" + name;
         position = { x: 0, y: 0 };
     }
-    var path = _config__WEBPACK_IMPORTED_MODULE_7__["default"].paths[type];
+    var path = _config__WEBPACK_IMPORTED_MODULE_8__["default"].paths[type];
     ++player_count[type];
     players[id] = playground.create_sprite(id, name, type, path, function () { return __drawFrame(); });
     players[id].set_scale({ x: 0.1, y: 0.1 });
     players[id].set_position(position);
-    _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["player_window_list"].set(_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["player_window_list"].get().concat([[name, id, position]]));
+    _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].set(_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].get().concat([[name, id, position]]));
     workspace.refreshToolboxSelection();
     __drawFrame();
 };
@@ -2968,8 +3018,8 @@ var removePlayer = function (id) {
     }
     player.delete();
     delete players[id];
-    var pl = _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["player_window_list"].get();
-    _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_6__["player_window_list"].set(pl.filter(function (pair) {
+    var pl = _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].get();
+    _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].set(pl.filter(function (pair) {
         if (pair[1] === id) {
             return false;
         }
@@ -2992,6 +3042,7 @@ var exec = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].
 var run_icon = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("play_arrow_icon");
 var handler = null;
 var nextStep = function (interp) {
+    console.log("stepping");
     if (interp.step())
         handler = setTimeout(nextStep, 5, interp);
     else
@@ -3047,7 +3098,7 @@ save_handler.onclick = function () {
     }
     as_dom.appendChild(players_as_dom);
     var flows_as_dom = document.createElement("flows");
-    var flows = _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_5__["flow_window_list"].get();
+    var flows = _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["flow_window_list"].get();
     var flow_keys = Object.keys(flows);
     for (var i = 0; i != flow_keys.length; ++i) {
         var flo = flows[flow_keys[i]];
@@ -3080,7 +3131,7 @@ load_input.onchange = function (e) {
     clear_players();
     workspace.clear();
     workspace.clearUndo();
-    var flows = _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_5__["flow_window_list"].get();
+    var flows = _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["flow_window_list"].get();
     var keys = Object.keys(flows);
     for (var i = 0; i != keys.length; ++i) {
         var flo = flows[keys[i]];
@@ -3088,16 +3139,16 @@ load_input.onchange = function (e) {
         var block = Blockly.Blocks[name_1];
         block.editor_.destroy();
         block.editor_ = undefined;
-        _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_11__["CustomBlock"].dispose("flow_block_" + flo.name, true);
+        _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_12__["CustomBlock"].dispose("flow_block_" + flo.name, true);
     }
-    _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_5__["flow_window_list"].set({});
+    _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["flow_window_list"].set({});
     var reader = new FileReader();
     reader.onload = function (e) {
         var contents = (e.target).result.toString();
         var as_xml = Blockly.Xml.textToDom(contents);
         var flow_blocks = as_xml.querySelector("flows");
         flow_blocks.querySelectorAll("flow").forEach(function (flow) {
-            var block = Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_5__["AddFlowBlock"])(flow.getAttribute("name"));
+            var block = Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["AddFlowBlock"])(flow.getAttribute("name"));
             var as_flow = block.block();
             var data = JSON.parse(flow.getAttribute("data"));
             as_flow.data = flow.getAttribute("data");
@@ -3140,7 +3191,7 @@ connector.onclick = function () { return __awaiter(_this, void 0, void 0, functi
         switch (_a.label) {
             case 0:
                 connector.setAttribute("disabled", "true");
-                if (!(_Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__["Device"].state == bci_device__WEBPACK_IMPORTED_MODULE_9__["DeviceState"].CONNECTED)) return [3, 2];
+                if (!(_Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__["Device"].state == bci_device__WEBPACK_IMPORTED_MODULE_10__["DeviceState"].CONNECTED)) return [3, 2];
                 return [4, _Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__["Device"].disconnect()];
             case 1:
                 _a.sent();
@@ -3175,11 +3226,11 @@ var _loop_1 = function (type) {
         return "continue";
     var ele = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("add_" + type);
     ele.onclick = function () { return addPlayer(type); };
-    ele.src = _config__WEBPACK_IMPORTED_MODULE_7__["default"].paths[type];
+    ele.src = _config__WEBPACK_IMPORTED_MODULE_8__["default"].paths[type];
     var del = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("delete-character");
     del.onclick = function () { return removePlayer(selected); };
 };
-for (var type in _config__WEBPACK_IMPORTED_MODULE_7__["default"].paths) {
+for (var type in _config__WEBPACK_IMPORTED_MODULE_8__["default"].paths) {
     _loop_1(type);
 }
 

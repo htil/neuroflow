@@ -25,6 +25,7 @@ export interface locale {
 	},
 	category: {
 		bci: string,
+		events:string,
 		flow: string,
 		loops: string,
 		logic: string,

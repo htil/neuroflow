@@ -13,6 +13,7 @@ import { Interpreter } from "JS-Interpreter/acorn_interpreter";
 
 // Custom blocks
 import { Device, BCICategory } from "./Blocks/BCIBlocks";
+import { EventCategory } from "./Blocks/EventBlocks";
 import { FlowCategory, AddFlowBlock, FlowCategoryCallback, flow_window_list, flow_window_type, FlowMutator, flow_block, flow_block_data } from "./Blocks/FlowBlocks";
 import { PlayerCategory, player_window_list, player_list_type, PlayerCategoryCallback, PlayerSet, player_list_item } from "./Blocks/PlayerBlocks";
 
@@ -204,7 +205,7 @@ let toolbox = new Toolbox([
 	cat_text,
 	cat_math,
 	cat_vars,
-
+	EventCategory(locale.category.events),
 	<Separator>{gap: 0},
 
 	BCICategory(locale.category.bci),
@@ -381,6 +382,7 @@ let exec = WindowManager.eById("play_arrow_handler");
 let run_icon = WindowManager.eById("play_arrow_icon");
 let handler: NodeJS.Timeout = null;
 let nextStep = (interp: Interpreter) => {
+	console.log("stepping")
 	if (interp.step())
 		handler = setTimeout(nextStep, 5, interp);
 	else

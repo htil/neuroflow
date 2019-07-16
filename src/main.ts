@@ -6,6 +6,7 @@
 // Imports
 // =============================================================================
 import { WindowManager } from "./Utility/WindowManager";
+import { InterpManager } from "./Utility/InterpManager";
 import { Toolbox, Category, Separator } from "./Utility/Toolbox";
 import { Playground, dictionary } from "./Playground";
 import { Sprite, Point } from "./Sprite";
@@ -433,7 +434,9 @@ let clear_players = () => {
 // Handle Code execution
 let exec = WindowManager.eById("play_arrow_handler");
 let run_icon = WindowManager.eById("play_arrow_icon");
+let interpManger;
 let handler: NodeJS.Timeout = null;
+
 let nextStep = (interp: Interpreter) => {
   console.log("stepping");
   if (interp.step()) handler = setTimeout(nextStep, 5, interp);
@@ -442,7 +445,9 @@ let nextStep = (interp: Interpreter) => {
 
 exec.onclick = () => {
   let code = Blockly.JavaScript.workspaceToCode(workspace);
-  console.log("CODE:", code);
+  interpManger = new InterpManager(5, code);
+  //console.log("CODE:", code);
+  console.log(interpManger);
   let interp = new Interpreter(
     code,
     (interpreter: Interpreter, scope: object) => {
@@ -501,13 +506,15 @@ exec.onclick = () => {
   );
 
   if (run_icon.innerHTML === "play_arrow") {
+    // UI changes
     run_icon.innerHTML = "stop";
 
     // Step through nicely
+    // Add multi interp logic here
     nextStep(interp);
   } else {
     clearTimeout(handler);
-    run_icon.innerHTML = "play_arrow";
+    run_icon.innerHTML = "play_arrow"; // UI changes
   }
 };
 

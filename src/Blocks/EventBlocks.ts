@@ -5,6 +5,12 @@ import * as i18n from "../i18n/i18n";
 let locale = i18n.set_locale(config.LOCALE);
 Blockly.Msg.EVENT_HUE = 70;
 
+/**
+ * generateEventDropDown
+ *
+ * A function that returns array list of supported events
+ */
+
 let generateEventDropDown = () => {
   let events = locale.events;
   let out = [];
@@ -25,7 +31,7 @@ let generateEventDropDown = () => {
  */
 
 export let Keypress = new CustomBlock(
-  "keypress_input",
+  "event_keypress",
   (b: Blockly.Block) => {
     console.log(b);
     b.appendStatementInput("keypress_input")
@@ -43,19 +49,12 @@ export let Keypress = new CustomBlock(
     //b.setColour(Blockly.Msg.PLAYER_HUE);
   },
   (b: Blockly.Block) => {
-    let event_handle = b.getFieldValue("PLAYER_OPTIONS") || "''";
     var code = Blockly.JavaScript.statementToCode(
       b,
       "keypress_input",
       Blockly.JavaScript.ORDER_NONE
     );
-    //console.log(code)
 
-    // Set new value to current value on no input
-    //let new_value = Blockly.JavaScript.valueToCode(b, "player_new_value", Blockly.JavaScript.ORDER_NONE) ||
-    //	"JSON.parse(" + WindowDeclaration.asGetterBinding(player_handle) + ")";
-
-    //return WindowDeclaration.asSetterBinding(player_handle) + "JSON.stringify(" + new_value + "));\n";
     return code;
   }
 );

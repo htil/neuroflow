@@ -6,49 +6,52 @@
  * that exports the necessary fields and add it to `src/i18n/i18n.ts`.
  */
 export interface locale {
-	bci: {
-		block: string,
-		tooltip: string,
+  bci: {
+    block: string;
+    tooltip: string;
 
-		alpha: string,
-		beta: string,
-		theta: string,
-		delta: string,
-		gamma: string,
+    alpha: string;
+    beta: string;
+    theta: string;
+    delta: string;
+    gamma: string;
 
-		engagement: string
-	},
-	bluetooth: {
-		error: {
-			connection: string
-		}
-	},
-	category: {
-		bci: string,
-		events:string,
-		flow: string,
-		loops: string,
-		logic: string,
-		math: string,
-		players: string,
-		text: string,
-		variables: string
-	},
-	flow: {
-		add: string,
-		already_exists: (name: string) => string,
-		prompt: string,
-		tooltip: string
-	},
-	player: {
-		create: string,
-		new: string,
-		none: string,
+    engagement: string;
+  };
+  bluetooth: {
+    error: {
+      connection: string;
+    };
+  };
+  category: {
+    bci: string;
+    events: string;
+    flow: string;
+    loops: string;
+    logic: string;
+    math: string;
+    players: string;
+    text: string;
+    variables: string;
+  };
+  flow: {
+    add: string;
+    already_exists: (name: string) => string;
+    prompt: string;
+    tooltip: string;
+  };
+  player: {
+    create: string;
+    new: string;
+    none: string;
 
-		amoeba: string,
-		bacteria: string
-	},
-	help: {
-		no_players: string
-	}
-};
+    amoeba: string;
+    bacteria: string;
+  };
+  help: {
+    no_players: string;
+  };
+  events: {
+    [key: string]: string;
+  };
+}

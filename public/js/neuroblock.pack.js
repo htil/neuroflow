@@ -622,11 +622,23 @@ __webpack_require__.r(__webpack_exports__);
 
 var locale = _i18n_i18n__WEBPACK_IMPORTED_MODULE_2__["set_locale"](_config__WEBPACK_IMPORTED_MODULE_1__["default"].LOCALE);
 Blockly.Msg.EVENT_HUE = 70;
+console.log(locale);
+var generateEventDropDown = function () {
+    var events = locale.events;
+    var out = [];
+    for (var event_1 in locale.events) {
+        var val = event_1;
+        var key = events[event_1];
+        out.push([key, val]);
+    }
+    return out;
+};
+console.log(generateEventDropDown());
 var Keypress = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["CustomBlock"]("keypress_input", function (b) {
     console.log(b);
     b.appendStatementInput("keypress_input")
         .appendField("On Keypress")
-        .appendField(new Blockly.FieldDropdown([["W", "119"], ["A", "A"]]), "FIELDNAME");
+        .appendField(new Blockly.FieldDropdown(generateEventDropDown()), "FIELDNAME");
     b.setNextStatement(true, null);
     b.setStyle("hat_blocks");
     b.setColour(Blockly.Msg.EVENT_HUE);
@@ -2694,7 +2706,9 @@ var messages = {
     },
     flow: {
         add: "Add Flow Block",
-        already_exists: function (name) { return "A flow block named '" + name + "' already exists."; },
+        already_exists: function (name) {
+            return "A flow block named '" + name + "' already exists.";
+        },
         prompt: "New flow block name",
         tooltip: "A flow component. Click the gear to edit me."
     },
@@ -2707,6 +2721,45 @@ var messages = {
     },
     help: {
         no_players: "There aren't any players. Press the + to add one!"
+    },
+    events: {
+        "32": "Space",
+        "48": "0",
+        "49": "1",
+        "50": "2",
+        "51": "3",
+        "52": "4",
+        "53": "5",
+        "54": "6",
+        "55": "7",
+        "56": "8",
+        "57": "9",
+        "97": "A",
+        "98": "B",
+        "99": "C",
+        "100": "D",
+        "101": "E",
+        "102": "F",
+        "103": "G",
+        "104": "H",
+        "105": "I",
+        "106": "J",
+        "107": "K",
+        "108": "L",
+        "109": "M",
+        "110": "N",
+        "111": "O",
+        "112": "P",
+        "113": "Q",
+        "114": "R",
+        "115": "S",
+        "116": "T",
+        "117": "U",
+        "118": "V",
+        "119": "W",
+        "120": "X",
+        "121": "Y",
+        "122": "Z"
     }
 };
 /* harmony default export */ __webpack_exports__["default"] = (messages);
@@ -2850,8 +2903,13 @@ webgl_div.onmouseup = function (event) {
 };
 webgl_div.onmousemove = function (event) {
     var bounds = webgl_div.getBoundingClientRect();
-    var in_range = function (val, ref, range) { return (val > ref - range) && (val < ref + range); };
-    mouse.point = { x: event.clientX / bounds.width * 2 - 1.0, y: (event.clientY - 64) / bounds.height * -2 + 1.0 };
+    var in_range = function (val, ref, range) {
+        return val > ref - range && val < ref + range;
+    };
+    mouse.point = {
+        x: (event.clientX / bounds.width) * 2 - 1.0,
+        y: ((event.clientY - 64) / bounds.height) * -2 + 1.0
+    };
     if (mouse.down) {
         if (selected === "")
             return;
@@ -2870,7 +2928,8 @@ webgl_div.onmousemove = function (event) {
         found[2] = mouse.point;
         _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].set(windows_1);
         __drawFrame();
-        if (in_range(mouse.point.x, 0.9, 0.05) && in_range(mouse.point.y, -0.9, 0.06)) {
+        if (in_range(mouse.point.x, 0.9, 0.05) &&
+            in_range(mouse.point.y, -0.9, 0.06)) {
             trash.style.transform = "scale(1.1, 1.1)";
             trash.style.color = "red";
             mouse.shouldDelete = true;
@@ -2887,7 +2946,8 @@ webgl_div.onmousemove = function (event) {
             if (player == "__background")
                 continue;
             var pos = players[player].get_position();
-            if (in_range(mouse.point.x, pos.x, 0.1) && in_range(mouse.point.y, pos.y, 0.1)) {
+            if (in_range(mouse.point.x, pos.x, 0.1) &&
+                in_range(mouse.point.y, pos.y, 0.1)) {
                 show_cursor = true;
                 selected = player;
             }
@@ -2916,12 +2976,28 @@ var cat_text = {
 var cat_logic = {
     name: locale.category.logic,
     colour: "%{BKY_LOGIC_HUE}",
-    modules: ["controls_if", "logic_compare", "logic_operation", "logic_negate", "logic_boolean", "logic_ternary"]
+    modules: [
+        "controls_if",
+        "logic_compare",
+        "logic_operation",
+        "logic_negate",
+        "logic_boolean",
+        "logic_ternary"
+    ]
 };
 var cat_math = {
     name: locale.category.math,
     colour: "%{BKY_MATH_HUE}",
-    modules: ["math_number", "math_single", "math_round", "math_trig", "math_constrain", "math_arithmetic", "math_modulo", "math_random_int"]
+    modules: [
+        "math_number",
+        "math_single",
+        "math_round",
+        "math_trig",
+        "math_constrain",
+        "math_arithmetic",
+        "math_modulo",
+        "math_random_int"
+    ]
 };
 var cat_vars = {
     name: locale.category.variables,
@@ -2942,17 +3018,17 @@ var toolbox = new _Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["Toolbox"]([
     Object(_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["PlayerCategory"])(locale.category.players)
 ]);
 var workspace = Blockly.inject(blockly_div, {
-    toolbox: toolbox.toString(),
+    toolbox: toolbox.toString()
 });
 var onresize = function (e) {
     var area = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("workspace-area");
-    blockly_div.style.left = 0 + 'px';
-    blockly_div.style.top = 0 + 'px';
-    blockly_div.style.width = area.offsetWidth + 'px';
-    blockly_div.style.height = area.offsetHeight + 'px';
+    blockly_div.style.left = 0 + "px";
+    blockly_div.style.top = 0 + "px";
+    blockly_div.style.width = area.offsetWidth + "px";
+    blockly_div.style.height = area.offsetHeight + "px";
     Blockly.svgResize(workspace);
 };
-window.addEventListener('resize', onresize, false);
+window.addEventListener("resize", onresize, false);
 onresize();
 function __highlightBlock(id) {
     workspace.highlightBlock(id);
@@ -3003,7 +3079,9 @@ var addPlayer = function (type, init) {
     }
     var path = _config__WEBPACK_IMPORTED_MODULE_8__["default"].paths[type];
     ++player_count[type];
-    players[id] = playground.create_sprite(id, name, type, path, function () { return __drawFrame(); });
+    players[id] = playground.create_sprite(id, name, type, path, function () {
+        return __drawFrame();
+    });
     players[id].set_scale({ x: 0.1, y: 0.1 });
     players[id].set_position(position);
     _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].set(_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].get().concat([[name, id, position]]));
@@ -3058,7 +3136,7 @@ exec.onclick = function () {
         interpreter.setProperty(scope, "prompt", interpreter.createNativeFunction(function (text) {
             return prompt(text);
         }));
-        interpreter.setProperty(scope, '__highlightBlock', interpreter.createNativeFunction(function (id) {
+        interpreter.setProperty(scope, "__highlightBlock", interpreter.createNativeFunction(function (id) {
             return workspace.highlightBlock(id);
         }));
         interpreter.setProperty(scope, "__drawFrame", interpreter.createNativeFunction(function () {
@@ -3110,10 +3188,10 @@ save_handler.onclick = function () {
     as_dom.appendChild(flows_as_dom);
     var as_text = Blockly.Xml.domToText(as_dom);
     function download(filename, text) {
-        var element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-        element.setAttribute('download', filename);
-        element.style.display = 'none';
+        var element = document.createElement("a");
+        element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
+        element.setAttribute("download", filename);
+        element.style.display = "none";
         document.body.appendChild(element);
         element.click();
         document.body.removeChild(element);
@@ -3124,7 +3202,7 @@ var load_handler = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowMa
 var load_input = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("load_file_input");
 load_handler.onclick = function () { return load_input.click(); };
 load_input.onchange = function (e) {
-    var file = (e.target).files[0];
+    var file = e.target.files[0];
     if (!file) {
         return;
     }
@@ -3144,7 +3222,7 @@ load_input.onchange = function (e) {
     _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["flow_window_list"].set({});
     var reader = new FileReader();
     reader.onload = function (e) {
-        var contents = (e.target).result.toString();
+        var contents = e.target.result.toString();
         var as_xml = Blockly.Xml.textToDom(contents);
         var flow_blocks = as_xml.querySelector("flows");
         flow_blocks.querySelectorAll("flow").forEach(function (flow) {

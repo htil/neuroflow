@@ -439,16 +439,17 @@ let handler: NodeJS.Timeout = null;
 let nextStep = () => {
   let interp = interpManger.getCurrentInterpreter().interp;
   let isNextStep = interpManger.isNextStep();
-  console.log("isNextStep, ID", isNextStep, interpManger.currentInterpreterID);
+  //console.log("isNextStep, ID", isNextStep, interpManger.currentInterpreterID);
   if (isNextStep) {
     let status = interp.step();
+    status = interpManger.currentInterpreterID == 1 ? true : status;
     interpManger.updateInterpreter(status);
     handler = setTimeout(nextStep, interpManger.handlerDelay);
     interpManger.switchInterpreter();
   }
 };
 
-document.addEventListener("keypress", e => {
+document.addEventListener("keydown", e => {
   if (run_icon.innerHTML === "stop")
     interpManger.executeEventCode(e.keyCode.toString());
 });

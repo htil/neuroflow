@@ -198,7 +198,6 @@ export class InterpManager {
   executeEventCode(keyCode: string): any {
     if (this.eventCode[keyCode]) {
       let code = this.eventCode[keyCode];
-
       // update event interpreter
       this.interpreters[1].interp = this._createInterpreter(code);
     }
@@ -236,7 +235,6 @@ export class InterpManager {
    * @returns{boolean} Returns boolean reflecting wheter all interpreters are done.
    */
   isNextStep(): boolean {
-    console.log(this.interpreters[0].isNextStep);
     return this.interpreters[0].isNextStep || this.interpreters[1].isNextStep;
   }
 

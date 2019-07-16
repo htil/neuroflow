@@ -2495,7 +2495,6 @@ var InterpManager = (function () {
         return this.currentInterpreterID;
     };
     InterpManager.prototype.isNextStep = function () {
-        console.log(this.interpreters[0].isNextStep);
         return this.interpreters[0].isNextStep || this.interpreters[1].isNextStep;
     };
     InterpManager.prototype.switchInterpreter = function () {
@@ -2840,6 +2839,10 @@ var messages = {
     },
     events: {
         "32": "Space",
+        "38": "Up Arrow",
+        "40": "Down Arrow",
+        "39": "Right Arrow",
+        "37": "Left Arrow",
         "48": "0",
         "49": "1",
         "50": "2",
@@ -2850,32 +2853,32 @@ var messages = {
         "55": "7",
         "56": "8",
         "57": "9",
-        "97": "A",
-        "98": "B",
-        "99": "C",
-        "100": "D",
-        "101": "E",
-        "102": "F",
-        "103": "G",
-        "104": "H",
-        "105": "I",
-        "106": "J",
-        "107": "K",
-        "108": "L",
-        "109": "M",
-        "110": "N",
-        "111": "O",
-        "112": "P",
-        "113": "Q",
-        "114": "R",
-        "115": "S",
-        "116": "T",
-        "117": "U",
-        "118": "V",
-        "119": "W",
-        "120": "X",
-        "121": "Y",
-        "122": "Z"
+        "65": "A",
+        "66": "B",
+        "67": "C",
+        "68": "D",
+        "69": "E",
+        "70": "F",
+        "71": "G",
+        "72": "H",
+        "73": "I",
+        "74": "J",
+        "75": "K",
+        "76": "L",
+        "77": "M",
+        "78": "N",
+        "79": "O",
+        "80": "P",
+        "81": "Q",
+        "82": "R",
+        "83": "S",
+        "84": "T",
+        "85": "U",
+        "86": "V",
+        "87": "W",
+        "88": "X",
+        "89": "Y",
+        "90": "Z"
     }
 };
 /* harmony default export */ __webpack_exports__["default"] = (messages);
@@ -3236,15 +3239,15 @@ var handler = null;
 var nextStep = function () {
     var interp = interpManger.getCurrentInterpreter().interp;
     var isNextStep = interpManger.isNextStep();
-    console.log("isNextStep, ID", isNextStep, interpManger.currentInterpreterID);
     if (isNextStep) {
         var status_1 = interp.step();
+        status_1 = interpManger.currentInterpreterID == 1 ? true : status_1;
         interpManger.updateInterpreter(status_1);
         handler = setTimeout(nextStep, interpManger.handlerDelay);
         interpManger.switchInterpreter();
     }
 };
-document.addEventListener("keypress", function (e) {
+document.addEventListener("keydown", function (e) {
     if (run_icon.innerHTML === "stop")
         interpManger.executeEventCode(e.keyCode.toString());
 });

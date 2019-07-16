@@ -33,7 +33,6 @@ let generateEventDropDown = () => {
 export let Keypress = new CustomBlock(
   "event_keypress",
   (b: Blockly.Block) => {
-    console.log(b);
     b.appendStatementInput("keypress_input")
       .appendField("On Keypress")
       .appendField(

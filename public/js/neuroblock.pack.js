@@ -633,7 +633,6 @@ var generateEventDropDown = function () {
     return out;
 };
 var Keypress = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["CustomBlock"]("event_keypress", function (b) {
-    console.log(b);
     b.appendStatementInput("keypress_input")
         .appendField("On Keypress")
         .appendField(new Blockly.FieldDropdown(generateEventDropDown()), "FIELDNAME");
@@ -2402,20 +2401,62 @@ var CustomBlock = (function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "InterpManager", function() { return InterpManager; });
+/* harmony import */ var JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! JS-Interpreter/acorn_interpreter */ "./node_modules/JS-Interpreter/acorn_interpreter.js");
+/* harmony import */ var JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_0__);
+
+var NON_EVENT_INTERP = "NON_EVENT_INTERP";
+var EVENT_INTERP = "EVENT_INTERP";
 var InterpManager = (function () {
-    function InterpManager(handlerDelay, workspaceCode) {
+    function InterpManager(handlerDelay, workspace, api) {
         this.interpreters = [];
         this.currentInterpreterID = 0;
         this.handlerDelay = handlerDelay;
-        this.workspaceCode = workspaceCode;
+        this.workspaceCode = Blockly.JavaScript.workspaceToCode(workspace);
         this.eventCode = {};
+        this.nonEventCode = "";
+        this.api = api;
+        this.handler = null;
+        this.workspace = workspace;
         this._handleSourceCode();
     }
+    InterpManager.prototype._addInterpreter = function (interpreter, type) {
+        var obj = {
+            interp: interpreter,
+            isNextStep: true,
+            type: type
+        };
+        this.interpreters.push(obj);
+    };
+    InterpManager.prototype._createInterpreter = function (code) {
+        var _this = this;
+        var initAPI = function (interpreter, scope) {
+            interpreter.setProperty(scope, "alert", interpreter.createNativeFunction(function (text) {
+                return alert(text);
+            }));
+            interpreter.setProperty(scope, "prompt", interpreter.createNativeFunction(function (text) {
+                return prompt(text);
+            }));
+            interpreter.setProperty(scope, "__highlightBlock", interpreter.createNativeFunction(function (id) {
+                return _this.workspace.highlightBlock(id);
+            }));
+            interpreter.setProperty(scope, "__drawFrame", interpreter.createNativeFunction(function () {
+                return _this.api.__drawFrame();
+            }));
+            interpreter.setProperty(scope, "__windowssSetItem", interpreter.createNativeFunction(function (id, val) {
+                return window.sessionStorage.setItem(id, val);
+            }));
+            interpreter.setProperty(scope, "__windowssGetItem", interpreter.createNativeFunction(function (id) {
+                return window.sessionStorage.getItem(id);
+            }));
+        };
+        return new JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_0__["Interpreter"](code, initAPI);
+    };
     InterpManager.prototype._getBlockType = function (block) {
         return block.type.split("_")[0];
     };
     InterpManager.prototype._handleSourceCode = function () {
         var topBlocks = Blockly.mainWorkspace.getTopBlocks(true);
+        var nonEventCode = "";
         for (var block in topBlocks) {
             var curBlock = topBlocks[block];
             var type = this._getBlockType(curBlock);
@@ -2425,21 +2466,43 @@ var InterpManager = (function () {
                 this._setEventCode(key, code);
             }
             else {
-                console.log("non event");
+                var code = Blockly.JavaScript.blockToCode(curBlock);
+                nonEventCode += code;
             }
         }
+        this._setNonEventCode(nonEventCode);
+        var interp = this._createInterpreter(this.nonEventCode);
+        this._addInterpreter(interp, NON_EVENT_INTERP);
+        var eventInterp = this._createInterpreter("");
+        this._addInterpreter(eventInterp, EVENT_INTERP);
     };
     InterpManager.prototype._setEventCode = function (key, code) {
         this.eventCode[key] = code;
     };
-    InterpManager.prototype.addInterpreter = function (interpreter, type, code) {
-        var obj = {
-            interp: interpreter,
-            isDone: false,
-            type: type,
-            code: code
-        };
-        this.interpreters.push(obj);
+    InterpManager.prototype._setNonEventCode = function (code) {
+        this.nonEventCode = code;
+    };
+    InterpManager.prototype.executeEventCode = function (keyCode) {
+        if (this.eventCode[keyCode]) {
+            var code = this.eventCode[keyCode];
+            this.interpreters[1].interp = this._createInterpreter(code);
+        }
+    };
+    InterpManager.prototype.getCurrentInterpreter = function () {
+        return this.interpreters[this.currentInterpreterID];
+    };
+    InterpManager.prototype.getCurrentInterpID = function () {
+        return this.currentInterpreterID;
+    };
+    InterpManager.prototype.isNextStep = function () {
+        console.log(this.interpreters[0].isNextStep);
+        return this.interpreters[0].isNextStep || this.interpreters[1].isNextStep;
+    };
+    InterpManager.prototype.switchInterpreter = function () {
+        this.currentInterpreterID = this.currentInterpreterID == 0 ? 1 : 0;
+    };
+    InterpManager.prototype.updateInterpreter = function (isNextStep) {
+        this.interpreters[this.currentInterpreterID].isNextStep = isNextStep;
     };
     return InterpManager;
 }());
@@ -2857,18 +2920,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Utility_InterpManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Utility/InterpManager */ "./src/Utility/InterpManager.ts");
 /* harmony import */ var _Utility_Toolbox__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Utility/Toolbox */ "./src/Utility/Toolbox.ts");
 /* harmony import */ var _Playground__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Playground */ "./src/Playground.ts");
-/* harmony import */ var JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! JS-Interpreter/acorn_interpreter */ "./node_modules/JS-Interpreter/acorn_interpreter.js");
-/* harmony import */ var JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Blocks/BCIBlocks */ "./src/Blocks/BCIBlocks.ts");
-/* harmony import */ var _Blocks_EventBlocks__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Blocks/EventBlocks */ "./src/Blocks/EventBlocks.ts");
-/* harmony import */ var _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Blocks/FlowBlocks */ "./src/Blocks/FlowBlocks.ts");
-/* harmony import */ var _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Blocks/PlayerBlocks */ "./src/Blocks/PlayerBlocks.ts");
-/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./config */ "./src/config.ts");
-/* harmony import */ var _i18n_i18n__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./i18n/i18n */ "./src/i18n/i18n.ts");
-/* harmony import */ var bci_device__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! bci-device */ "./node_modules/bci-device/dest/BCIDevice.js");
-/* harmony import */ var bci_device__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(bci_device__WEBPACK_IMPORTED_MODULE_11__);
-/* harmony import */ var _graph__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./graph */ "./src/graph.ts");
-/* harmony import */ var _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Utility/CustomBlock */ "./src/Utility/CustomBlock.ts");
+/* harmony import */ var _Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Blocks/BCIBlocks */ "./src/Blocks/BCIBlocks.ts");
+/* harmony import */ var _Blocks_EventBlocks__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Blocks/EventBlocks */ "./src/Blocks/EventBlocks.ts");
+/* harmony import */ var _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Blocks/FlowBlocks */ "./src/Blocks/FlowBlocks.ts");
+/* harmony import */ var _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Blocks/PlayerBlocks */ "./src/Blocks/PlayerBlocks.ts");
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./config */ "./src/config.ts");
+/* harmony import */ var _i18n_i18n__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./i18n/i18n */ "./src/i18n/i18n.ts");
+/* harmony import */ var bci_device__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! bci-device */ "./node_modules/bci-device/dest/BCIDevice.js");
+/* harmony import */ var bci_device__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(bci_device__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _graph__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./graph */ "./src/graph.ts");
+/* harmony import */ var _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Utility/CustomBlock */ "./src/Utility/CustomBlock.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -2916,11 +2977,10 @@ var _this = undefined;
 
 
 
+var locale = _i18n_i18n__WEBPACK_IMPORTED_MODULE_9__["set_locale"](_config__WEBPACK_IMPORTED_MODULE_8__["default"].LOCALE);
 
-var locale = _i18n_i18n__WEBPACK_IMPORTED_MODULE_10__["set_locale"](_config__WEBPACK_IMPORTED_MODULE_9__["default"].LOCALE);
 
-
-var g = new _graph__WEBPACK_IMPORTED_MODULE_12__["default"]("graph", ["flow_data"], ["#ffe119"]);
+var g = new _graph__WEBPACK_IMPORTED_MODULE_11__["default"]("graph", ["flow_data"], ["#ffe119"]);
 setInterval(function () { return g.update(); }, 100);
 var blockly_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("workspace");
 var code_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("codeText");
@@ -2929,7 +2989,7 @@ Blockly.JavaScript.STATEMENT_PREFIX = "__highlightBlock(%1);\n";
 Blockly.JavaScript.addReservedWords("__highlightBlock");
 var playground = new _Playground__WEBPACK_IMPORTED_MODULE_3__["Playground"](webgl_div);
 var players = {};
-var background = playground.create_sprite("__background", "__background", "background", _config__WEBPACK_IMPORTED_MODULE_9__["default"].paths.background, function () { return __drawFrame(); });
+var background = playground.create_sprite("__background", "__background", "background", _config__WEBPACK_IMPORTED_MODULE_8__["default"].paths.background, function () { return __drawFrame(); });
 players["__background"] = background;
 Blockly.JavaScript.addReservedWords("__drawFrame");
 function __drawFrame() {
@@ -2938,7 +2998,7 @@ function __drawFrame() {
         resolve("Drawn");
     });
 }
-_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_8__["PlayerSet"].set_suffix("__drawFrame();\n");
+_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["PlayerSet"].set_suffix("__drawFrame();\n");
 var trash = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("canvas-trash");
 var mouse = { point: { x: 0, y: 0 }, down: false, shouldDelete: false };
 var selected = "";
@@ -2969,19 +3029,17 @@ webgl_div.onmousemove = function (event) {
         if (selected === "")
             return;
         players[selected].set_position(mouse.point);
-        var windows_1 = _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_8__["player_window_list"].get();
+        var windows_1 = _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].get();
         var find_player = function (id) {
             for (var i = 0; i != windows_1.length; ++i) {
-                console.log(windows_1[i]);
                 if (windows_1[i][1] == id)
                     return windows_1[i];
             }
             throw "PLAYER NOT FOUND: " + name;
         };
-        console.log(selected);
         var found = find_player(selected);
         found[2] = mouse.point;
-        _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_8__["player_window_list"].set(windows_1);
+        _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].set(windows_1);
         __drawFrame();
         if (in_range(mouse.point.x, 0.9, 0.05) &&
             in_range(mouse.point.y, -0.9, 0.06)) {
@@ -3066,11 +3124,11 @@ var toolbox = new _Utility_Toolbox__WEBPACK_IMPORTED_MODULE_2__["Toolbox"]([
     cat_text,
     cat_math,
     cat_vars,
-    Object(_Blocks_EventBlocks__WEBPACK_IMPORTED_MODULE_6__["EventCategory"])(locale.category.events),
+    Object(_Blocks_EventBlocks__WEBPACK_IMPORTED_MODULE_5__["EventCategory"])(locale.category.events),
     { gap: 0 },
-    Object(_Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_5__["BCICategory"])(locale.category.bci),
-    Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_7__["FlowCategory"])(locale.category.flow),
-    Object(_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_8__["PlayerCategory"])(locale.category.players)
+    Object(_Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__["BCICategory"])(locale.category.bci),
+    Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["FlowCategory"])(locale.category.flow),
+    Object(_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["PlayerCategory"])(locale.category.players)
 ]);
 var workspace = Blockly.inject(blockly_div, {
     toolbox: toolbox.toString()
@@ -3088,27 +3146,27 @@ onresize();
 function __highlightBlock(id) {
     workspace.highlightBlock(id);
 }
-workspace.registerToolboxCategoryCallback("PLAYERS", _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_8__["PlayerCategoryCallback"]);
-workspace.registerToolboxCategoryCallback("FLOWS", _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_7__["FlowCategoryCallback"]);
+workspace.registerToolboxCategoryCallback("PLAYERS", _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["PlayerCategoryCallback"]);
+workspace.registerToolboxCategoryCallback("FLOWS", _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["FlowCategoryCallback"]);
 workspace.addChangeListener(function (event) {
     var code = Blockly.JavaScript.workspaceToCode(workspace);
     code_div.innerHTML = code;
 });
-Blockly.Extensions.registerMutator("flow_mutator", _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_7__["FlowMutator"].get_serialize(), function () {
-    this.setMutator(new _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_7__["FlowMutator"]());
+Blockly.Extensions.registerMutator("flow_mutator", _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["FlowMutator"].get_serialize(), function () {
+    this.setMutator(new _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["FlowMutator"]());
 }, null);
 workspace.registerButtonCallback("add_flow", function (e) {
     var name = prompt(locale.flow.prompt);
     if (name == undefined || name.length == 0)
         return;
-    var fl = _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_7__["flow_window_list"].get();
+    var fl = _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["flow_window_list"].get();
     while (name != undefined && fl[name] != undefined) {
         alert(locale.flow.already_exists(name));
         name = prompt(locale.flow.prompt);
     }
     if (name == undefined || name.length == 0)
         return;
-    Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_7__["AddFlowBlock"])(name);
+    Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["AddFlowBlock"])(name);
     workspace.refreshToolboxSelection();
 });
 var player_count = {};
@@ -3132,14 +3190,14 @@ var addPlayer = function (type, init) {
         id = "PLAYER_" + name;
         position = { x: 0, y: 0 };
     }
-    var path = _config__WEBPACK_IMPORTED_MODULE_9__["default"].paths[type];
+    var path = _config__WEBPACK_IMPORTED_MODULE_8__["default"].paths[type];
     ++player_count[type];
     players[id] = playground.create_sprite(id, name, type, path, function () {
         return __drawFrame();
     });
     players[id].set_scale({ x: 0.1, y: 0.1 });
     players[id].set_position(position);
-    _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_8__["player_window_list"].set(_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_8__["player_window_list"].get().concat([[name, id, position]]));
+    _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].set(_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].get().concat([[name, id, position]]));
     workspace.refreshToolboxSelection();
     __drawFrame();
 };
@@ -3151,8 +3209,8 @@ var removePlayer = function (id) {
     }
     player.delete();
     delete players[id];
-    var pl = _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_8__["player_window_list"].get();
-    _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_8__["player_window_list"].set(pl.filter(function (pair) {
+    var pl = _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].get();
+    _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["player_window_list"].set(pl.filter(function (pair) {
         if (pair[1] === id) {
             return false;
         }
@@ -3173,42 +3231,29 @@ var clear_players = function () {
 };
 var exec = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("play_arrow_handler");
 var run_icon = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("play_arrow_icon");
-var interpManger;
+var interpManger = null;
 var handler = null;
-var nextStep = function (interp) {
-    console.log("stepping");
-    if (interp.step())
-        handler = setTimeout(nextStep, 5, interp);
-    else
-        run_icon.innerHTML = "play_arrow";
+var nextStep = function () {
+    var interp = interpManger.getCurrentInterpreter().interp;
+    var isNextStep = interpManger.isNextStep();
+    console.log("isNextStep, ID", isNextStep, interpManger.currentInterpreterID);
+    if (isNextStep) {
+        var status_1 = interp.step();
+        interpManger.updateInterpreter(status_1);
+        handler = setTimeout(nextStep, interpManger.handlerDelay);
+        interpManger.switchInterpreter();
+    }
 };
+document.addEventListener("keypress", function (e) {
+    if (run_icon.innerHTML === "stop")
+        interpManger.executeEventCode(e.keyCode.toString());
+});
 exec.onclick = function () {
     var code = Blockly.JavaScript.workspaceToCode(workspace);
-    interpManger = new _Utility_InterpManager__WEBPACK_IMPORTED_MODULE_1__["InterpManager"](5, code);
-    console.log(interpManger);
-    var interp = new JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_4__["Interpreter"](code, function (interpreter, scope) {
-        interpreter.setProperty(scope, "alert", interpreter.createNativeFunction(function (text) {
-            return alert(text);
-        }));
-        interpreter.setProperty(scope, "prompt", interpreter.createNativeFunction(function (text) {
-            return prompt(text);
-        }));
-        interpreter.setProperty(scope, "__highlightBlock", interpreter.createNativeFunction(function (id) {
-            return workspace.highlightBlock(id);
-        }));
-        interpreter.setProperty(scope, "__drawFrame", interpreter.createNativeFunction(function () {
-            return __drawFrame();
-        }));
-        interpreter.setProperty(scope, "__windowssSetItem", interpreter.createNativeFunction(function (id, val) {
-            return window.sessionStorage.setItem(id, val);
-        }));
-        interpreter.setProperty(scope, "__windowssGetItem", interpreter.createNativeFunction(function (id) {
-            return window.sessionStorage.getItem(id);
-        }));
-    });
+    interpManger = new _Utility_InterpManager__WEBPACK_IMPORTED_MODULE_1__["InterpManager"](1, workspace, { __drawFrame: __drawFrame });
     if (run_icon.innerHTML === "play_arrow") {
         run_icon.innerHTML = "stop";
-        nextStep(interp);
+        nextStep();
     }
     else {
         clearTimeout(handler);
@@ -3233,7 +3278,7 @@ save_handler.onclick = function () {
     }
     as_dom.appendChild(players_as_dom);
     var flows_as_dom = document.createElement("flows");
-    var flows = _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_7__["flow_window_list"].get();
+    var flows = _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["flow_window_list"].get();
     var flow_keys = Object.keys(flows);
     for (var i = 0; i != flow_keys.length; ++i) {
         var flo = flows[flow_keys[i]];
@@ -3266,7 +3311,7 @@ load_input.onchange = function (e) {
     clear_players();
     workspace.clear();
     workspace.clearUndo();
-    var flows = _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_7__["flow_window_list"].get();
+    var flows = _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["flow_window_list"].get();
     var keys = Object.keys(flows);
     for (var i = 0; i != keys.length; ++i) {
         var flo = flows[keys[i]];
@@ -3274,16 +3319,16 @@ load_input.onchange = function (e) {
         var block = Blockly.Blocks[name_1];
         block.editor_.destroy();
         block.editor_ = undefined;
-        _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_13__["CustomBlock"].dispose("flow_block_" + flo.name, true);
+        _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_12__["CustomBlock"].dispose("flow_block_" + flo.name, true);
     }
-    _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_7__["flow_window_list"].set({});
+    _Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["flow_window_list"].set({});
     var reader = new FileReader();
     reader.onload = function (e) {
         var contents = e.target.result.toString();
         var as_xml = Blockly.Xml.textToDom(contents);
         var flow_blocks = as_xml.querySelector("flows");
         flow_blocks.querySelectorAll("flow").forEach(function (flow) {
-            var block = Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_7__["AddFlowBlock"])(flow.getAttribute("name"));
+            var block = Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["AddFlowBlock"])(flow.getAttribute("name"));
             var as_flow = block.block();
             var data = JSON.parse(flow.getAttribute("data"));
             as_flow.data = flow.getAttribute("data");
@@ -3326,8 +3371,8 @@ connector.onclick = function () { return __awaiter(_this, void 0, void 0, functi
         switch (_a.label) {
             case 0:
                 connector.setAttribute("disabled", "true");
-                if (!(_Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_5__["Device"].state == bci_device__WEBPACK_IMPORTED_MODULE_11__["DeviceState"].CONNECTED)) return [3, 2];
-                return [4, _Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_5__["Device"].disconnect()];
+                if (!(_Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__["Device"].state == bci_device__WEBPACK_IMPORTED_MODULE_10__["DeviceState"].CONNECTED)) return [3, 2];
+                return [4, _Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__["Device"].disconnect()];
             case 1:
                 _a.sent();
                 connector_icon.innerText = "bluetooth";
@@ -3336,7 +3381,7 @@ connector.onclick = function () { return __awaiter(_this, void 0, void 0, functi
                 _a.trys.push([2, 4, , 5]);
                 connector_icon.classList.add("blink");
                 connector_icon.innerText = "bluetooth_searching";
-                return [4, _Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_5__["Device"].connect()];
+                return [4, _Blocks_BCIBlocks__WEBPACK_IMPORTED_MODULE_4__["Device"].connect()];
             case 3:
                 _a.sent();
                 console.log("Connected device.");
@@ -3361,11 +3406,11 @@ var _loop_1 = function (type) {
         return "continue";
     var ele = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("add_" + type);
     ele.onclick = function () { return addPlayer(type); };
-    ele.src = _config__WEBPACK_IMPORTED_MODULE_9__["default"].paths[type];
+    ele.src = _config__WEBPACK_IMPORTED_MODULE_8__["default"].paths[type];
     var del = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("delete-character");
     del.onclick = function () { return removePlayer(selected); };
 };
-for (var type in _config__WEBPACK_IMPORTED_MODULE_9__["default"].paths) {
+for (var type in _config__WEBPACK_IMPORTED_MODULE_8__["default"].paths) {
     _loop_1(type);
 }
 

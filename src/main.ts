@@ -133,13 +133,12 @@ webgl_div.onmousemove = (event: MouseEvent) => {
     let windows = <player_list_type>player_window_list.get();
     let find_player = (id: string) => {
       for (let i = 0; i != windows.length; ++i) {
-        console.log(windows[i]);
         if (windows[i][1] == id) return windows[i];
       }
 
       throw "PLAYER NOT FOUND: " + name;
     };
-    console.log(selected);
+
     let found = find_player(selected);
     found[2] = mouse.point;
     player_window_list.set(windows);
@@ -434,84 +433,34 @@ let clear_players = () => {
 // Handle Code execution
 let exec = WindowManager.eById("play_arrow_handler");
 let run_icon = WindowManager.eById("play_arrow_icon");
-let interpManger;
+let interpManger: InterpManager = null;
 let handler: NodeJS.Timeout = null;
 
-let nextStep = (interp: Interpreter) => {
-  console.log("stepping");
-  if (interp.step()) handler = setTimeout(nextStep, 5, interp);
-  else run_icon.innerHTML = "play_arrow";
+let nextStep = () => {
+  let interp = interpManger.getCurrentInterpreter().interp;
+  let isNextStep = interpManger.isNextStep();
+  console.log("isNextStep, ID", isNextStep, interpManger.currentInterpreterID);
+  if (isNextStep) {
+    let status = interp.step();
+    interpManger.updateInterpreter(status);
+    handler = setTimeout(nextStep, interpManger.handlerDelay);
+    interpManger.switchInterpreter();
+  }
 };
+
+document.addEventListener("keypress", e => {
+  if (run_icon.innerHTML === "stop")
+    interpManger.executeEventCode(e.keyCode.toString());
+});
 
 exec.onclick = () => {
   let code = Blockly.JavaScript.workspaceToCode(workspace);
-  interpManger = new InterpManager(5, code);
-  //console.log("CODE:", code);
-  console.log(interpManger);
-  let interp = new Interpreter(
-    code,
-    (interpreter: Interpreter, scope: object) => {
-      // Add an API function for prompt / alert
-      interpreter.setProperty(
-        scope,
-        "alert",
-        interpreter.createNativeFunction((text: string) => {
-          return alert(text);
-        })
-      );
-
-      interpreter.setProperty(
-        scope,
-        "prompt",
-        interpreter.createNativeFunction((text: string) => {
-          return prompt(text);
-        })
-      );
-
-      // Add an API function for highlighting blocks.
-      interpreter.setProperty(
-        scope,
-        "__highlightBlock",
-        interpreter.createNativeFunction((id: string) => {
-          return workspace.highlightBlock(id);
-        })
-      );
-
-      // Add an API function for drawing a frame
-      interpreter.setProperty(
-        scope,
-        "__drawFrame",
-        interpreter.createNativeFunction(() => {
-          return __drawFrame();
-        })
-      );
-
-      // Add an API function for referencing the sessionStorage
-      interpreter.setProperty(
-        scope,
-        "__windowssSetItem",
-        interpreter.createNativeFunction((id: string, val: string) => {
-          return window.sessionStorage.setItem(id, val);
-        })
-      );
-
-      interpreter.setProperty(
-        scope,
-        "__windowssGetItem",
-        interpreter.createNativeFunction((id: string) => {
-          return window.sessionStorage.getItem(id);
-        })
-      );
-    }
-  );
+  interpManger = new InterpManager(1, workspace, { __drawFrame });
 
   if (run_icon.innerHTML === "play_arrow") {
     // UI changes
     run_icon.innerHTML = "stop";
-
-    // Step through nicely
-    // Add multi interp logic here
-    nextStep(interp);
+    nextStep();
   } else {
     clearTimeout(handler);
     run_icon.innerHTML = "play_arrow"; // UI changes

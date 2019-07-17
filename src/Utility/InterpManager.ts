@@ -1,259 +1,198 @@
 import { dictionary } from "../Playground";
 import { Interpreter } from "JS-Interpreter/acorn_interpreter";
-let NON_EVENT_INTERP = "NON_EVENT_INTERP";
-let EVENT_INTERP = "EVENT_INTERP";
+import { Point } from "../Sprite";
+
+const NON_EVENT_INTERP = "NON_EVENT_INTERP";
+const EVENT_INTERP = "EVENT_INTERP";
+
+export interface ManagedInterpreter {
+	interp: Interpreter,
+	isNextStep: boolean,
+	type: string
+};
 
 /**
- * @class InterpManager
+ * InterpManager
  *
- * A class to manage multiple threads based on Neil Fraser's JS Interpreter example. See {@link https://neil.fraser.name/software/JS-Interpreter/docs.html | this link for additional information}
+ * A class to manage multiple threads based on Neil Fraser's JS Interpreter example.
+ * See {@link https://neil.fraser.name/software/JS-Interpreter/docs.html | this link for additional information}
  */
 export class InterpManager {
-  interpreters: any[]; // Current design assumes 0 => Non-event interpreter, 1 => Event interpreter.
-  currentInterpreterID: number;
-  eventCode: dictionary<any>;
-  nonEventCode: string;
-  handler: NodeJS.Timeout;
-  handlerDelay: number;
-  workspaceCode: String;
-  workspace: Blockly.Workspace;
-  api: any;
-  /**
-   * @constructor
-   *
-   * @param {Number} handlerDelay - The amount of time between each interpreter step.
-   * @param {Object} workspace - Current Blockly workspace
-   * @param {Object} api - Interpreter API functions
-   * Default constructor
-   */
-  constructor(handlerDelay: number, workspace: Blockly.Workspace, api: any) {
-    this.interpreters = [];
-    this.currentInterpreterID = 0;
-    this.handlerDelay = handlerDelay;
-    this.workspaceCode = Blockly.JavaScript.workspaceToCode(workspace);
-    this.eventCode = {};
-    this.nonEventCode = "";
-    this.api = api;
-    this.handler = null;
-    this.workspace = workspace;
-    this._handleSourceCode();
-  }
+	interpreters: dictionary<Interpreter> = {};
+	sources: dictionary<string> = {};
 
-  /**
-   * @function addInterpreter
-   *
-   * Add interpreter to list of interpreters
-   *
-   * @param {Any} interpreter - The interpreter to add
-   * @param {String} type - The interpreter type
-   * @param {String} code - The source code associated with the new interpreter
-   */
-  _addInterpreter(interpreter: Interpreter, type: string): void {
-    let obj = {
-      interp: interpreter,
-      isNextStep: true,
-      type
-    };
-    this.interpreters.push(obj);
-  }
+	handler: NodeJS.Timeout = null;
+	handlerDelay: number;
 
-  /**
-   * @function _createInterpreter
-   *
-   * Creates an interpreter object
-   *
-   * @param {String} code - The source code associated with the new interpreter
-   * @returns {Object} Returns new interpreter object
-   */
-  _createInterpreter(code: string): Interpreter {
-    let initAPI = (interpreter: Interpreter, scope: object) => {
-      // Add an API function for prompt / alert
-      interpreter.setProperty(
-        scope,
-        "alert",
-        interpreter.createNativeFunction((text: string) => {
-          return alert(text);
-        })
-      );
+	workspace: Blockly.Workspace;
+	api: any; // FIXME: Use type here
 
-      interpreter.setProperty(
-        scope,
-        "prompt",
-        interpreter.createNativeFunction((text: string) => {
-          return prompt(text);
-        })
-      );
+	private MAIN = "__MAIN__";
 
-      // Add an API function for highlighting blocks.
-      interpreter.setProperty(
-        scope,
-        "__highlightBlock",
-        interpreter.createNativeFunction((id: string) => {
-          return this.workspace.highlightBlock(id);
-        })
-      );
+	/**
+	 * Default InterpManager constructor
+	 *
+	 * @param workspace - Blockly parent workspace
+	 * @param api - Interpreter API functions
+	 * @param handlerDelay - The amount of time between each interpreter step. Defaults to 5 ms
+	 */
+	constructor(workspace: Blockly.Workspace, api: any, handlerDelay: number = 5) {
+		// Save the workspace and delay for use in the step function for each interpreter
+		this.workspace = workspace;
+		this.handlerDelay = handlerDelay;
 
-      // Add an API function for drawing a frame
-      interpreter.setProperty(
-        scope,
-        "__drawFrame",
-        interpreter.createNativeFunction(() => {
-          return this.api.__drawFrame();
-        })
-      );
+		// Keep references to the API for constructing the individual interpreters
+		this.api = api;
+	}
 
-      // Add an API function for referencing the sessionStorage
-      interpreter.setProperty(
-        scope,
-        "__windowssSetItem",
-        interpreter.createNativeFunction((id: string, val: string) => {
-          return window.sessionStorage.setItem(id, val);
-        })
-      );
+	/**
+	 * Has Next Step
+	 *
+	 * Returns whether or not this interpreter manager has any more steps to step through.
+	 */
+	hasNextStep(): boolean {
+		return Object.keys(this.interpreters).length > 0;
+	}
 
-      interpreter.setProperty(
-        scope,
-        "__windowssGetItem",
-        interpreter.createNativeFunction((id: string) => {
-          return window.sessionStorage.getItem(id);
-        })
-      );
-    };
+	step(): void {
+		let keys = Object.keys(this.interpreters);
+		for (let i = 0; i != keys.length; ++i) {
+			let interp = this.interpreters[keys[i]];
 
-    return new Interpreter(code, initAPI);
-  }
+			// Remove the interpreter if it no longer can step
+			if (!interp.step()) {
+				delete this.interpreters[keys[i]];
+			}
+		}
+	}
 
-  /**
-   * @function _getBlockType
-   *
-   * Get type associated with block
-   *
-   * @param {Object} block - Block object.
-   * @returns {string} Returns block type as a string.
-   */
-  _getBlockType(block: any): string {
-    return block.type.split("_")[0];
-  }
+	run(code: string, cb: () => void, should_block: boolean = false): void {
+		let do_run = () => {
+			if (this.hasNextStep()) {
+				this.step();
+				this.handler = setTimeout(do_run, this.handlerDelay);
+			} else {
+				cb();
+				this.stop();
+			}
+		};
 
-  /**
-   * @function _handleSourceCode
-   *
-   * Store source code according to its type. This currently seperates event code from non-event code.
-   * This function also creates event and non-event interpreters.
-   *
-   */
-  _handleSourceCode(): void {
-    let topBlocks = Blockly.mainWorkspace.getTopBlocks(true);
-    let nonEventCode = "";
+		// Create the main interpreter code
+		console.log("CODE:", code);
+		this.interpreters[this.MAIN] = this.createInterpreter(code);
 
-    for (let block in topBlocks) {
-      let curBlock = topBlocks[block];
-      let type = this._getBlockType(curBlock);
-      if (type == "event") {
-        let key = curBlock.inputList[0].fieldRow[1].value_;
-        let code = Blockly.JavaScript.blockToCode(curBlock);
-        this._setEventCode(key, code);
-      } else {
-        let code = Blockly.JavaScript.blockToCode(curBlock);
-        nonEventCode += code;
-      }
-    }
+		// Loop forever if needed
+		if (should_block) {
+			this.interpreters[this.MAIN].appendCode("while (true);");
+		}
 
-    this._setNonEventCode(nonEventCode);
-    let interp = this._createInterpreter(this.nonEventCode);
-    this._addInterpreter(interp, NON_EVENT_INTERP);
+		// Create the event handler
+		window.onkeydown = (ev: KeyboardEvent) => {
+			let key = ev.keyCode;
 
-    // Add dummy event interp
-    let eventInterp = this._createInterpreter("");
-    this._addInterpreter(eventInterp, EVENT_INTERP);
-  }
+			if (key in this.sources) {
+				this.interpreters[key] = this.createInterpreter(this.sources[key]);
+			}
+		};
 
-  /**
-   * @function _setEventCode
-   *
-   * Sets source code associated with specific event
-   *
-   */
-  _setEventCode(key: string, code: string): void {
-    this.eventCode[key] = code;
-  }
+		// Start the execution
+		do_run();
+	}
 
-  /**
-   * @function _setNonEventCode
-   *
-   * Sets source code NOT associated with events
-   *
-   */
-  _setNonEventCode(code: string): void {
-    this.nonEventCode = code;
-  }
+	stop(): void {
+		clearTimeout(this.handler);
 
-  /**
-   * @function executeEventCode
-   *
-   * Executes event code
-   *
-   *
-   */
-  executeEventCode(keyCode: string): any {
-    if (this.eventCode[keyCode]) {
-      let code = this.eventCode[keyCode];
-      // update event interpreter
-      this.interpreters[1].interp = this._createInterpreter(code);
-    }
-  }
+		// Clear out the state data
+		this.interpreters = {};
+		this.sources = {};
+	}
 
-  /**
-   * @function getCurrentInterpreter
-   *
-   * Returns current Interpreter
-   *
-   * @returns {Object} Returns current Interpreter
-   *
-   */
-  getCurrentInterpreter(): any {
-    return this.interpreters[this.currentInterpreterID];
-  }
+	/**
+	 * Create Interpreter
+	 *
+	 * Creates an interpreter object
+	 *
+	 * @param code - The source code associated with the new interpreter
+	 *
+	 * @returns New interpreter object set up with external API calls.
+	 */
+	createInterpreter(code: string): Interpreter {
+		let initAPI = (interpreter: Interpreter, scope: object) => {
+			// Add an API function for prompt / alert
+			interpreter.setProperty(
+				scope,
+				"alert",
+				interpreter.createNativeFunction((text: string) => {
+					return alert(text);
+				})
+			);
 
-  /**
-   * @function getCurrentInterpID
-   *
-   *  Returns ID of current interpreter
-   *
-   * @returns {number} Returns ID of current interpreter
-   *
-   */
-  getCurrentInterpID(): number {
-    return this.currentInterpreterID;
-  }
+			interpreter.setProperty(
+				scope,
+				"prompt",
+				interpreter.createNativeFunction((text: string) => {
+					return prompt(text);
+				})
+			);
 
-  /**
-   * @function isNextStep
-   *
-   * Used to determine if all interpreters are done
-   *
-   * @returns{boolean} Returns boolean reflecting wheter all interpreters are done.
-   */
-  isNextStep(): boolean {
-    return this.interpreters[0].isNextStep || this.interpreters[1].isNextStep;
-  }
+			// Add api call for event-based code
+			interpreter.setProperty(
+				scope,
+				"__handle_event",
+				interpreter.createNativeFunction((key_filter: string, root_id: string) => {
+					this.sources[key_filter] = Blockly.JavaScript.statementToCode(
+						this.workspace.getBlockById(root_id),
+						"keypress_input",
+						Blockly.JavaScript.ORDER_NONE
+					);
+				})
+			);
 
-  /**
-   * @function switchInterpreter
-   *
-   * Switch interpreter. Assumes only two types of interpreters (0 => Non-event interpreter, 1 => Event interpreter).
-   *
-   */
-  switchInterpreter(): void {
-    this.currentInterpreterID = this.currentInterpreterID == 0 ? 1 : 0;
-  }
-  /**
-   * @function updateInterpreter
-   *
-   * Switch interpreter. Assumes only two types of interpreters (0 => Non-event interpreter, 1 => Event interpreter).
-   *
-   */
-  updateInterpreter(isNextStep: boolean): void {
-    this.interpreters[this.currentInterpreterID].isNextStep = isNextStep;
-  }
+			// Add some api for Math
+			interpreter.setProperty(
+				scope,
+				"__distance",
+				interpreter.createNativeFunction((lhs: string, rhs: string) => {
+					let l = <Point>JSON.parse(lhs);
+					let r = <Point>JSON.parse(rhs);
+
+					return Math.hypot(l.x - r.x, l.y - r.y);
+				})
+			);
+
+			// Add any other API calls
+			let api_keys = Object.keys(this.api);
+			for (let i = 0; i != api_keys.length; ++i) {
+				let ap = this.api[api_keys[i]];
+
+				interpreter.setProperty(
+					scope,
+					api_keys[i],
+					interpreter.createNativeFunction(function (...args: any) {
+						return ap(...args);
+					})
+				);
+			}
+
+			// Add an API function for referencing the sessionStorage
+			// TODO: Add the following to the constructor in main.ts
+			interpreter.setProperty(
+				scope,
+				"__windowssSetItem",
+				interpreter.createNativeFunction((id: string, val: string) => {
+					return window.sessionStorage.setItem(id, val);
+				})
+			);
+
+			interpreter.setProperty(
+				scope,
+				"__windowssGetItem",
+				interpreter.createNativeFunction((id: string) => {
+					return window.sessionStorage.getItem(id);
+				})
+			);
+		};
+
+		return new Interpreter(code, initAPI);
+	}
 }

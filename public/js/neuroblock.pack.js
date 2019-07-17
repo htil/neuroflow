@@ -623,9 +623,9 @@ __webpack_require__.r(__webpack_exports__);
 var locale = _i18n_i18n__WEBPACK_IMPORTED_MODULE_2__["set_locale"](_config__WEBPACK_IMPORTED_MODULE_1__["default"].LOCALE);
 Blockly.Msg.EVENT_HUE = 70;
 var generateEventDropDown = function () {
-    var events = locale.events;
+    var events = locale.events.keys;
     var out = [];
-    for (var event_1 in locale.events) {
+    for (var event_1 in events) {
         var val = event_1;
         var key = events[event_1];
         out.push([key, val]);
@@ -635,13 +635,14 @@ var generateEventDropDown = function () {
 var Keypress = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["CustomBlock"]("event_keypress", function (b) {
     b.appendStatementInput("keypress_input")
         .appendField("On Keypress")
-        .appendField(new Blockly.FieldDropdown(generateEventDropDown()), "FIELDNAME");
-    b.setNextStatement(true, null);
+        .appendField(new Blockly.FieldDropdown(generateEventDropDown()), "KEY_FILTER");
     b.setStyle("hat_blocks");
     b.setColour(Blockly.Msg.EVENT_HUE);
+    b.setNextStatement(false, null);
     b.setPreviousStatement(false);
 }, function (b) {
-    var code = Blockly.JavaScript.statementToCode(b, "keypress_input", Blockly.JavaScript.ORDER_NONE);
+    var key_filter = b.getFieldValue("KEY_FILTER");
+    var code = "__handle_event(\"" + key_filter + "\", \"" + b.id + "\")";
     return code;
 });
 var EventCategory = function (title) {
@@ -988,7 +989,7 @@ var FlowMutator = (function (_super) {
 /*!************************************!*\
   !*** ./src/Blocks/PlayerBlocks.ts ***!
   \************************************/
-/*! exports provided: player_window_list, PlayerPoint, PlayerGet, PlayerSet, PlayerCollidesWith, PlayerCategory, PlayerCategoryCallback */
+/*! exports provided: player_window_list, PlayerPoint, PlayerGet, PlayerSet, PlayerUpdateX, PlayerUpdateY, PlayerCollidesWith, PlayerCategory, PlayerCategoryCallback */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -997,6 +998,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerPoint", function() { return PlayerPoint; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerGet", function() { return PlayerGet; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerSet", function() { return PlayerSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerUpdateX", function() { return PlayerUpdateX; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerUpdateY", function() { return PlayerUpdateY; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerCollidesWith", function() { return PlayerCollidesWith; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerCategory", function() { return PlayerCategory; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayerCategoryCallback", function() { return PlayerCategoryCallback; });
@@ -1068,6 +1071,44 @@ var PlayerSet = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["CustomBlo
         "JSON.parse(" + _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowDeclaration"].asGetterBinding(player_handle) + ")";
     return _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowDeclaration"].asSetterBinding(player_handle) + "JSON.stringify(" + new_value + "));\n";
 });
+var PlayerUpdateX = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["CustomBlock"]("player_update_x", function (b) {
+    b.appendValueInput("player_select")
+        .appendField("change")
+        .appendField(new Blockly.FieldDropdown(function () {
+        var res = player_window_list.get();
+        return (res && res.length > 0 ? res : [[locale.player.none, "PLAYER_NONE"]]);
+    }), "PLAYER_OPTIONS")
+        .appendField("X by");
+    b.setNextStatement(true);
+    b.setPreviousStatement(true);
+    b.setColour(Blockly.Msg.PLAYER_HUE);
+}, function (b) {
+    var player_handle = b.getFieldValue("PLAYER_OPTIONS") || "''";
+    var player_win = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowManager"].fetch(player_handle);
+    var current_value = "JSON.parse(" + player_win.toGetterBinding() + ")";
+    var delta = Number(Blockly.JavaScript.valueToCode(b, "player_select", Blockly.JavaScript.ORDER_NONE)) || 0;
+    var new_value = "{ x: (" + current_value + ".x + " + delta + "), y: " + current_value + ".y }";
+    return _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowDeclaration"].asSetterBinding(player_handle) + "JSON.stringify(" + new_value + "));\n";
+});
+var PlayerUpdateY = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["CustomBlock"]("player_update_y", function (b) {
+    b.appendValueInput("player_select")
+        .appendField("change")
+        .appendField(new Blockly.FieldDropdown(function () {
+        var res = player_window_list.get();
+        return (res && res.length > 0 ? res : [[locale.player.none, "PLAYER_NONE"]]);
+    }), "PLAYER_OPTIONS")
+        .appendField("Y by");
+    b.setNextStatement(true);
+    b.setPreviousStatement(true);
+    b.setColour(Blockly.Msg.PLAYER_HUE);
+}, function (b) {
+    var player_handle = b.getFieldValue("PLAYER_OPTIONS") || "''";
+    var player_win = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowManager"].fetch(player_handle);
+    var current_value = "JSON.parse(" + player_win.toGetterBinding() + ")";
+    var delta = Number(Blockly.JavaScript.valueToCode(b, "player_select", Blockly.JavaScript.ORDER_NONE)) || 0;
+    var new_value = "{ x: " + current_value + ".x, y: (" + current_value + ".y + " + delta + ") }";
+    return _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowDeclaration"].asSetterBinding(player_handle) + "JSON.stringify(" + new_value + "));\n";
+});
 var PlayerCollidesWith = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["CustomBlock"]("player_collides", function (b) {
     b.appendDummyInput("player_lhs")
         .appendField(new Blockly.FieldDropdown(function () {
@@ -1088,24 +1129,11 @@ var PlayerCollidesWith = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["
         return '';
     if (player_lhs == player_rhs)
         return ["true", Blockly.JavaScript.ORDER_MEMBER];
-    console.log("PLAYER:", player_lhs, player_rhs);
-    var players = player_window_list.get();
-    var find_player = function (id) {
-        for (var i = 0; i != players.length; ++i) {
-            console.log(players[i]);
-            if (players[i][1] == id)
-                return players[i];
-        }
-        throw "PLAYER NOT FOUND: " + name;
-    };
-    var lhs = find_player(player_lhs)[2];
-    var rhs = find_player(player_rhs)[2];
-    var length = 0.2;
+    var lhs = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowManager"].fetch(player_lhs);
+    var rhs = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowManager"].fetch(player_rhs);
+    var length = 0.15;
     return [
-        lhs.x + " < " + rhs.x + " + " + length + " && " +
-            (lhs.x + " + " + length + " > " + rhs.x + " && ") +
-            (lhs.y + " < " + rhs.y + " + " + length + " && ") +
-            (rhs.y + " + " + length + " > " + rhs.y),
+        "__distance(" + lhs.toGetterBinding() + ", " + rhs.toGetterBinding() + ") < " + length,
         Blockly.JavaScript.ORDER_NONE
     ];
 });
@@ -1125,6 +1153,8 @@ var PlayerCategoryCallback = function (ws) {
         res.push(Blockly.Xml.textToDom(Object(_Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["unwind"])([PlayerSet.name], true)).firstChild);
         res.push(Blockly.Xml.textToDom(Object(_Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["unwind"])([PlayerCollidesWith.name], true)).firstChild);
         res.push(Blockly.Xml.textToDom(Object(_Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["unwind"])([PlayerPoint.name], true)).firstChild);
+        res.push(Blockly.Xml.textToDom(Object(_Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["unwind"])([PlayerUpdateX.name], true)).firstChild);
+        res.push(Blockly.Xml.textToDom(Object(_Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["unwind"])([PlayerUpdateY.name], true)).firstChild);
     }
     else {
         res.push(Blockly.Xml.textToDom(Object(_Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["unwind"])([{ text: locale.help.no_players }], true)).firstChild);
@@ -1221,6 +1251,86 @@ var averageBandPowerRangeComponent = (function (_super) {
     return averageBandPowerRangeComponent;
 }(rete__WEBPACK_IMPORTED_MODULE_0__["Component"]));
 /* harmony default export */ __webpack_exports__["default"] = (averageBandPowerRangeComponent);
+
+
+/***/ }),
+
+/***/ "./src/Components/bciDevice.component.ts":
+/*!***********************************************!*\
+  !*** ./src/Components/bciDevice.component.ts ***!
+  \***********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var rete__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rete */ "./node_modules/rete/build/rete.esm.js");
+/* harmony import */ var _socket_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./socket.types */ "./src/Components/socket.types.ts");
+/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rete-vue-render-plugin */ "./node_modules/rete-vue-render-plugin/build/vue-render-plugin.min.js");
+/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__);
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var template = document.querySelector("#CustomNode").innerHTML;
+var CustomSocket = {
+    template: "<div class=\"socket\" :class=\"[type, socket.name, used()?'used':''] | kebab\" :title=\"socket.name\"></div>",
+    props: ['type', 'socket', 'used']
+};
+var as_any = rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default.a;
+var CustomNode = {
+    template: template,
+    mixins: [as_any.mixin],
+    methods: {
+        used: function (io) {
+            return io.connections.length;
+        }
+    },
+    components: {
+        Socket: CustomSocket
+    }
+};
+;
+;
+var bciDeviceComponent = (function (_super) {
+    __extends(bciDeviceComponent, _super);
+    function bciDeviceComponent() {
+        var _this = _super.call(this, "BCI Device") || this;
+        _this.data = {
+            component: CustomNode,
+            controls: {}
+        };
+        return _this;
+    }
+    bciDeviceComponent.prototype.builder = function (node) {
+        var out0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("data", "EEG Data", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
+        this.data.controls = {};
+        return node
+            .addOutput(out0);
+    };
+    bciDeviceComponent.prototype.worker = function (node, inputs, outputs) {
+        if (false)
+            {}
+        outputs["data"] = [1, 2, 3, 4, 5];
+    };
+    bciDeviceComponent.get_group = function () {
+        return "BCI.JS";
+    };
+    return bciDeviceComponent;
+}(rete__WEBPACK_IMPORTED_MODULE_0__["Component"]));
+/* harmony default export */ __webpack_exports__["default"] = (bciDeviceComponent);
 
 
 /***/ }),
@@ -1559,15 +1669,25 @@ var graphComponent = (function (_super) {
     }
     graphComponent.prototype.builder = function (node) {
         var in0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("data_in", "Array<Number>", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
+        var in1 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("data_name", "Data Name", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].String, true);
         this.data.controls = {};
         return node
-            .addInput(in0);
+            .addInput(in0)
+            .addInput(in1);
     };
     graphComponent.prototype.worker = function (node, inputs, outputs) {
         if (!(inputs["data_in"].length))
             return;
         var save_to = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_3__["WindowManager"].fetch("flow_data");
-        save_to.set(inputs["data_in"][0]);
+        var data_name = inputs["data_name"][0];
+        var data_sets = save_to.get();
+        if (!data_name || data_name.length == 0) {
+            delete data_sets[data_name];
+        }
+        else {
+            data_sets[data_name] = inputs["data_in"][0];
+        }
+        save_to.set(data_sets);
     };
     graphComponent.get_group = function () {
         return "GRAPH";
@@ -1686,8 +1806,8 @@ __webpack_require__.r(__webpack_exports__);
 
 ;
 var SocketTypes = {
-    Number: new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Socket("Number"),
     Array: new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Socket("Array"),
+    Number: new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Socket("Number"),
     String: new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Socket("String")
 };
 var any_t = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Socket("Any");
@@ -2406,28 +2526,62 @@ __webpack_require__.r(__webpack_exports__);
 
 var NON_EVENT_INTERP = "NON_EVENT_INTERP";
 var EVENT_INTERP = "EVENT_INTERP";
+;
 var InterpManager = (function () {
-    function InterpManager(handlerDelay, workspace, api) {
-        this.interpreters = [];
-        this.currentInterpreterID = 0;
-        this.handlerDelay = handlerDelay;
-        this.workspaceCode = Blockly.JavaScript.workspaceToCode(workspace);
-        this.eventCode = {};
-        this.nonEventCode = "";
-        this.api = api;
+    function InterpManager(workspace, api, handlerDelay) {
+        if (handlerDelay === void 0) { handlerDelay = 5; }
+        this.interpreters = {};
+        this.sources = {};
         this.handler = null;
+        this.MAIN = "__MAIN__";
         this.workspace = workspace;
-        this._handleSourceCode();
+        this.handlerDelay = handlerDelay;
+        this.api = api;
     }
-    InterpManager.prototype._addInterpreter = function (interpreter, type) {
-        var obj = {
-            interp: interpreter,
-            isNextStep: true,
-            type: type
-        };
-        this.interpreters.push(obj);
+    InterpManager.prototype.hasNextStep = function () {
+        return Object.keys(this.interpreters).length > 0;
     };
-    InterpManager.prototype._createInterpreter = function (code) {
+    InterpManager.prototype.step = function () {
+        var keys = Object.keys(this.interpreters);
+        for (var i = 0; i != keys.length; ++i) {
+            var interp = this.interpreters[keys[i]];
+            if (!interp.step()) {
+                delete this.interpreters[keys[i]];
+            }
+        }
+    };
+    InterpManager.prototype.run = function (code, cb, should_block) {
+        var _this = this;
+        if (should_block === void 0) { should_block = false; }
+        var do_run = function () {
+            if (_this.hasNextStep()) {
+                _this.step();
+                _this.handler = setTimeout(do_run, _this.handlerDelay);
+            }
+            else {
+                cb();
+                _this.stop();
+            }
+        };
+        console.log("CODE:", code);
+        this.interpreters[this.MAIN] = this.createInterpreter(code);
+        if (should_block) {
+            this.interpreters[this.MAIN].appendCode("while (true);");
+        }
+        window.onkeydown = function (ev) {
+            var key = ev.keyCode;
+            if (key in _this.sources) {
+                _this.interpreters[key] = _this.createInterpreter(_this.sources[key]);
+            }
+        };
+        do_run();
+    };
+    InterpManager.prototype.stop = function () {
+        clearTimeout(this.handler);
+        this.interpreters = {};
+        this.sources = {};
+    };
+    InterpManager.prototype.createInterpreter = function (code) {
         var _this = this;
         var initAPI = function (interpreter, scope) {
             interpreter.setProperty(scope, "alert", interpreter.createNativeFunction(function (text) {
@@ -2436,12 +2590,28 @@ var InterpManager = (function () {
             interpreter.setProperty(scope, "prompt", interpreter.createNativeFunction(function (text) {
                 return prompt(text);
             }));
-            interpreter.setProperty(scope, "__highlightBlock", interpreter.createNativeFunction(function (id) {
-                return _this.workspace.highlightBlock(id);
+            interpreter.setProperty(scope, "__handle_event", interpreter.createNativeFunction(function (key_filter, root_id) {
+                _this.sources[key_filter] = Blockly.JavaScript.statementToCode(_this.workspace.getBlockById(root_id), "keypress_input", Blockly.JavaScript.ORDER_NONE);
             }));
-            interpreter.setProperty(scope, "__drawFrame", interpreter.createNativeFunction(function () {
-                return _this.api.__drawFrame();
+            interpreter.setProperty(scope, "__distance", interpreter.createNativeFunction(function (lhs, rhs) {
+                var l = JSON.parse(lhs);
+                var r = JSON.parse(rhs);
+                return Math.hypot(l.x - r.x, l.y - r.y);
             }));
+            var api_keys = Object.keys(_this.api);
+            var _loop_1 = function (i) {
+                var ap = _this.api[api_keys[i]];
+                interpreter.setProperty(scope, api_keys[i], interpreter.createNativeFunction(function () {
+                    var args = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        args[_i] = arguments[_i];
+                    }
+                    return ap.apply(void 0, args);
+                }));
+            };
+            for (var i = 0; i != api_keys.length; ++i) {
+                _loop_1(i);
+            }
             interpreter.setProperty(scope, "__windowssSetItem", interpreter.createNativeFunction(function (id, val) {
                 return window.sessionStorage.setItem(id, val);
             }));
@@ -2450,58 +2620,6 @@ var InterpManager = (function () {
             }));
         };
         return new JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_0__["Interpreter"](code, initAPI);
-    };
-    InterpManager.prototype._getBlockType = function (block) {
-        return block.type.split("_")[0];
-    };
-    InterpManager.prototype._handleSourceCode = function () {
-        var topBlocks = Blockly.mainWorkspace.getTopBlocks(true);
-        var nonEventCode = "";
-        for (var block in topBlocks) {
-            var curBlock = topBlocks[block];
-            var type = this._getBlockType(curBlock);
-            if (type == "event") {
-                var key = curBlock.inputList[0].fieldRow[1].value_;
-                var code = Blockly.JavaScript.blockToCode(curBlock);
-                this._setEventCode(key, code);
-            }
-            else {
-                var code = Blockly.JavaScript.blockToCode(curBlock);
-                nonEventCode += code;
-            }
-        }
-        this._setNonEventCode(nonEventCode);
-        var interp = this._createInterpreter(this.nonEventCode);
-        this._addInterpreter(interp, NON_EVENT_INTERP);
-        var eventInterp = this._createInterpreter("");
-        this._addInterpreter(eventInterp, EVENT_INTERP);
-    };
-    InterpManager.prototype._setEventCode = function (key, code) {
-        this.eventCode[key] = code;
-    };
-    InterpManager.prototype._setNonEventCode = function (code) {
-        this.nonEventCode = code;
-    };
-    InterpManager.prototype.executeEventCode = function (keyCode) {
-        if (this.eventCode[keyCode]) {
-            var code = this.eventCode[keyCode];
-            this.interpreters[1].interp = this._createInterpreter(code);
-        }
-    };
-    InterpManager.prototype.getCurrentInterpreter = function () {
-        return this.interpreters[this.currentInterpreterID];
-    };
-    InterpManager.prototype.getCurrentInterpID = function () {
-        return this.currentInterpreterID;
-    };
-    InterpManager.prototype.isNextStep = function () {
-        return this.interpreters[0].isNextStep || this.interpreters[1].isNextStep;
-    };
-    InterpManager.prototype.switchInterpreter = function () {
-        this.currentInterpreterID = this.currentInterpreterID == 0 ? 1 : 0;
-    };
-    InterpManager.prototype.updateInterpreter = function (isNextStep) {
-        this.interpreters[this.currentInterpreterID].isNextStep = isNextStep;
     };
     return InterpManager;
 }());
@@ -2658,13 +2776,15 @@ var WindowManager = (function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Components_averageBandPowerRange_component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Components/averageBandPowerRange.component */ "./src/Components/averageBandPowerRange.component.ts");
-/* harmony import */ var _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Components/blocklyEnd.component */ "./src/Components/blocklyEnd.component.ts");
-/* harmony import */ var _Components_display_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components/display.component */ "./src/Components/display.component.ts");
-/* harmony import */ var _Components_graph_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Components/graph.component */ "./src/Components/graph.component.ts");
-/* harmony import */ var _Components_buffer_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Components/buffer.component */ "./src/Components/buffer.component.ts");
-/* harmony import */ var _Components_number_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Components/number.component */ "./src/Components/number.component.ts");
-/* harmony import */ var _Components_string_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Components/string.component */ "./src/Components/string.component.ts");
+/* harmony import */ var _Components_bciDevice_component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Components/bciDevice.component */ "./src/Components/bciDevice.component.ts");
+/* harmony import */ var _Components_averageBandPowerRange_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Components/averageBandPowerRange.component */ "./src/Components/averageBandPowerRange.component.ts");
+/* harmony import */ var _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components/blocklyEnd.component */ "./src/Components/blocklyEnd.component.ts");
+/* harmony import */ var _Components_display_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Components/display.component */ "./src/Components/display.component.ts");
+/* harmony import */ var _Components_graph_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Components/graph.component */ "./src/Components/graph.component.ts");
+/* harmony import */ var _Components_buffer_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Components/buffer.component */ "./src/Components/buffer.component.ts");
+/* harmony import */ var _Components_number_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Components/number.component */ "./src/Components/number.component.ts");
+/* harmony import */ var _Components_string_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Components/string.component */ "./src/Components/string.component.ts");
+
 
 
 
@@ -2673,13 +2793,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var components = {
-    averageBandPowerRangeComponent: _Components_averageBandPowerRange_component__WEBPACK_IMPORTED_MODULE_0__["default"],
-    blocklyEndComponent: _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_1__["default"],
-    displayComponent: _Components_display_component__WEBPACK_IMPORTED_MODULE_2__["default"],
-    graphComponent: _Components_graph_component__WEBPACK_IMPORTED_MODULE_3__["default"],
-    bufferComponent: _Components_buffer_component__WEBPACK_IMPORTED_MODULE_4__["default"],
-    numberComponent: _Components_number_component__WEBPACK_IMPORTED_MODULE_5__["default"],
-    stringComponent: _Components_string_component__WEBPACK_IMPORTED_MODULE_6__["default"],
+    bciDeviceComponent: _Components_bciDevice_component__WEBPACK_IMPORTED_MODULE_0__["default"],
+    averageBandPowerRangeComponent: _Components_averageBandPowerRange_component__WEBPACK_IMPORTED_MODULE_1__["default"],
+    blocklyEndComponent: _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_2__["default"],
+    displayComponent: _Components_display_component__WEBPACK_IMPORTED_MODULE_3__["default"],
+    graphComponent: _Components_graph_component__WEBPACK_IMPORTED_MODULE_4__["default"],
+    bufferComponent: _Components_buffer_component__WEBPACK_IMPORTED_MODULE_5__["default"],
+    numberComponent: _Components_number_component__WEBPACK_IMPORTED_MODULE_6__["default"],
+    stringComponent: _Components_string_component__WEBPACK_IMPORTED_MODULE_7__["default"],
 };
 /* harmony default export */ __webpack_exports__["default"] = (components);
 
@@ -2720,24 +2841,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Graph", function() { return Graph; });
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Utility/WindowManager */ "./src/Utility/WindowManager.ts");
-
 
 var alpha_component = "88";
 var WINDOW_SIZE = 64;
 var Graph = (function () {
-    function Graph(id, datasets, colors) {
+    function Graph(id, handle, colors) {
         this.ctx = document.getElementById(id).getContext('2d');
-        this.declarations = datasets.map(function (name) { return _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_1__["WindowManager"].fetch(name); });
-        var ds = datasets.map(function (name, index) {
-            var cap = name[0].toLocaleUpperCase() + name.substr(1);
-            return {
-                label: cap,
-                xLabels: Array.apply(null, { length: WINDOW_SIZE }).map(Number.call, Number),
-                data: [],
-                backgroundColor: colors[index] + alpha_component
-            };
-        });
+        this.handle = handle;
+        var datasets = this.handle.get();
+        var keys = Object.keys(datasets);
+        var ds = new Array(keys.length);
+        for (var i = 0; i != ds.length; ++i) {
+            var name_1 = keys[i];
+            this.map[name_1] = ds[i] = this.add_dataset(name_1, colors, i);
+        }
         this.chart = new chart_js__WEBPACK_IMPORTED_MODULE_0__["Chart"](this.ctx, {
             type: 'line',
             data: {
@@ -2761,17 +2878,36 @@ var Graph = (function () {
             }
         });
     }
+    Graph.prototype.add_dataset = function (name, colors, i) {
+        var cap = name[0].toLocaleUpperCase() + name.substr(1);
+        return {
+            label: cap,
+            xLabels: Array.apply(null, { length: WINDOW_SIZE }).map(Number.call, Number),
+            data: [],
+            backgroundColor: colors[i] + alpha_component
+        };
+    };
     Graph.prototype.update = function () {
-        var dec = this.declarations;
-        this.chart.data.datasets.forEach(function (ds, index) {
-            var _a;
-            var data = dec[index].get();
+        var _a;
+        var dec = this.handle.get();
+        var keys = Object.keys(dec);
+        var updated = {};
+        for (var i = 0; i != keys.length; ++i) {
+            var data = dec[i];
             if (data.length == 0)
                 return;
-            (_a = ds.data).push.apply(_a, dec[index].get());
+            var ds = this.map[keys[i]];
+            (_a = ds.data).push.apply(_a, data);
             if (ds.data.length > WINDOW_SIZE)
                 ds.data.splice(0, ds.data.length - WINDOW_SIZE - 1);
-        });
+            updated[name] = true;
+        }
+        var updated_keys = Object.keys(updated);
+        for (var i = 0; i != updated_keys.length; ++i) {
+            if (!updated[updated_keys[i]]) {
+                this.chart.data.datasets.push(this.add_dataset(keys[i], ["#ffffff"], 0));
+            }
+        }
         this.chart.update(0);
     };
     return Graph;
@@ -2838,47 +2974,50 @@ var messages = {
         no_players: "There aren't any players. Press the + to add one!"
     },
     events: {
-        "32": "Space",
-        "38": "Up Arrow",
-        "40": "Down Arrow",
-        "39": "Right Arrow",
-        "37": "Left Arrow",
-        "48": "0",
-        "49": "1",
-        "50": "2",
-        "51": "3",
-        "52": "4",
-        "53": "5",
-        "54": "6",
-        "55": "7",
-        "56": "8",
-        "57": "9",
-        "65": "A",
-        "66": "B",
-        "67": "C",
-        "68": "D",
-        "69": "E",
-        "70": "F",
-        "71": "G",
-        "72": "H",
-        "73": "I",
-        "74": "J",
-        "75": "K",
-        "76": "L",
-        "77": "M",
-        "78": "N",
-        "79": "O",
-        "80": "P",
-        "81": "Q",
-        "82": "R",
-        "83": "S",
-        "84": "T",
-        "85": "U",
-        "86": "V",
-        "87": "W",
-        "88": "X",
-        "89": "Y",
-        "90": "Z"
+        keypress: "On Keypress",
+        keys: {
+            "32": "Space",
+            "38": "Up Arrow",
+            "40": "Down Arrow",
+            "39": "Right Arrow",
+            "37": "Left Arrow",
+            "48": "0",
+            "49": "1",
+            "50": "2",
+            "51": "3",
+            "52": "4",
+            "53": "5",
+            "54": "6",
+            "55": "7",
+            "56": "8",
+            "57": "9",
+            "65": "A",
+            "66": "B",
+            "67": "C",
+            "68": "D",
+            "69": "E",
+            "70": "F",
+            "71": "G",
+            "72": "H",
+            "73": "I",
+            "74": "J",
+            "75": "K",
+            "76": "L",
+            "77": "M",
+            "78": "N",
+            "79": "O",
+            "80": "P",
+            "81": "Q",
+            "82": "R",
+            "83": "S",
+            "84": "T",
+            "85": "U",
+            "86": "V",
+            "87": "W",
+            "88": "X",
+            "89": "Y",
+            "90": "Z"
+        }
     }
 };
 /* harmony default export */ __webpack_exports__["default"] = (messages);
@@ -2983,7 +3122,7 @@ var _this = undefined;
 var locale = _i18n_i18n__WEBPACK_IMPORTED_MODULE_9__["set_locale"](_config__WEBPACK_IMPORTED_MODULE_8__["default"].LOCALE);
 
 
-var g = new _graph__WEBPACK_IMPORTED_MODULE_11__["default"]("graph", ["flow_data"], ["#ffe119"]);
+var g = new _graph__WEBPACK_IMPORTED_MODULE_11__["default"]("graph", _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].fetch("flow_data"), ["#ffe119"]);
 setInterval(function () { return g.update(); }, 100);
 var blockly_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("workspace");
 var code_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("codeText");
@@ -3002,6 +3141,8 @@ function __drawFrame() {
     });
 }
 _Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["PlayerSet"].set_suffix("__drawFrame();\n");
+_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["PlayerUpdateX"].set_suffix("__drawFrame();\n");
+_Blocks_PlayerBlocks__WEBPACK_IMPORTED_MODULE_7__["PlayerUpdateY"].set_suffix("__drawFrame();\n");
 var trash = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("canvas-trash");
 var mouse = { point: { x: 0, y: 0 }, down: false, shouldDelete: false };
 var selected = "";
@@ -3234,32 +3375,19 @@ var clear_players = function () {
 };
 var exec = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("play_arrow_handler");
 var run_icon = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("play_arrow_icon");
-var interpManger = null;
-var handler = null;
-var nextStep = function () {
-    var interp = interpManger.getCurrentInterpreter().interp;
-    var isNextStep = interpManger.isNextStep();
-    if (isNextStep) {
-        var status_1 = interp.step();
-        status_1 = interpManger.currentInterpreterID == 1 ? true : status_1;
-        interpManger.updateInterpreter(status_1);
-        handler = setTimeout(nextStep, interpManger.handlerDelay);
-        interpManger.switchInterpreter();
-    }
-};
-document.addEventListener("keydown", function (e) {
-    if (run_icon.innerHTML === "stop")
-        interpManger.executeEventCode(e.keyCode.toString());
+var interpManger = new _Utility_InterpManager__WEBPACK_IMPORTED_MODULE_1__["InterpManager"](workspace, {
+    __drawFrame: __drawFrame,
+    __highlightBlock: __highlightBlock
 });
 exec.onclick = function () {
     var code = Blockly.JavaScript.workspaceToCode(workspace);
-    interpManger = new _Utility_InterpManager__WEBPACK_IMPORTED_MODULE_1__["InterpManager"](1, workspace, { __drawFrame: __drawFrame });
+    var should_block = workspace.getBlocksByType("event_keypress", false).length != 0;
     if (run_icon.innerHTML === "play_arrow") {
         run_icon.innerHTML = "stop";
-        nextStep();
+        interpManger.run(code, function () { return run_icon.innerHTML = "play_arrow"; }, should_block);
     }
     else {
-        clearTimeout(handler);
+        interpManger.stop();
         run_icon.innerHTML = "play_arrow";
     }
 };

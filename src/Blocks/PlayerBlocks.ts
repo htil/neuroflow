@@ -127,6 +127,76 @@ export let PlayerSet = new CustomBlock("player_set", (b: Blockly.Block) => {
 });
 
 /**
+ * Player Update X
+ *
+ * A custom block used for updating the X position of a player using deltas.
+ */
+export let PlayerUpdateX = new CustomBlock("player_update_x", (b: Blockly.Block) => {
+	b.appendValueInput("player_select")
+		.appendField("change")
+		.appendField(new Blockly.FieldDropdown(
+			(): (Blockly.field_options_type) => {
+				let res = <player_list_type>player_window_list.get();
+
+				return (res && res.length > 0 ? res : [[locale.player.none, "PLAYER_NONE"]]);
+			}
+		), "PLAYER_OPTIONS")
+		.appendField("X by");
+
+	// Allow for connecting
+	b.setNextStatement(true);
+	b.setPreviousStatement(true);
+
+	b.setColour(Blockly.Msg.PLAYER_HUE);
+}, (b: Blockly.Block) => {
+	let player_handle = b.getFieldValue("PLAYER_OPTIONS") || "''";
+
+	let player_win = WindowManager.fetch(player_handle);
+	let current_value = `JSON.parse(${player_win.toGetterBinding()})`;
+
+	let delta = Number(Blockly.JavaScript.valueToCode(b, "player_select", Blockly.JavaScript.ORDER_NONE)) || 0;
+
+	// Set new value to current value on no input
+	let new_value = `{ x: (${current_value}.x + ${delta}), y: ${current_value}.y }`;
+	return WindowDeclaration.asSetterBinding(player_handle) + "JSON.stringify(" + new_value + "));\n";
+});
+
+/**
+ * Player Update Y
+ *
+ * A custom block used for updating the Y position of a player using deltas.
+ */
+export let PlayerUpdateY = new CustomBlock("player_update_y", (b: Blockly.Block) => {
+	b.appendValueInput("player_select")
+		.appendField("change")
+		.appendField(new Blockly.FieldDropdown(
+			(): (Blockly.field_options_type) => {
+				let res = <player_list_type>player_window_list.get();
+
+				return (res && res.length > 0 ? res : [[locale.player.none, "PLAYER_NONE"]]);
+			}
+		), "PLAYER_OPTIONS")
+		.appendField("Y by");
+
+	// Allow for connecting
+	b.setNextStatement(true);
+	b.setPreviousStatement(true);
+
+	b.setColour(Blockly.Msg.PLAYER_HUE);
+}, (b: Blockly.Block) => {
+	let player_handle = b.getFieldValue("PLAYER_OPTIONS") || "''";
+
+	let player_win = WindowManager.fetch(player_handle);
+	let current_value = `JSON.parse(${player_win.toGetterBinding()})`;
+
+	let delta = Number(Blockly.JavaScript.valueToCode(b, "player_select", Blockly.JavaScript.ORDER_NONE)) || 0;
+
+	// Set new value to current value on no input
+	let new_value = `{ x: ${current_value}.x, y: (${current_value}.y + ${delta}) }`;
+	return WindowDeclaration.asSetterBinding(player_handle) + "JSON.stringify(" + new_value + "));\n";
+});
+
+/**
  * Player Collision Check
  *
  * A custom block used for setting the position of a player. Requires a {@link PlayerGet} block
@@ -166,31 +236,28 @@ export let PlayerCollidesWith = new CustomBlock("player_collides", (b: Blockly.B
 		return ["true", Blockly.JavaScript.ORDER_MEMBER];
 
 	// Get the actual player coordinates
-	console.log("PLAYER:", player_lhs, player_rhs);
-	let players = <player_list_type>player_window_list.get();
-	let find_player = (id: string) => {
-		for (let i = 0; i != players.length; ++i) {
-			console.log(players[i]);
-			if (players[i][1] == id)
-				return players[i];
-		}
-
-		throw "PLAYER NOT FOUND: " + name;
-	};
-	let lhs = find_player(player_lhs)[2];
-	let rhs = find_player(player_rhs)[2];
+	let lhs = WindowManager.fetch(player_lhs);
+	let rhs = WindowManager.fetch(player_rhs);
 
 	// Use bounding box for collision detection
-	const length = 0.2;
+	const length = 0.15;
 
-	// See MDN on Axis-Aligned Bounding Box
+	// Radius Collision
+	// TODO: Make this elliptical (or rectangular)
 	return [
-		`${lhs.x} < ${rhs.x} + ${length} && ` +
-			`${lhs.x} + ${length} > ${rhs.x} && ` +
-			`${lhs.y} < ${rhs.y} + ${length} && ` +
-			`${rhs.y} + ${length} > ${rhs.y}`,
+		`__distance(${lhs.toGetterBinding()}, ${rhs.toGetterBinding()}) < ${length}`,
 		Blockly.JavaScript.ORDER_NONE
 	];
+
+	// See MDN on Axis-Aligned Bounding Box
+	// return [
+	// 	`${lhs.x} < ${rhs.x} + ${length} && ` +
+	// 		`${lhs.x} + ${length} > ${rhs.x} && ` +
+	// 		`${lhs.y} < ${rhs.y} + ${length} && ` +
+	// 		`${rhs.y} + ${length} > ${rhs.y}`,
+	// 	Blockly.JavaScript.ORDER_NONE
+	// ];
+
 });
 
 /**
@@ -229,6 +296,10 @@ export let PlayerCategoryCallback = (ws: Blockly.Workspace): Array<Node> => {
 		res.push(Blockly.Xml.textToDom(unwind([PlayerSet.name], true)).firstChild);
 		res.push(Blockly.Xml.textToDom(unwind([PlayerCollidesWith.name], true)).firstChild);
 		res.push(Blockly.Xml.textToDom(unwind([PlayerPoint.name], true)).firstChild);
+
+		// Position Updates
+		res.push(Blockly.Xml.textToDom(unwind([PlayerUpdateX.name], true)).firstChild);
+		res.push(Blockly.Xml.textToDom(unwind([PlayerUpdateY.name], true)).firstChild);
 	} else {
 		res.push(Blockly.Xml.textToDom(unwind([<Label>{text: locale.help.no_players}], true)).firstChild);
 	}

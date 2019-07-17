@@ -23,7 +23,8 @@ import {
 	flow_window_type,
 	FlowMutator,
 	flow_block,
-	flow_block_data
+	flow_block_data,
+	get_flow_api
 } from "./Blocks/FlowBlocks";
 import {
 	PlayerCategory,
@@ -439,7 +440,8 @@ let exec = WindowManager.eById("play_arrow_handler");
 let run_icon = WindowManager.eById("play_arrow_icon");
 let interpManger: InterpManager = new InterpManager(workspace, {
 	__drawFrame,
-	__highlightBlock
+	__highlightBlock,
+	__get_flow: get_flow_api
 });
 
 exec.onclick = () => {

@@ -96,6 +96,14 @@ export interface flow_block extends Blockly.Block {
 	container_?: SVGElement
 };
 
+export let get_flow_api = (workspace: Blockly.Workspace) => {
+	return (block_id: string, editor_name: string) => {
+		let block: flow_block = workspace.getBlockById(block_id);
+		block.editor_.process();
+
+		return flow_final_result.get()["${editor_name}"];
+	}
+};
 
 /**
  * Add Flow Block
@@ -125,7 +133,7 @@ export let AddFlowBlock = (name: string) => {
 			return ["''", Blockly.JavaScript.ORDER_MEMBER];
 		}
 
-		return [`JSON.parse(${flow_final_result.toGetterBinding()})["${editor_name}"]`, Blockly.JavaScript.ORDER_MEMBER];
+		return [`__get_flow("${b.id}", "${editor_name}")`, Blockly.JavaScript.ORDER_NONE];
 	});
 
 	// Create a container for the editor

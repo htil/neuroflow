@@ -1,6 +1,6 @@
 /**
  * @class WindowDeclaration
- * 
+ *
  * A simple wrapper for declaring window-level variables
  */
 export class WindowDeclaration {
@@ -8,9 +8,9 @@ export class WindowDeclaration {
 
 	/**
 	 * @constructor
-	 * 
+	 *
 	 * Default constructor
-	 * 
+	 *
 	 * @param {String} name - The window-level binding.
 	 * @param {Any} val - The value to store.
 	 */
@@ -23,7 +23,7 @@ export class WindowDeclaration {
 
 	/**
 	 * @function delete
-	 * 
+	 *
 	 * Deletes a window binding.
 	 */
 	delete(): void {
@@ -32,9 +32,9 @@ export class WindowDeclaration {
 
 	/**
 	 * @function get
-	 * 
+	 *
 	 * Returns the value of the window-level variable.
-	 * 
+	 *
 	 * @returns {Any} The value associated with the binding.
 	 */
 	get(): any {
@@ -43,9 +43,9 @@ export class WindowDeclaration {
 
 	/**
 	 * @function set
-	 * 
+	 *
 	 * Sets the value of the window-level variable.
-	 * 
+	 *
 	 * @param {Any} val - The value to save
 	 */
 	set(val: any) {
@@ -54,9 +54,9 @@ export class WindowDeclaration {
 
 	/**
 	 * @function toGetterBinding
-	 * 
+	 *
 	 * Returns a getter binding reference to eval().
-	 * 
+	 *
 	 * @returns {string} The binding reference.
 	 */
 	toGetterBinding(): string {
@@ -74,15 +74,15 @@ export class WindowDeclaration {
 
 /**
  * @class WindowManager
- * 
+ *
  * A simple (static) window interface for not directly manipulating the window.
  */
 export class WindowManager {
 	/**
 	 * @function eById
-	 * 
+	 *
 	 * Gets an element from the DOM by its associated ID.
-	 * 
+	 *
 	 * @param {string} id - The DOM ID.
 	 * @returns {HTMLElement} The element corresponding to that ID.
 	 * @throws {Error} Throws an error if the specified ID does not exist.
@@ -91,18 +91,18 @@ export class WindowManager {
 		let res = document.getElementById(id);
 		if (res == null)
 			throw new Error("Could not find element with ID: " + id);
-		
+
 		return res;
 	}
 
 	/**
 	 * @function declare
-	 * 
+	 *
 	 * Declares a new window-level variable.
-	 * 
+	 *
 	 * @param {string} name - The name of the variable to declare.
 	 * @param {Any} val - The value to assign to that variable.
-	 * 
+	 *
 	 * @returns {WindowDeclaration} The declared variable.
 	 * @throws {Error} Throws an error if the window-level name exists.
 	 */
@@ -116,11 +116,11 @@ export class WindowManager {
 
 	/**
 	 * @function fetch
-	 * 
+	 *
 	 * Fetches a window declaration by name.
-	 * 
+	 *
 	 * @param {string} name - The name fo the declared variable
-	 * 
+	 *
 	 * @return {WindowDeclaration} The declaration that matches the name.
 	 * @throws {Error} Throws an error if the window-level name does not exist.
 	 */
@@ -134,9 +134,9 @@ export class WindowManager {
 
 	/**
 	 * @function origin
-	 * 
+	 *
 	 * Returns the origin of the web page.
-	 * 
+	 *
 	 * @return {string} The origin of the web page
 	 */
 	static origin(): string {
@@ -148,7 +148,7 @@ export class WindowManager {
 
 	/**
 	 * @function clear
-	 * 
+	 *
 	 * Clears the window-level variables.
 	 */
 	static clear(): void {

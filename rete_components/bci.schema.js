@@ -14,6 +14,28 @@ module.exports = [
 		id: id,
 		group: group,
 
+		name:          "bciDevice",
+		friendly_name: "BCI Device",
+		dependencies: [{
+			names: ["WindowDeclaration", "WindowManager"],
+			path: "../Utility/WindowManager"
+		}],
+
+		outputs: [{
+			name: "data",
+			description: "EEG Data",
+			type: "Array"
+		}],
+
+		worker: `
+			let device_data = WindowManager.fetch("eeg_data");
+			outputs["data"] = device_data.get();
+		`
+	},
+	{
+		id: id,
+		group: group,
+
 		name:          "averageBandPowerRange",
 		friendly_name: "Average Range Band Power",
 
@@ -43,7 +65,8 @@ module.exports = [
 		],
 
 		worker: `
-			let psd = bci.averageBandPowers(inputs['in1'][0], ${MUSE_SAMPLE_RATE}, [inputs["range_low"][0], inputs["range_high"][0]], undefined);
+			console.log("PSD:", inputs["in1"][0], [inputs["range_low"][0], inputs["range_high"][0]]);
+			let psd = bci.averageBandPowers(inputs['in1'][0], ${MUSE_SAMPLE_RATE}, [inputs["range_low"][0], inputs["range_high"][0]]);
 			outputs['out1'] = psd[0];
 		`
 	},
@@ -167,62 +190,42 @@ module.exports = [
 	// 		outputs['out1'] = bci.cspLearn(inputs['in1'], inputs['in2']);
 	// 	`
 	// },
-	// {
-	// 	id: id,
-	// 	group: group,
+	{
+		id: id,
+		group: group,
 
-	// 	name:          "signalBandPowerRange",
-	// 	friendly_name: "Signal Bands Power Range",
+		name:          "signalBandPowerRange",
+		friendly_name: "Signal Bands Power Range",
 
-	// 	dependencies: deps,
+		dependencies: deps,
 
-	// 	inputs: [
-	// 		{
-	// 			name: "in1",
-	// 			description: "Samples",
-	// 			type: "Array"
-	// 		}, {
-	// 			name: "in2",
-	// 			description: "Sample Rate",
-	// 			type: "Number"
-	// 		}, {
-	// 			name: "in3",
-	// 			description: "Options",
-	// 			type: "Object",
-	// 			optional: true
-	// 		}
-	// 	],
-	// 	outputs: [
-	// 		{
-	// 			name: "out1",
-	// 			description: "Delta Band Power",
-	// 			type: "Number"
-	// 		}, {
-	// 			name: "out2",
-	// 			description: "Theta Band Power",
-	// 			type: "Number"
-	// 		}, {
-	// 			name: "out3",
-	// 			description: "Alpha Band Power",
-	// 			type: "Number"
-	// 		}, {
-	// 			name: "out4",
-	// 			description: "Beta Band Power",
-	// 			type: "Number"
-	// 		}, {
-	// 			name: "out5",
-	// 			description: "Gamma Band Power",
-	// 			type: "Number"
-	// 		}
-	// 	],
+		inputs: [
+			{
+				name: "range_low",
+				description: "Lower Range",
+				type: "Number"
+			}, {
+				name: "range_high",
+				description: "Higher Range",
+				type: "Number"
+			}, {
+				name: "in1",
+				description: "Data",
+				type: "Array"
+			}
+		],
+		outputs: [
+			{
+				name: "out1",
+				description: "Signal Band Power",
+				type: "Number"
+			}
+		],
 
-	// 	worker: `
-	// 		let psd: any = bci.signalBandPower(inputs['in1'][0], inputs['in2'][0], ['delta','theta','alpha', 'beta','gamma'], inputs['in3'][0]);
-	// 		let psd_as_array: Array<number> = psd;
-
-	// 		for (let i=0; i < 5; ++i) {
-	// 			outputs['out'+ (i + 1)] = psd_as_array[i];
-	// 		}
-	// 	`
-	// }
+		worker: `
+			let bands = [inputs["range_low"][0], inputs["range_high"][0]];
+			let psd: any = bci.signalBandPower(inputs['in1'][0], ${MUSE_SAMPLE_RATE}, bands);
+			outputs['out1'] = psd;
+		`
+	}
 ];

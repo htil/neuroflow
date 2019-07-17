@@ -2,7 +2,7 @@ import { BCIDevice, BCIDeviceSample, ScalpElectrodes } from "bci-device";
 import { Category } from "../Utility/Toolbox";
 import { CustomBlock } from "../Utility/CustomBlock";
 import * as bci from "bcijs/browser";
-import { WindowManager } from "../Utility/WindowManager";
+import { WindowManager, WindowDeclaration } from "../Utility/WindowManager";
 import * as i18n from "../i18n/i18n";
 
 import config from "../config";
@@ -20,6 +20,7 @@ Blockly.Msg.BCI_HUE = 180;
 
 // Declare the bands
 WindowManager.clear();
+let buffer_handle = WindowManager.declare("eeg_data", [[]]);
 let alpha = WindowManager.declare("alpha", 0);
 let beta  = WindowManager.declare("beta",  0);
 let theta = WindowManager.declare("theta", 0);
@@ -50,6 +51,7 @@ export let Device: BCIDevice = new BCIDevice({
 		});
 
 		if (buffer.length < BUFFER_SIZE) return;
+		buffer_handle.set(buffer);
 
 		let psd = bci.psd(buffer);
 

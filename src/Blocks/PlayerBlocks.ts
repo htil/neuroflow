@@ -154,7 +154,7 @@ export let PlayerUpdateX = new CustomBlock("player_update_x", (b: Blockly.Block)
 	let player_win = WindowManager.fetch(player_handle);
 	let current_value = `JSON.parse(${player_win.toGetterBinding()})`;
 
-	let delta = Number(Blockly.JavaScript.valueToCode(b, "player_select", Blockly.JavaScript.ORDER_NONE)) || 0;
+	let delta = Blockly.JavaScript.valueToCode(b, "player_select", Blockly.JavaScript.ORDER_NONE) || 0;
 
 	// Set new value to current value on no input
 	let new_value = `{ x: (${current_value}.x + ${delta}), y: ${current_value}.y }`;
@@ -189,7 +189,7 @@ export let PlayerUpdateY = new CustomBlock("player_update_y", (b: Blockly.Block)
 	let player_win = WindowManager.fetch(player_handle);
 	let current_value = `JSON.parse(${player_win.toGetterBinding()})`;
 
-	let delta = Number(Blockly.JavaScript.valueToCode(b, "player_select", Blockly.JavaScript.ORDER_NONE)) || 0;
+	let delta = Blockly.JavaScript.valueToCode(b, "player_select", Blockly.JavaScript.ORDER_NONE) || 0;
 
 	// Set new value to current value on no input
 	let new_value = `{ x: ${current_value}.x, y: (${current_value}.y + ${delta}) }`;

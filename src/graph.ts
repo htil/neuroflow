@@ -1,5 +1,6 @@
 import {Chart, ChartDataSets} from "chart.js";
 import {WindowDeclaration, WindowManager} from "./Utility/WindowManager";
+import { dictionary } from "./Playground";
 
 // Alpha transparency component in hex
 const alpha_component = "88";
@@ -14,8 +15,19 @@ const WINDOW_SIZE = 64;
  */
 export class Graph {
 	ctx: CanvasRenderingContext2D;
-	declarations: Array<WindowDeclaration>;
+	handle: WindowDeclaration;
 	chart: Chart;
+	map: dictionary<ChartDataSets>;
+
+	private add_dataset(name: string, colors: Array<string>, i: number) {
+		let cap = name[0].toLocaleUpperCase() + name.substr(1);
+		return <ChartDataSets>{
+			label: cap,
+			xLabels: Array.apply(null, {length: WINDOW_SIZE}).map(Number.call, Number),
+			data: [],
+			backgroundColor: colors[i] + alpha_component
+		};
+	}
 
 	/**
 	 * @constructor
@@ -26,19 +38,17 @@ export class Graph {
 	 * @param {String[]} datasets - An array of names of window declarations to use as datasets.
 	 * @param {String[]} colors - The colors to use on each dataset.
 	 */
-	constructor(id: string, datasets: Array<string>, colors: Array<string>) {
+	constructor(id: string, handle: WindowDeclaration, colors: Array<string>) {
 		this.ctx = (<HTMLCanvasElement>document.getElementById(id)).getContext('2d');
-		this.declarations = datasets.map(name => WindowManager.fetch(name));
+		this.handle = handle;
+		let datasets: dictionary<Array<number>> = this.handle.get();
+		let keys = Object.keys(datasets);
 
-		let ds = datasets.map((name, index) => {
-			let cap = name[0].toLocaleUpperCase() + name.substr(1);
-			return <ChartDataSets>{
-				label: cap,
-				xLabels: Array.apply(null, {length: WINDOW_SIZE}).map(Number.call, Number),
-				data: [],
-				backgroundColor: colors[index] + alpha_component
-			};
-		});
+		let ds = new Array(keys.length);
+		for (let i = 0; i != ds.length; ++i) {
+			let name = keys[i];
+			this.map[name] = ds[i] = this.add_dataset(name, colors, i);
+		}
 
 		this.chart = new Chart(this.ctx, {
 			type: 'line',
@@ -66,17 +76,32 @@ export class Graph {
 	}
 
 	update() {
-		let dec = this.declarations;
-		this.chart.data.datasets.forEach((ds, index) => {
-			let data = dec[index].get();
+		let dec = this.handle.get();
+		let keys = Object.keys(dec);
+		let updated: dictionary<boolean> = {};
+
+		// this.chart.data.datasets.forEach((ds, index) => {
+		for (let i = 0; i != keys.length; ++i) {
+			let data = dec[i];
 			if (data.length == 0)
 				return;
 
-			(<number[]>ds.data).push(...dec[index].get());
+			let ds = this.map[keys[i]];
+			(<number[]>ds.data).push(...data);
 			if (ds.data.length > WINDOW_SIZE)
 				ds.data.splice(0, ds.data.length - WINDOW_SIZE - 1);
 				// ds.data = ds.data.slice(ds.data.length - WINDOW_SIZE - 1);
-		});
+
+			updated[name] = true;
+		}
+
+		// Make sure that there aren't new ones
+		let updated_keys = Object.keys(updated);
+		for (let i = 0; i != updated_keys.length; ++i) {
+			if (!updated[updated_keys[i]]) {
+				this.chart.data.datasets.push(this.add_dataset(keys[i], ["#ffffff"], 0));
+			}
+		}
 
 		this.chart.update(<any>0);
 	}

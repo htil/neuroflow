@@ -441,7 +441,7 @@ let run_icon = WindowManager.eById("play_arrow_icon");
 let interpManger: InterpManager = new InterpManager(workspace, {
 	__drawFrame,
 	__highlightBlock,
-	__get_flow: get_flow_api
+	__get_flow: get_flow_api(workspace)
 });
 
 exec.onclick = () => {

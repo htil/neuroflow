@@ -101,7 +101,7 @@ export let get_flow_api = (workspace: Blockly.Workspace) => {
 		let block: flow_block = workspace.getBlockById(block_id);
 		block.editor_.process();
 
-		return flow_final_result.get()["${editor_name}"];
+		return flow_final_result.get()[editor_name];
 	}
 };
 

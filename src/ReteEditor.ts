@@ -67,6 +67,11 @@ export default class ReteEditor {
 		this.raw_engine = undefined;
 	}
 
+	async process() {
+		await this.raw_engine.abort();
+		await this.raw_engine.process(this.raw_editor.toJSON());
+	}
+
 	get_editor() {
 		return this.raw_editor;
 	}

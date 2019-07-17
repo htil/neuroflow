@@ -20,7 +20,7 @@ Blockly.Msg.BCI_HUE = 180;
 
 // Declare the bands
 WindowManager.clear();
-let buffer_handle = WindowManager.declare("eeg_data", [[]]);
+let buffer_handle = WindowManager.declare("eeg_data", [0, 0]); // Initialized for no empty errors
 let alpha = WindowManager.declare("alpha", 0);
 let beta  = WindowManager.declare("beta",  0);
 let theta = WindowManager.declare("theta", 0);

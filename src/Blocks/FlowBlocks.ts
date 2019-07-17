@@ -125,7 +125,7 @@ export let AddFlowBlock = (name: string) => {
 			return ["''", Blockly.JavaScript.ORDER_MEMBER];
 		}
 
-		return [JSON.stringify(result[editor_name]), Blockly.JavaScript.ORDER_MEMBER];
+		return [`JSON.parse(${flow_final_result.toGetterBinding()})["${editor_name}"]`, Blockly.JavaScript.ORDER_MEMBER];
 	});
 
 	// Create a container for the editor

@@ -48,7 +48,7 @@ let locale = i18n.set_locale(config.LOCALE);
 // Charting
 import Graph from "./graph";
 import { CustomBlock } from "./Utility/CustomBlock";
-let g = new Graph("graph", WindowManager.fetch("flow_data"), ["#ffe119"]);
+let g = new Graph("graph", ["flow_data"], ["#ffe119"]);
 setInterval(() => g.update(), 100);
 
 // =============================================================================

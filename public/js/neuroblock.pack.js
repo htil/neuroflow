@@ -479,6 +479,7 @@ var buffer = [];
 var weight = Array(6).fill(0);
 Blockly.Msg.BCI_HUE = 180;
 _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_3__["WindowManager"].clear();
+var buffer_handle = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_3__["WindowManager"].declare("eeg_data", [0, 0]);
 var alpha = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_3__["WindowManager"].declare("alpha", 0);
 var beta = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_3__["WindowManager"].declare("beta", 0);
 var theta = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_3__["WindowManager"].declare("theta", 0);
@@ -498,6 +499,7 @@ var Device = new bci_device__WEBPACK_IMPORTED_MODULE_0__["BCIDevice"]({
         });
         if (buffer.length < BUFFER_SIZE)
             return;
+        buffer_handle.set(buffer);
         var psd = bcijs_browser__WEBPACK_IMPORTED_MODULE_2__["psd"](buffer);
         var al = bcijs_browser__WEBPACK_IMPORTED_MODULE_2__["psdBandPower"](psd, sample.sampleRate, "alpha");
         var be = bcijs_browser__WEBPACK_IMPORTED_MODULE_2__["psdBandPower"](psd, sample.sampleRate, "beta");
@@ -660,7 +662,7 @@ var EventCategory = function (title) {
 /*!**********************************!*\
   !*** ./src/Blocks/FlowBlocks.ts ***!
   \**********************************/
-/*! exports provided: flow_window_list, flow_final_result, flow_data, AddFlowBlock, FlowCategory, FlowCategoryCallback, FlowMutator */
+/*! exports provided: flow_window_list, flow_final_result, flow_data, get_flow_api, AddFlowBlock, FlowCategory, FlowCategoryCallback, FlowMutator */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -668,6 +670,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "flow_window_list", function() { return flow_window_list; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "flow_final_result", function() { return flow_final_result; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "flow_data", function() { return flow_data; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get_flow_api", function() { return get_flow_api; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AddFlowBlock", function() { return AddFlowBlock; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FlowCategory", function() { return FlowCategory; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FlowCategoryCallback", function() { return FlowCategoryCallback; });
@@ -741,6 +744,13 @@ var flow_window_list = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["Wind
 var flow_final_result = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowManager"].declare("blockly_final", {});
 var flow_data = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowManager"].declare("flow_data", []);
 ;
+var get_flow_api = function (workspace) {
+    return function (block_id, editor_name) {
+        var block = workspace.getBlockById(block_id);
+        block.editor_.process();
+        return flow_final_result.get()[editor_name];
+    };
+};
 var AddFlowBlock = function (name) {
     var editor_name = name + "_editor@0.0.1";
     var block = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["CustomBlock"]("flow_block_" + name, {
@@ -756,7 +766,7 @@ var AddFlowBlock = function (name) {
         if (result[editor_name] == undefined) {
             return ["''", Blockly.JavaScript.ORDER_MEMBER];
         }
-        return [JSON.stringify(result[editor_name]), Blockly.JavaScript.ORDER_MEMBER];
+        return ["__get_flow(\"" + b.id + "\", \"" + editor_name + "\")", Blockly.JavaScript.ORDER_NONE];
     });
     var container = document.createElementNS("http://www.w3.org/2000/svg", "g");
     var fo = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
@@ -1086,7 +1096,7 @@ var PlayerUpdateX = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["Custo
     var player_handle = b.getFieldValue("PLAYER_OPTIONS") || "''";
     var player_win = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowManager"].fetch(player_handle);
     var current_value = "JSON.parse(" + player_win.toGetterBinding() + ")";
-    var delta = Number(Blockly.JavaScript.valueToCode(b, "player_select", Blockly.JavaScript.ORDER_NONE)) || 0;
+    var delta = Blockly.JavaScript.valueToCode(b, "player_select", Blockly.JavaScript.ORDER_NONE) || 0;
     var new_value = "{ x: (" + current_value + ".x + " + delta + "), y: " + current_value + ".y }";
     return _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowDeclaration"].asSetterBinding(player_handle) + "JSON.stringify(" + new_value + "));\n";
 });
@@ -1105,7 +1115,7 @@ var PlayerUpdateY = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["Custo
     var player_handle = b.getFieldValue("PLAYER_OPTIONS") || "''";
     var player_win = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowManager"].fetch(player_handle);
     var current_value = "JSON.parse(" + player_win.toGetterBinding() + ")";
-    var delta = Number(Blockly.JavaScript.valueToCode(b, "player_select", Blockly.JavaScript.ORDER_NONE)) || 0;
+    var delta = Blockly.JavaScript.valueToCode(b, "player_select", Blockly.JavaScript.ORDER_NONE) || 0;
     var new_value = "{ x: " + current_value + ".x, y: (" + current_value + ".y + " + delta + ") }";
     return _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowDeclaration"].asSetterBinding(player_handle) + "JSON.stringify(" + new_value + "));\n";
 });
@@ -1242,7 +1252,8 @@ var averageBandPowerRangeComponent = (function (_super) {
     averageBandPowerRangeComponent.prototype.worker = function (node, inputs, outputs) {
         if (!(inputs["range_low"].length && inputs["range_high"].length && inputs["in1"].length))
             return;
-        var psd = bcijs_browser__WEBPACK_IMPORTED_MODULE_3__["averageBandPowers"](inputs['in1'][0], 220, [inputs["range_low"][0], inputs["range_high"][0]], undefined);
+        console.log("PSD:", inputs["in1"][0], [inputs["range_low"][0], inputs["range_high"][0]]);
+        var psd = bcijs_browser__WEBPACK_IMPORTED_MODULE_3__["averageBandPowers"](inputs['in1'][0], 220, [inputs["range_low"][0], inputs["range_high"][0]]);
         outputs['out1'] = psd[0];
     };
     averageBandPowerRangeComponent.get_group = function () {
@@ -1268,6 +1279,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _socket_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./socket.types */ "./src/Components/socket.types.ts");
 /* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rete-vue-render-plugin */ "./node_modules/rete-vue-render-plugin/build/vue-render-plugin.min.js");
 /* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Utility/WindowManager */ "./src/Utility/WindowManager.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1281,6 +1293,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+
 
 
 
@@ -1323,7 +1336,8 @@ var bciDeviceComponent = (function (_super) {
     bciDeviceComponent.prototype.worker = function (node, inputs, outputs) {
         if (false)
             {}
-        outputs["data"] = [1, 2, 3, 4, 5];
+        var device_data = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_3__["WindowManager"].fetch("eeg_data");
+        outputs["data"] = device_data.get();
     };
     bciDeviceComponent.get_group = function () {
         return "BCI.JS";
@@ -1669,25 +1683,15 @@ var graphComponent = (function (_super) {
     }
     graphComponent.prototype.builder = function (node) {
         var in0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("data_in", "Array<Number>", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
-        var in1 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("data_name", "Data Name", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].String, true);
         this.data.controls = {};
         return node
-            .addInput(in0)
-            .addInput(in1);
+            .addInput(in0);
     };
     graphComponent.prototype.worker = function (node, inputs, outputs) {
         if (!(inputs["data_in"].length))
             return;
         var save_to = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_3__["WindowManager"].fetch("flow_data");
-        var data_name = inputs["data_name"][0];
-        var data_sets = save_to.get();
-        if (!data_name || data_name.length == 0) {
-            delete data_sets[data_name];
-        }
-        else {
-            data_sets[data_name] = inputs["data_in"][0];
-        }
-        save_to.set(data_sets);
+        save_to.set(inputs["data_in"][0]);
     };
     graphComponent.get_group = function () {
         return "GRAPH";
@@ -1789,6 +1793,97 @@ var numberComponent = (function (_super) {
     return numberComponent;
 }(rete__WEBPACK_IMPORTED_MODULE_0__["Component"]));
 /* harmony default export */ __webpack_exports__["default"] = (numberComponent);
+
+
+/***/ }),
+
+/***/ "./src/Components/signalBandPowerRange.component.ts":
+/*!**********************************************************!*\
+  !*** ./src/Components/signalBandPowerRange.component.ts ***!
+  \**********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var rete__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rete */ "./node_modules/rete/build/rete.esm.js");
+/* harmony import */ var _socket_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./socket.types */ "./src/Components/socket.types.ts");
+/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rete-vue-render-plugin */ "./node_modules/rete-vue-render-plugin/build/vue-render-plugin.min.js");
+/* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bcijs/browser */ "./node_modules/bcijs/browser.js");
+/* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(bcijs_browser__WEBPACK_IMPORTED_MODULE_3__);
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+var template = document.querySelector("#CustomNode").innerHTML;
+var CustomSocket = {
+    template: "<div class=\"socket\" :class=\"[type, socket.name, used()?'used':''] | kebab\" :title=\"socket.name\"></div>",
+    props: ['type', 'socket', 'used']
+};
+var as_any = rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default.a;
+var CustomNode = {
+    template: template,
+    mixins: [as_any.mixin],
+    methods: {
+        used: function (io) {
+            return io.connections.length;
+        }
+    },
+    components: {
+        Socket: CustomSocket
+    }
+};
+;
+;
+var signalBandPowerRangeComponent = (function (_super) {
+    __extends(signalBandPowerRangeComponent, _super);
+    function signalBandPowerRangeComponent() {
+        var _this = _super.call(this, "Signal Bands Power Range") || this;
+        _this.data = {
+            component: CustomNode,
+            controls: {}
+        };
+        return _this;
+    }
+    signalBandPowerRangeComponent.prototype.builder = function (node) {
+        var in0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("range_low", "Lower Range", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
+        var in1 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("range_high", "Higher Range", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
+        var in2 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in1", "Data", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
+        var out0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out1", "Signal Band Power", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
+        this.data.controls = {};
+        return node
+            .addInput(in0)
+            .addInput(in1)
+            .addInput(in2)
+            .addOutput(out0);
+    };
+    signalBandPowerRangeComponent.prototype.worker = function (node, inputs, outputs) {
+        if (!(inputs["range_low"].length && inputs["range_high"].length && inputs["in1"].length))
+            return;
+        var bands = [inputs["range_low"][0], inputs["range_high"][0]];
+        var psd = bcijs_browser__WEBPACK_IMPORTED_MODULE_3__["signalBandPower"](inputs['in1'][0], 220, bands);
+        outputs['out1'] = psd;
+    };
+    signalBandPowerRangeComponent.get_group = function () {
+        return "BCI.JS";
+    };
+    return signalBandPowerRangeComponent;
+}(rete__WEBPACK_IMPORTED_MODULE_0__["Component"]));
+/* harmony default export */ __webpack_exports__["default"] = (signalBandPowerRangeComponent);
 
 
 /***/ }),
@@ -2381,6 +2476,21 @@ var ReteEditor = (function () {
         this.raw_editor = undefined;
         this.raw_engine = undefined;
     };
+    ReteEditor.prototype.process = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.raw_engine.abort()];
+                    case 1:
+                        _a.sent();
+                        return [4, this.raw_engine.process(this.raw_editor.toJSON())];
+                    case 2:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
     ReteEditor.prototype.get_editor = function () {
         return this.raw_editor;
     };
@@ -2526,7 +2636,6 @@ __webpack_require__.r(__webpack_exports__);
 
 var NON_EVENT_INTERP = "NON_EVENT_INTERP";
 var EVENT_INTERP = "EVENT_INTERP";
-;
 var InterpManager = (function () {
     function InterpManager(workspace, api, handlerDelay) {
         if (handlerDelay === void 0) { handlerDelay = 5; }
@@ -2559,18 +2668,24 @@ var InterpManager = (function () {
                 _this.handler = setTimeout(do_run, _this.handlerDelay);
             }
             else {
-                cb();
-                _this.stop();
+                _this.handler = setTimeout(do_run, _this.handlerDelay);
             }
         };
+        var blocks = this.workspace.getBlocksByType("event_keypress", false);
+        var blocks_as_code = blocks.map(function (block) {
+            return Blockly.JavaScript.blockToCode(block);
+        });
+        code = blocks_as_code.join(";\n") + ";\n" + code;
         console.log("CODE:", code);
-        this.interpreters[this.MAIN] = this.createInterpreter(code);
+        this.interpreters[this.MAIN] = this.createInterpreter(code, true);
+        this.main_scope = this.interpreters[this.MAIN].global;
         if (should_block) {
             this.interpreters[this.MAIN].appendCode("while (true);");
         }
         window.onkeydown = function (ev) {
             var key = ev.keyCode;
             if (key in _this.sources) {
+                console.log("RUNNING SOURCE:", _this.sources[key]);
                 _this.interpreters[key] = _this.createInterpreter(_this.sources[key]);
             }
         };
@@ -2581,8 +2696,9 @@ var InterpManager = (function () {
         this.interpreters = {};
         this.sources = {};
     };
-    InterpManager.prototype.createInterpreter = function (code) {
+    InterpManager.prototype.createInterpreter = function (code, is_main_thread) {
         var _this = this;
+        if (is_main_thread === void 0) { is_main_thread = false; }
         var initAPI = function (interpreter, scope) {
             interpreter.setProperty(scope, "alert", interpreter.createNativeFunction(function (text) {
                 return alert(text);
@@ -2591,6 +2707,7 @@ var InterpManager = (function () {
                 return prompt(text);
             }));
             interpreter.setProperty(scope, "__handle_event", interpreter.createNativeFunction(function (key_filter, root_id) {
+                Blockly.JavaScript.variableDB_.setVariableMap(_this.workspace.getVariableMap());
                 _this.sources[key_filter] = Blockly.JavaScript.statementToCode(_this.workspace.getBlockById(root_id), "keypress_input", Blockly.JavaScript.ORDER_NONE);
             }));
             interpreter.setProperty(scope, "__distance", interpreter.createNativeFunction(function (lhs, rhs) {
@@ -2619,7 +2736,11 @@ var InterpManager = (function () {
                 return window.sessionStorage.getItem(id);
             }));
         };
-        return new JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_0__["Interpreter"](code, initAPI);
+        var interp = new JS_Interpreter_acorn_interpreter__WEBPACK_IMPORTED_MODULE_0__["Interpreter"](code, initAPI);
+        if (!is_main_thread) {
+            interp.stateStack[0].scope = this.main_scope;
+        }
+        return interp;
     };
     return InterpManager;
 }());
@@ -2778,12 +2899,14 @@ var WindowManager = (function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_bciDevice_component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Components/bciDevice.component */ "./src/Components/bciDevice.component.ts");
 /* harmony import */ var _Components_averageBandPowerRange_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Components/averageBandPowerRange.component */ "./src/Components/averageBandPowerRange.component.ts");
-/* harmony import */ var _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components/blocklyEnd.component */ "./src/Components/blocklyEnd.component.ts");
-/* harmony import */ var _Components_display_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Components/display.component */ "./src/Components/display.component.ts");
-/* harmony import */ var _Components_graph_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Components/graph.component */ "./src/Components/graph.component.ts");
-/* harmony import */ var _Components_buffer_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Components/buffer.component */ "./src/Components/buffer.component.ts");
-/* harmony import */ var _Components_number_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Components/number.component */ "./src/Components/number.component.ts");
-/* harmony import */ var _Components_string_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Components/string.component */ "./src/Components/string.component.ts");
+/* harmony import */ var _Components_signalBandPowerRange_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components/signalBandPowerRange.component */ "./src/Components/signalBandPowerRange.component.ts");
+/* harmony import */ var _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Components/blocklyEnd.component */ "./src/Components/blocklyEnd.component.ts");
+/* harmony import */ var _Components_display_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Components/display.component */ "./src/Components/display.component.ts");
+/* harmony import */ var _Components_graph_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Components/graph.component */ "./src/Components/graph.component.ts");
+/* harmony import */ var _Components_buffer_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Components/buffer.component */ "./src/Components/buffer.component.ts");
+/* harmony import */ var _Components_number_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Components/number.component */ "./src/Components/number.component.ts");
+/* harmony import */ var _Components_string_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Components/string.component */ "./src/Components/string.component.ts");
+
 
 
 
@@ -2795,12 +2918,13 @@ __webpack_require__.r(__webpack_exports__);
 var components = {
     bciDeviceComponent: _Components_bciDevice_component__WEBPACK_IMPORTED_MODULE_0__["default"],
     averageBandPowerRangeComponent: _Components_averageBandPowerRange_component__WEBPACK_IMPORTED_MODULE_1__["default"],
-    blocklyEndComponent: _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_2__["default"],
-    displayComponent: _Components_display_component__WEBPACK_IMPORTED_MODULE_3__["default"],
-    graphComponent: _Components_graph_component__WEBPACK_IMPORTED_MODULE_4__["default"],
-    bufferComponent: _Components_buffer_component__WEBPACK_IMPORTED_MODULE_5__["default"],
-    numberComponent: _Components_number_component__WEBPACK_IMPORTED_MODULE_6__["default"],
-    stringComponent: _Components_string_component__WEBPACK_IMPORTED_MODULE_7__["default"],
+    signalBandPowerRangeComponent: _Components_signalBandPowerRange_component__WEBPACK_IMPORTED_MODULE_2__["default"],
+    blocklyEndComponent: _Components_blocklyEnd_component__WEBPACK_IMPORTED_MODULE_3__["default"],
+    displayComponent: _Components_display_component__WEBPACK_IMPORTED_MODULE_4__["default"],
+    graphComponent: _Components_graph_component__WEBPACK_IMPORTED_MODULE_5__["default"],
+    bufferComponent: _Components_buffer_component__WEBPACK_IMPORTED_MODULE_6__["default"],
+    numberComponent: _Components_number_component__WEBPACK_IMPORTED_MODULE_7__["default"],
+    stringComponent: _Components_string_component__WEBPACK_IMPORTED_MODULE_8__["default"],
 };
 /* harmony default export */ __webpack_exports__["default"] = (components);
 
@@ -2841,20 +2965,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Graph", function() { return Graph; });
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Utility/WindowManager */ "./src/Utility/WindowManager.ts");
+
 
 var alpha_component = "88";
 var WINDOW_SIZE = 64;
 var Graph = (function () {
-    function Graph(id, handle, colors) {
+    function Graph(id, datasets, colors) {
         this.ctx = document.getElementById(id).getContext('2d');
-        this.handle = handle;
-        var datasets = this.handle.get();
-        var keys = Object.keys(datasets);
-        var ds = new Array(keys.length);
-        for (var i = 0; i != ds.length; ++i) {
-            var name_1 = keys[i];
-            this.map[name_1] = ds[i] = this.add_dataset(name_1, colors, i);
-        }
+        this.declarations = datasets.map(function (name) { return _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_1__["WindowManager"].fetch(name); });
+        var ds = datasets.map(function (name, index) {
+            var cap = name[0].toLocaleUpperCase() + name.substr(1);
+            return {
+                label: cap,
+                xLabels: Array.apply(null, { length: WINDOW_SIZE }).map(Number.call, Number),
+                data: [],
+                backgroundColor: colors[index] + alpha_component
+            };
+        });
         this.chart = new chart_js__WEBPACK_IMPORTED_MODULE_0__["Chart"](this.ctx, {
             type: 'line',
             data: {
@@ -2878,36 +3006,17 @@ var Graph = (function () {
             }
         });
     }
-    Graph.prototype.add_dataset = function (name, colors, i) {
-        var cap = name[0].toLocaleUpperCase() + name.substr(1);
-        return {
-            label: cap,
-            xLabels: Array.apply(null, { length: WINDOW_SIZE }).map(Number.call, Number),
-            data: [],
-            backgroundColor: colors[i] + alpha_component
-        };
-    };
     Graph.prototype.update = function () {
-        var _a;
-        var dec = this.handle.get();
-        var keys = Object.keys(dec);
-        var updated = {};
-        for (var i = 0; i != keys.length; ++i) {
-            var data = dec[i];
+        var dec = this.declarations;
+        this.chart.data.datasets.forEach(function (ds, index) {
+            var _a;
+            var data = dec[index].get();
             if (data.length == 0)
                 return;
-            var ds = this.map[keys[i]];
-            (_a = ds.data).push.apply(_a, data);
+            (_a = ds.data).push.apply(_a, dec[index].get());
             if (ds.data.length > WINDOW_SIZE)
                 ds.data.splice(0, ds.data.length - WINDOW_SIZE - 1);
-            updated[name] = true;
-        }
-        var updated_keys = Object.keys(updated);
-        for (var i = 0; i != updated_keys.length; ++i) {
-            if (!updated[updated_keys[i]]) {
-                this.chart.data.datasets.push(this.add_dataset(keys[i], ["#ffffff"], 0));
-            }
-        }
+        });
         this.chart.update(0);
     };
     return Graph;
@@ -3122,7 +3231,7 @@ var _this = undefined;
 var locale = _i18n_i18n__WEBPACK_IMPORTED_MODULE_9__["set_locale"](_config__WEBPACK_IMPORTED_MODULE_8__["default"].LOCALE);
 
 
-var g = new _graph__WEBPACK_IMPORTED_MODULE_11__["default"]("graph", _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].fetch("flow_data"), ["#ffe119"]);
+var g = new _graph__WEBPACK_IMPORTED_MODULE_11__["default"]("graph", ["flow_data"], ["#ffe119"]);
 setInterval(function () { return g.update(); }, 100);
 var blockly_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("workspace");
 var code_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("codeText");
@@ -3377,7 +3486,8 @@ var exec = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].
 var run_icon = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("play_arrow_icon");
 var interpManger = new _Utility_InterpManager__WEBPACK_IMPORTED_MODULE_1__["InterpManager"](workspace, {
     __drawFrame: __drawFrame,
-    __highlightBlock: __highlightBlock
+    __highlightBlock: __highlightBlock,
+    __get_flow: Object(_Blocks_FlowBlocks__WEBPACK_IMPORTED_MODULE_6__["get_flow_api"])(workspace)
 });
 exec.onclick = function () {
     var code = Blockly.JavaScript.workspaceToCode(workspace);

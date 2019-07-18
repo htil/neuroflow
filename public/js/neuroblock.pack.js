@@ -2651,7 +2651,7 @@ var NON_EVENT_INTERP = "NON_EVENT_INTERP";
 var EVENT_INTERP = "EVENT_INTERP";
 var InterpManager = (function () {
     function InterpManager(workspace, api, handlerDelay) {
-        if (handlerDelay === void 0) { handlerDelay = 5; }
+        if (handlerDelay === void 0) { handlerDelay = 1; }
         this.interpreters = {};
         this.sources = {};
         this.handler = null;
@@ -2689,7 +2689,6 @@ var InterpManager = (function () {
             return Blockly.JavaScript.blockToCode(block);
         });
         code = blocks_as_code.join(";\n") + ";\n" + code;
-        console.log("CODE:", code);
         this.interpreters[this.MAIN] = this.createInterpreter(code, true);
         this.main_scope = this.interpreters[this.MAIN].global;
         if (should_block) {
@@ -2698,7 +2697,6 @@ var InterpManager = (function () {
         window.onkeydown = function (ev) {
             var key = ev.keyCode;
             if (key in _this.sources) {
-                console.log("RUNNING SOURCE:", _this.sources[key]);
                 _this.interpreters[key] = _this.createInterpreter(_this.sources[key]);
             }
         };
@@ -2959,7 +2957,13 @@ __webpack_require__.r(__webpack_exports__);
         background: "media/background3.png",
         amoeba: "media/players/amoeba.png",
         bacteria: "media/players/green-bacteria.png",
-        shrimp: "media/players/shrimp.png"
+        shrimp: "media/players/shrimp.png",
+        beach: "media/players/beach-ball.png",
+        football: "media/players/football.png",
+        basketball: "media/players/basketball.png",
+        baseball: "media/players/baseball.png",
+        mermaid: "media/players/mermaid.png",
+        sunflower: "media/players/sunflower.png"
     }
 });
 
@@ -3375,7 +3379,8 @@ var cat_math = {
         "math_constrain",
         "math_arithmetic",
         "math_modulo",
-        "math_random_int"
+        "math_random_int",
+        "math_random_float"
     ]
 };
 var cat_vars = {
@@ -3507,7 +3512,7 @@ exec.onclick = function () {
     var should_block = workspace.getBlocksByType("event_keypress", false).length != 0;
     if (run_icon.innerHTML === "play_arrow") {
         run_icon.innerHTML = "stop";
-        interpManger.run(code, function () { return run_icon.innerHTML = "play_arrow"; }, should_block);
+        interpManger.run(code, function () { return (run_icon.innerHTML = "play_arrow"); }, should_block);
     }
     else {
         interpManger.stop();

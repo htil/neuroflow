@@ -43,14 +43,6 @@ module.exports = [
 
 		inputs: [
 			{
-				name: "range_low",
-				description: "Lower Range",
-				type: "Number"
-			}, {
-				name: "range_high",
-				description: "Higher Range",
-				type: "Number"
-			}, {
 				name: "in1",
 				description: "Data",
 				type: "Array"
@@ -63,10 +55,22 @@ module.exports = [
 				type: "Number"
 			}
 		],
+	controls: [
+			{
+				name:'range_low',
+				path: "../Controls/Number.control",
+			  alias: "range_low"
+			},
+			{
+				name:'range_high',
+				path: "../Controls/Number.control",
+				alias: "range_high"
+			}
+		],
 
 		worker: `
-			console.log("PSD:", inputs["in1"][0], [inputs["range_low"][0], inputs["range_high"][0]]);
-			let psd = bci.averageBandPowers(inputs['in1'][0], ${MUSE_SAMPLE_RATE}, [inputs["range_low"][0], inputs["range_high"][0]]);
+			console.log("PSD:", inputs["in1"][0],[node.data.range_low, node.data.range_high]);
+			let psd = bci.averageBandPowers(inputs['in1'][0], ${MUSE_SAMPLE_RATE}, [node.data.range_low, node.data.range_high]);
 			outputs['out1'] = psd[0];
 		`
 	},
@@ -200,15 +204,7 @@ module.exports = [
 		dependencies: deps,
 
 		inputs: [
-			{
-				name: "range_low",
-				description: "Lower Range",
-				type: "Number"
-			}, {
-				name: "range_high",
-				description: "Higher Range",
-				type: "Number"
-			}, {
+		 {
 				name: "in1",
 				description: "Data",
 				type: "Array"
@@ -221,9 +217,21 @@ module.exports = [
 				type: "Number"
 			}
 		],
+		controls: [
+			{
+				name:'range_low',
+				path: "../Controls/Number.control",
+			  alias: "range_low"
+			},
+			{
+				name:'range_high',
+				path: "../Controls/Number.control",
+				alias: "range_high"
+			}
+		],
 
 		worker: `
-			let bands = [inputs["range_low"][0], inputs["range_high"][0]];
+			let bands = [node.data.range_low, node.data.range_high];
 			let psd: any = bci.signalBandPower(inputs['in1'][0], ${MUSE_SAMPLE_RATE}, bands);
 			outputs['out1'] = psd;
 		`

@@ -2,7 +2,7 @@ import { Control } from "rete";
 
 const VueNumControl = {
 	props: ['readonly', 'emitter', 'ikey', 'getData', 'putData'],
-	template: '<input type="number" :readonly="readonly" :value="value" @input="change($event)" @dblclick.stop=""/>',
+	template: '<div><input type="number" :readonly="readonly" :value="value" @input="change($event)" @dblclick.stop=""/> <font color="white"> {{this.ikey}} </font></div>',
 
 	data() {
 		return {

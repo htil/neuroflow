@@ -26,7 +26,7 @@ template(id="CustomNode")
 					Socket(v-socket:input="input", type="input", :socket="input.socket", :used!="() => input.connections.length")
 					div(class="input-title", v-show="!input.showControl()", style="margin-right: 10px") {{ input.name }}
 					div(class="input-control", v-show="input.showControl()", v-control="input.control")
-			div(class="control", v-for="control in controls()", v-control="control")
+			div(class="control", v-for="control in controls()", v-control="control") 				
 			div(class="col")
 				div(class="output", v-for="output in outputs()", :key="output.key")
 					div(class="output-title", style="margin-left: 10px") {{ output.name }}

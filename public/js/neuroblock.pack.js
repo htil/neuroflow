@@ -1190,6 +1190,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bcijs/browser */ "./node_modules/bcijs/browser.js");
 /* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(bcijs_browser__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _Controls_Number_control__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Controls/Number.control */ "./src/Controls/Number.control.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1203,6 +1204,8 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+
+
 
 
 
@@ -1238,22 +1241,25 @@ var averageBandPowerRangeComponent = (function (_super) {
         return _this;
     }
     averageBandPowerRangeComponent.prototype.builder = function (node) {
-        var in0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("range_low", "Lower Range", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var in1 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("range_high", "Higher Range", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var in2 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in1", "Data", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
+        var in0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in1", "Data", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
         var out0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out1", "Average Band Power", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        this.data.controls = {};
+        var Controlrange_low = new _Controls_Number_control__WEBPACK_IMPORTED_MODULE_4__["default"](this.editor, "range_low");
+        var Controlrange_high = new _Controls_Number_control__WEBPACK_IMPORTED_MODULE_4__["default"](this.editor, "range_high");
+        this.data.controls = {
+            range_low: Controlrange_low,
+            range_high: Controlrange_high
+        };
         return node
             .addInput(in0)
-            .addInput(in1)
-            .addInput(in2)
-            .addOutput(out0);
+            .addOutput(out0)
+            .addControl(Controlrange_low)
+            .addControl(Controlrange_high);
     };
     averageBandPowerRangeComponent.prototype.worker = function (node, inputs, outputs) {
-        if (!(inputs["range_low"].length && inputs["range_high"].length && inputs["in1"].length))
+        if (!(inputs["in1"].length))
             return;
-        console.log("PSD:", inputs["in1"][0], [inputs["range_low"][0], inputs["range_high"][0]]);
-        var psd = bcijs_browser__WEBPACK_IMPORTED_MODULE_3__["averageBandPowers"](inputs['in1'][0], 220, [inputs["range_low"][0], inputs["range_high"][0]]);
+        console.log("PSD:", inputs["in1"][0], [node.data.range_low, node.data.range_high]);
+        var psd = bcijs_browser__WEBPACK_IMPORTED_MODULE_3__["averageBandPowers"](inputs['in1'][0], 220, [node.data.range_low, node.data.range_high]);
         outputs['out1'] = psd[0];
     };
     averageBandPowerRangeComponent.get_group = function () {
@@ -1691,6 +1697,7 @@ var graphComponent = (function (_super) {
         if (!(inputs["data_in"].length))
             return;
         var save_to = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_3__["WindowManager"].fetch("flow_data");
+        console.log(inputs["data_in"]);
         save_to.set(inputs["data_in"][0]);
     };
     graphComponent.get_group = function () {
@@ -1812,6 +1819,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(rete_vue_render_plugin__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bcijs/browser */ "./node_modules/bcijs/browser.js");
 /* harmony import */ var bcijs_browser__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(bcijs_browser__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _Controls_Number_control__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Controls/Number.control */ "./src/Controls/Number.control.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1825,6 +1833,8 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+
+
 
 
 
@@ -1860,21 +1870,24 @@ var signalBandPowerRangeComponent = (function (_super) {
         return _this;
     }
     signalBandPowerRangeComponent.prototype.builder = function (node) {
-        var in0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("range_low", "Lower Range", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var in1 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("range_high", "Higher Range", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        var in2 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in1", "Data", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
+        var in0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Input("in1", "Data", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Array, true);
         var out0 = new rete__WEBPACK_IMPORTED_MODULE_0__["default"].Output("out1", "Signal Band Power", _socket_types__WEBPACK_IMPORTED_MODULE_1__["default"].Number, true);
-        this.data.controls = {};
+        var Controlrange_low = new _Controls_Number_control__WEBPACK_IMPORTED_MODULE_4__["default"](this.editor, "range_low");
+        var Controlrange_high = new _Controls_Number_control__WEBPACK_IMPORTED_MODULE_4__["default"](this.editor, "range_high");
+        this.data.controls = {
+            range_low: Controlrange_low,
+            range_high: Controlrange_high
+        };
         return node
             .addInput(in0)
-            .addInput(in1)
-            .addInput(in2)
-            .addOutput(out0);
+            .addOutput(out0)
+            .addControl(Controlrange_low)
+            .addControl(Controlrange_high);
     };
     signalBandPowerRangeComponent.prototype.worker = function (node, inputs, outputs) {
-        if (!(inputs["range_low"].length && inputs["range_high"].length && inputs["in1"].length))
+        if (!(inputs["in1"].length))
             return;
-        var bands = [inputs["range_low"][0], inputs["range_high"][0]];
+        var bands = [node.data.range_low, node.data.range_high];
         var psd = bcijs_browser__WEBPACK_IMPORTED_MODULE_3__["signalBandPower"](inputs['in1'][0], 220, bands);
         outputs['out1'] = psd;
     };
@@ -2094,7 +2107,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var VueNumControl = {
     props: ['readonly', 'emitter', 'ikey', 'getData', 'putData'],
-    template: '<input type="number" :readonly="readonly" :value="value" @input="change($event)" @dblclick.stop=""/>',
+    template: '<div><input type="number" :readonly="readonly" :value="value" @input="change($event)" @dblclick.stop=""/> <font color="white"> {{this.ikey}} </font></div>',
     data: function () {
         return {
             value: 0,

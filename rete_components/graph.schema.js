@@ -24,6 +24,7 @@ module.exports = [
 
 		worker: `
 			let save_to = WindowManager.fetch("flow_data");
+			console.log(inputs["data_in"]);
 			save_to.set(inputs["data_in"][0]);
 		`
 	}

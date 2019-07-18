@@ -119,6 +119,16 @@ declare module Blockly {
 		resizeBubble_(): void;
 	}
 
+	class variableDB {
+		constructor(workspace: Workspace);
+
+		setVariableMap(variable_map: VariableMap): void;
+	}
+
+	class VariableMap {
+		//
+	}
+
 	class Workspace {
 		options: blockly_options;
 
@@ -131,6 +141,7 @@ declare module Blockly {
 		getAllBlocks(ordered: boolean): Array<Blockly.Block>;
 		getBlockById(id: string): Block;
 		getBlocksByType(type: string, ordered: boolean): Array<Blockly.Block>;
+		getVariableMap(): VariableMap;
 		highlightBlock(id: string): void;
 		refreshToolboxSelection(): void;
 		registerButtonCallback(
@@ -231,6 +242,7 @@ declare module Blockly {
 		function blockToCode(block: Block): string;
 
 		let STATEMENT_PREFIX: string;
+		let variableDB_: variableDB;
 
 		const ONE_BASED_INDEXING: boolean;
 		const ORDER_ADDITION: number;

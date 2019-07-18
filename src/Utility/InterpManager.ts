@@ -26,6 +26,7 @@ export class InterpManager {
 
 	workspace: Blockly.Workspace;
 	api: any; // FIXME: Use type here
+	main_scope: object;
 
 	private MAIN = "__MAIN__";
 
@@ -79,7 +80,10 @@ export class InterpManager {
 
 		// Create the main interpreter code
 		console.log("CODE:", code);
-		this.interpreters[this.MAIN] = this.createInterpreter(code);
+		this.interpreters[this.MAIN] = this.createInterpreter(code, true);
+
+		// Store the global scope
+		this.main_scope = this.interpreters[this.MAIN].global;
 
 		// Loop forever if needed
 		if (should_block) {
@@ -91,6 +95,7 @@ export class InterpManager {
 			let key = ev.keyCode;
 
 			if (key in this.sources) {
+				console.log("RUNNING SOURCE:", this.sources[key]);
 				this.interpreters[key] = this.createInterpreter(this.sources[key]);
 			}
 		};
@@ -113,10 +118,12 @@ export class InterpManager {
 	 * Creates an interpreter object
 	 *
 	 * @param code - The source code associated with the new interpreter
+	 * @param is_main_thread - Whether or not to treat this as the main thread.
+	 *                         Non-main threads will have their global scopes replaced with the main one.
 	 *
 	 * @returns New interpreter object set up with external API calls.
 	 */
-	createInterpreter(code: string): Interpreter {
+	createInterpreter(code: string, is_main_thread: boolean = false): Interpreter {
 		let initAPI = (interpreter: Interpreter, scope: object) => {
 			// Add an API function for prompt / alert
 			interpreter.setProperty(
@@ -140,6 +147,10 @@ export class InterpManager {
 				scope,
 				"__handle_event",
 				interpreter.createNativeFunction((key_filter: string, root_id: string) => {
+					// If this event handler uses Blockly variables, tell the handler of the available variables
+					Blockly.JavaScript.variableDB_.setVariableMap(this.workspace.getVariableMap());
+
+					// Load the source
 					this.sources[key_filter] = Blockly.JavaScript.statementToCode(
 						this.workspace.getBlockById(root_id),
 						"keypress_input",
@@ -193,6 +204,16 @@ export class InterpManager {
 			);
 		};
 
-		return new Interpreter(code, initAPI);
+		// Create the interpreter
+		let interp = new Interpreter(code, initAPI);
+
+		// Replace its global scope if it isn't the main thread
+		if (!is_main_thread) {
+			// Save the main scope, otherwise apply the global scope to
+			// all subsequent threads
+			interp.stateStack[0].scope = this.main_scope;
+		}
+
+		return interp;
 	}
 }

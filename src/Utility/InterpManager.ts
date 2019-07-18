@@ -68,6 +68,7 @@ export class InterpManager {
 	}
 
 	run(code: string, cb: () => void, should_block: boolean = false): void {
+		// Method for actually running each step of all interpreters
 		let do_run = () => {
 			if (this.hasNextStep()) {
 				this.step();
@@ -77,6 +78,13 @@ export class InterpManager {
 				this.stop();
 			}
 		};
+
+		// Prepend all the code with event handling set-up lines
+		let blocks = this.workspace.getBlocksByType("event_keypress", false);
+		let blocks_as_code = blocks.map(block => {
+			return Blockly.JavaScript.blockToCode(block);
+		});
+		code = `${blocks_as_code.join(";\n")};\n${code}`;
 
 		// Create the main interpreter code
 		console.log("CODE:", code);

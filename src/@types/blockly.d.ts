@@ -240,9 +240,12 @@ declare module Blockly {
 		): string;
 		function workspaceToCode(workspace: Workspace): string;
 		function blockToCode(block: Block): string;
+		function init(workspace: Workspace): void;
 
 		let STATEMENT_PREFIX: string;
 		let variableDB_: variableDB;
+
+		let definitions_: dictionary<unknown>;
 
 		const ONE_BASED_INDEXING: boolean;
 		const ORDER_ADDITION: number;

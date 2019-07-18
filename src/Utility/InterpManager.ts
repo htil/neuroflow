@@ -40,7 +40,7 @@ export class InterpManager {
   constructor(
     workspace: Blockly.Workspace,
     api: any,
-    handlerDelay: number = 5
+    handlerDelay: number = 1
   ) {
     // Save the workspace and delay for use in the step function for each interpreter
     this.workspace = workspace;
@@ -92,7 +92,7 @@ export class InterpManager {
     code = `${blocks_as_code.join(";\n")};\n${code}`;
 
     // Create the main interpreter code
-    console.log("CODE:", code);
+    //console.log("CODE:", code);
     this.interpreters[this.MAIN] = this.createInterpreter(code, true);
 
     // Store the global scope
@@ -108,7 +108,7 @@ export class InterpManager {
       let key = ev.keyCode;
 
       if (key in this.sources) {
-        console.log("RUNNING SOURCE:", this.sources[key]);
+        //console.log("RUNNING SOURCE:", this.sources[key]);
         this.interpreters[key] = this.createInterpreter(this.sources[key]);
       }
     };

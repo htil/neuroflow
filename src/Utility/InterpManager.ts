@@ -92,7 +92,7 @@ export class InterpManager {
     code = `${blocks_as_code.join(";\n")};\n${code}`;
 
     // Create the main interpreter code
-    //console.log("CODE:", code);
+    console.log("CODE:", code);
     this.interpreters[this.MAIN] = this.createInterpreter(code, true);
 
     // Store the global scope

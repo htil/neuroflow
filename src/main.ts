@@ -49,7 +49,7 @@ let locale = i18n.set_locale(config.LOCALE);
 import Graph from "./graph";
 import { CustomBlock } from "./Utility/CustomBlock";
 let g = new Graph("graph", ["flow_data"], ["#ffe119"]);
-setInterval(() => g.update(), 100);
+setInterval(() => g.quickGraph(), 100);
 
 // =============================================================================
 // Initial set up
@@ -60,8 +60,8 @@ let code_div = WindowManager.eById("codeText");
 let webgl_div = <HTMLCanvasElement>WindowManager.eById("webgl");
 
 // Highligh blocks
-Blockly.JavaScript.STATEMENT_PREFIX = "__highlightBlock(%1);\n";
-Blockly.JavaScript.addReservedWords("__highlightBlock");
+//Blockly.JavaScript.STATEMENT_PREFIX = "__highlightBlock(%1);\n";
+//Blockly.JavaScript.addReservedWords("__highlightBlock");
 
 // =============================================================================
 // WebGL set up

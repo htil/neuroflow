@@ -662,7 +662,7 @@ var EventCategory = function (title) {
 /*!**********************************!*\
   !*** ./src/Blocks/FlowBlocks.ts ***!
   \**********************************/
-/*! exports provided: flow_window_list, flow_final_result, flow_data, get_flow_api, AddFlowBlock, FlowCategory, FlowCategoryCallback, FlowMutator */
+/*! exports provided: flow_window_list, flow_final_result, flow_data, get_flow_api, AddFlowBlock, FlowPlotBlock, FlowCategory, FlowCategoryCallback, FlowMutator */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -672,6 +672,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "flow_data", function() { return flow_data; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get_flow_api", function() { return get_flow_api; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AddFlowBlock", function() { return AddFlowBlock; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FlowPlotBlock", function() { return FlowPlotBlock; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FlowCategory", function() { return FlowCategory; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FlowCategoryCallback", function() { return FlowCategoryCallback; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FlowMutator", function() { return FlowMutator; });
@@ -743,7 +744,6 @@ Blockly.Msg.FLOW_HUE = 140;
 var flow_window_list = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowManager"].declare("flow_list", {});
 var flow_final_result = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowManager"].declare("blockly_final", {});
 var flow_data = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_2__["WindowManager"].declare("flow_data", []);
-;
 var get_flow_api = function (workspace) {
     return function (block_id, editor_name) {
         var block = workspace.getBlockById(block_id);
@@ -766,7 +766,10 @@ var AddFlowBlock = function (name) {
         if (result[editor_name] == undefined) {
             return ["''", Blockly.JavaScript.ORDER_MEMBER];
         }
-        return ["__get_flow(\"" + b.id + "\", \"" + editor_name + "\")", Blockly.JavaScript.ORDER_NONE];
+        return [
+            "__get_flow(\"" + b.id + "\", \"" + editor_name + "\")",
+            Blockly.JavaScript.ORDER_NONE
+        ];
     });
     var container = document.createElementNS("http://www.w3.org/2000/svg", "g");
     var fo = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
@@ -784,7 +787,7 @@ var AddFlowBlock = function (name) {
     wrapper.style.height = "100%";
     var flow_container = document.createElement("div");
     var button_template = document.querySelector("#rete_buttons");
-    var buttons = document.importNode((button_template).content, true);
+    var buttons = document.importNode(button_template.content, true);
     wrapper.appendChild(buttons);
     wrapper.appendChild(flow_container);
     fo.appendChild(wrapper);
@@ -803,7 +806,7 @@ var AddFlowBlock = function (name) {
     flow_window_list.set(ls);
     var keys = Object.keys(_components__WEBPACK_IMPORTED_MODULE_6__["default"]);
     var _loop_1 = function (i) {
-        var component = (_components__WEBPACK_IMPORTED_MODULE_6__["default"])[keys[i]];
+        var component = _components__WEBPACK_IMPORTED_MODULE_6__["default"][keys[i]];
         var instance = new component();
         editor.register(instance);
         var button_class = component.name;
@@ -828,6 +831,17 @@ var AddFlowBlock = function (name) {
     editor.start();
     return block;
 };
+var FlowPlotBlock = new _Utility_CustomBlock__WEBPACK_IMPORTED_MODULE_0__["CustomBlock"]("flow_plot", function (b) {
+    b.appendValueInput("plot_now").appendField("Plot");
+    b.setColour(Blockly.Msg.FLOW_HUE);
+    b.setNextStatement(true, null);
+    b.setPreviousStatement(true);
+}, function (b) {
+    var select = b.getFieldValue("plot_now");
+    var code = Blockly.JavaScript.valueToCode(b, "plot_now", Blockly.JavaScript.ORDER_NONE);
+    console.log(code);
+    return code + ";";
+});
 var FlowCategory = function (title) {
     return {
         name: title,
@@ -844,10 +858,13 @@ var FlowCategoryCallback = function (ws) {
     res.push(button);
     var keys = Object.keys(fl);
     for (var i = 0; i != keys.length; ++i) {
-        var flow_text = Object(_Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["unwind"])(["flow_block_" + fl[keys[i]].name], true);
-        var flow = Blockly.Xml.textToDom(flow_text).firstChild;
-        res.push(flow);
+        var flow_text_1 = Object(_Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["unwind"])(["flow_block_" + fl[keys[i]].name], true);
+        var flow_1 = Blockly.Xml.textToDom(flow_text_1).firstChild;
+        res.push(flow_1);
     }
+    var flow_text = Object(_Utility_Toolbox__WEBPACK_IMPORTED_MODULE_1__["unwind"])(["" + FlowPlotBlock.name], true);
+    var flow = Blockly.Xml.textToDom(flow_text).firstChild;
+    res.push(flow);
     return res;
 };
 var FlowMutator = (function (_super) {
@@ -866,36 +883,35 @@ var FlowMutator = (function (_super) {
         };
     };
     FlowMutator.prototype.drawIcon_ = function (group) {
-        Blockly.utils.createSvgElement('rect', {
-            'class': 'blocklyIconShape',
-            'rx': '4',
-            'ry': '4',
-            'height': '16',
-            'width': '16'
+        Blockly.utils.createSvgElement("rect", {
+            class: "blocklyIconShape",
+            rx: "4",
+            ry: "4",
+            height: "16",
+            width: "16"
         }, group);
-        Blockly.utils.createSvgElement('path', {
-            'class': 'blocklyIconSymbol',
-            'd': 'm4.203,7.296 0,1.368 -0.92,0.677 -0.11,0.41 0.9,1.559 0.41,' +
-                '0.11 1.043,-0.457 1.187,0.683 0.127,1.134 0.3,0.3 1.8,0 0.3,' +
-                '-0.299 0.127,-1.138 1.185,-0.682 1.046,0.458 0.409,-0.11 0.9,' +
-                '-1.559 -0.11,-0.41 -0.92,-0.677 0,-1.366 0.92,-0.677 0.11,' +
-                '-0.41 -0.9,-1.559 -0.409,-0.109 -1.046,0.458 -1.185,-0.682 ' +
-                '-0.127,-1.138 -0.3,-0.299 -1.8,0 -0.3,0.3 -0.126,1.135 -1.187,' +
-                '0.682 -1.043,-0.457 -0.41,0.11 -0.899,1.559 0.108,0.409z'
+        Blockly.utils.createSvgElement("path", {
+            class: "blocklyIconSymbol",
+            d: "m4.203,7.296 0,1.368 -0.92,0.677 -0.11,0.41 0.9,1.559 0.41," +
+                "0.11 1.043,-0.457 1.187,0.683 0.127,1.134 0.3,0.3 1.8,0 0.3," +
+                "-0.299 0.127,-1.138 1.185,-0.682 1.046,0.458 0.409,-0.11 0.9," +
+                "-1.559 -0.11,-0.41 -0.92,-0.677 0,-1.366 0.92,-0.677 0.11," +
+                "-0.41 -0.9,-1.559 -0.409,-0.109 -1.046,0.458 -1.185,-0.682 " +
+                "-0.127,-1.138 -0.3,-0.299 -1.8,0 -0.3,0.3 -0.126,1.135 -1.187," +
+                "0.682 -1.043,-0.457 -0.41,0.11 -0.899,1.559 0.108,0.409z"
         }, group);
-        Blockly.utils.createSvgElement('circle', {
-            'class': 'blocklyIconShape',
-            'r': '2.7',
-            'cx': '8',
-            'cy': '8'
+        Blockly.utils.createSvgElement("circle", {
+            class: "blocklyIconShape",
+            r: "2.7",
+            cx: "8",
+            cy: "8"
         }, group);
     };
-    ;
     FlowMutator.prototype.createEditor_ = function () {
-        this.svgDialog_ = Blockly.utils.createSvgElement('svg', {
-            'x': Blockly.Bubble.BORDER_WIDTH,
-            'y': Blockly.Bubble.BORDER_WIDTH,
-            "xmlns": "http://www.w3.org/2000/svg",
+        this.svgDialog_ = Blockly.utils.createSvgElement("svg", {
+            x: Blockly.Bubble.BORDER_WIDTH,
+            y: Blockly.Bubble.BORDER_WIDTH,
+            xmlns: "http://www.w3.org/2000/svg",
             "xmlns:xlink": "http://www.w3.org/1999/xlink",
             "xmlns:xhtml": "http://www.w3.org/1999/xhtml"
         }, null);
@@ -913,7 +929,6 @@ var FlowMutator = (function (_super) {
         this.svgDialog_.appendChild(container);
         return this.svgDialog_;
     };
-    ;
     FlowMutator.prototype.resizeBubble_ = function () {
         var doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
         var workspaceSize = {
@@ -934,8 +949,8 @@ var FlowMutator = (function (_super) {
             this.workspaceWidth_ = width;
             this.workspaceHeight_ = height;
             this.bubble_.setBubbleSize(width + doubleBorderWidth, height + doubleBorderWidth);
-            this.svgDialog_.setAttribute('width', String(this.workspaceWidth_));
-            this.svgDialog_.setAttribute('height', String(this.workspaceHeight_));
+            this.svgDialog_.setAttribute("width", String(this.workspaceWidth_));
+            this.svgDialog_.setAttribute("height", String(this.workspaceHeight_));
             var container = this.svgDialog_.querySelector("div");
             container.setAttribute("x", String(0));
             container.setAttribute("y", String(0));
@@ -943,19 +958,19 @@ var FlowMutator = (function (_super) {
             container.style.height = String(this.workspaceHeight_);
         }
         if (this.block_.RTL) {
-            var translation = 'translate(' + this.workspaceWidth_ + ',0)';
+            var translation = "translate(" + this.workspaceWidth_ + ",0)";
         }
     };
     FlowMutator.prototype.setVisible = function (visible) {
         if (visible == this.isVisible())
             return;
-        Blockly.Events.fire(new Blockly.Events.Ui(this.block_, 'mutatorOpen', !visible, visible));
+        Blockly.Events.fire(new Blockly.Events.Ui(this.block_, "mutatorOpen", !visible, visible));
         if (this.svgDialog_ == undefined) {
             var container = this.createEditor_();
         }
         if (visible) {
             this.svgDialog_.style.display = "block";
-            this.bubble_ = new Blockly.Bubble((this.block_.workspace), this.svgDialog_, this.block_.svgPath_, this.iconXY_, null, null);
+            this.bubble_ = new Blockly.Bubble(this.block_.workspace, this.svgDialog_, this.block_.svgPath_, this.iconXY_, null, null);
             this.bubble_.setSvgId(this.block_.id);
             this.resizeBubble_();
             this.updateColour();
@@ -986,11 +1001,9 @@ var FlowMutator = (function (_super) {
             this.setVisible(!this.isVisible());
         }
     };
-    ;
     return FlowMutator;
 }(Blockly.Mutator));
 
-;
 
 
 /***/ }),
@@ -2689,6 +2702,7 @@ var InterpManager = (function () {
             return Blockly.JavaScript.blockToCode(block);
         });
         code = blocks_as_code.join(";\n") + ";\n" + code;
+        console.log("CODE:", code);
         this.interpreters[this.MAIN] = this.createInterpreter(code, true);
         this.main_scope = this.interpreters[this.MAIN].global;
         if (should_block) {
@@ -2989,7 +3003,8 @@ var alpha_component = "88";
 var WINDOW_SIZE = 64;
 var Graph = (function () {
     function Graph(id, datasets, colors) {
-        this.ctx = document.getElementById(id).getContext('2d');
+        this.yMax = 0;
+        this.ctx = document.getElementById(id).getContext("2d");
         this.declarations = datasets.map(function (name) { return _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_1__["WindowManager"].fetch(name); });
         var ds = datasets.map(function (name, index) {
             var cap = name[0].toLocaleUpperCase() + name.substr(1);
@@ -2997,32 +3012,63 @@ var Graph = (function () {
                 label: cap,
                 xLabels: Array.apply(null, { length: WINDOW_SIZE }).map(Number.call, Number),
                 data: [],
-                backgroundColor: colors[index] + alpha_component
+                backgroundColor: "ff0000"
             };
         });
         this.chart = new chart_js__WEBPACK_IMPORTED_MODULE_0__["Chart"](this.ctx, {
-            type: 'line',
+            type: "bar",
             data: {
                 datasets: ds
             },
             options: {
                 scales: {
-                    xAxes: [{
-                            type: "category",
-                        }],
-                    yAxes: [{
+                    xAxes: [
+                        {
+                            type: "category"
+                        }
+                    ],
+                    yAxes: [
+                        {
                             ticks: {
                                 beginAtZero: true,
                                 min: 0,
-                                max: 1
+                                max: 5000
                             }
-                        }]
+                        }
+                    ]
                 },
                 responsive: true,
                 maintainAspectRatio: false
             }
         });
     }
+    Graph.prototype.addLabel = function (label) {
+        if (!this.chart.data.labels.includes(label)) {
+            this.chart.data.labels.push(label);
+        }
+    };
+    Graph.prototype.addData = function (data, index) {
+        this.chart.data.datasets.forEach(function (dataset) {
+            dataset.data[index] = data;
+        });
+    };
+    Graph.prototype.quickGraph = function () {
+        var w = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_1__["WindowManager"].fetch("blockly_final");
+        var data = w.get();
+        var index = 0;
+        var dLength = Object.keys(data).length;
+        for (var i in data) {
+            var label = i.split("_")[0];
+            var val = parseInt(data[i]);
+            this.addLabel(label);
+            this.addData(val, index++);
+            if (val > this.yMax) {
+                this.yMax = val;
+                this.chart.config.options.scales.yAxes[0].ticks.max = val;
+            }
+            this.chart.update();
+        }
+    };
     Graph.prototype.update = function () {
         var dec = this.declarations;
         this.chart.data.datasets.forEach(function (ds, index) {
@@ -3039,7 +3085,6 @@ var Graph = (function () {
     return Graph;
 }());
 
-;
 /* harmony default export */ __webpack_exports__["default"] = (Graph);
 
 
@@ -3249,12 +3294,10 @@ var locale = _i18n_i18n__WEBPACK_IMPORTED_MODULE_9__["set_locale"](_config__WEBP
 
 
 var g = new _graph__WEBPACK_IMPORTED_MODULE_11__["default"]("graph", ["flow_data"], ["#ffe119"]);
-setInterval(function () { return g.update(); }, 100);
+setInterval(function () { return g.quickGraph(); }, 100);
 var blockly_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("workspace");
 var code_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("codeText");
 var webgl_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("webgl");
-Blockly.JavaScript.STATEMENT_PREFIX = "__highlightBlock(%1);\n";
-Blockly.JavaScript.addReservedWords("__highlightBlock");
 var playground = new _Playground__WEBPACK_IMPORTED_MODULE_3__["Playground"](webgl_div);
 var players = {};
 var background = playground.create_sprite("__background", "__background", "background", _config__WEBPACK_IMPORTED_MODULE_8__["default"].paths.background, function () { return __drawFrame(); });

@@ -215,6 +215,7 @@ let cat_logic: Category = {
 
   modules: [
     "controls_if",
+    "controls_ifelse",
     "logic_compare",
     "logic_operation",
     "logic_negate",

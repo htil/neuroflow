@@ -3361,6 +3361,7 @@ var cat_logic = {
     colour: "%{BKY_LOGIC_HUE}",
     modules: [
         "controls_if",
+        "controls_ifelse",
         "logic_compare",
         "logic_operation",
         "logic_negate",

@@ -2319,11 +2319,15 @@ var Playground = (function () {
             var t = _this.gl.createTexture();
             _this.gl.bindTexture(_this.gl.TEXTURE_2D, t);
             _this.gl.texImage2D(_this.gl.TEXTURE_2D, 0, _this.gl.RGBA, _this.gl.RGBA, _this.gl.UNSIGNED_BYTE, i);
-            _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_WRAP_S, _this.gl.CLAMP_TO_EDGE);
-            _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_WRAP_T, _this.gl.CLAMP_TO_EDGE);
-            _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_MIN_FILTER, _this.gl.LINEAR);
-            _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_MAG_FILTER, _this.gl.LINEAR);
-            _this.gl.generateMipmap(_this.gl.TEXTURE_2D);
+            var is_power_2 = function (x) { return (x & (x - 1)) == 0; };
+            if (is_power_2(i.width) && is_power_2(i.height)) {
+                _this.gl.generateMipmap(_this.gl.TEXTURE_2D);
+            }
+            else {
+                _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_WRAP_S, _this.gl.CLAMP_TO_EDGE);
+                _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_WRAP_T, _this.gl.CLAMP_TO_EDGE);
+                _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_MIN_FILTER, _this.gl.LINEAR);
+            }
             s.set_texture(t);
             cb(s);
         };
@@ -2694,7 +2698,8 @@ var InterpManager = (function () {
                 _this.handler = setTimeout(do_run, _this.handlerDelay);
             }
             else {
-                _this.handler = setTimeout(do_run, _this.handlerDelay);
+                cb();
+                _this.stop();
             }
         };
         var blocks = this.workspace.getBlocksByType("event_keypress", false);
@@ -2702,12 +2707,12 @@ var InterpManager = (function () {
             return Blockly.JavaScript.blockToCode(block);
         });
         code = blocks_as_code.join(";\n") + ";\n" + code;
+        if (blocks.length != 0) {
+            code += "\nwhile (true);";
+        }
         console.log("CODE:", code);
         this.interpreters[this.MAIN] = this.createInterpreter(code, true);
         this.main_scope = this.interpreters[this.MAIN].global;
-        if (should_block) {
-            this.interpreters[this.MAIN].appendCode("while (true);");
-        }
         window.onkeydown = function (ev) {
             var key = ev.keyCode;
             if (key in _this.sources) {
@@ -3298,6 +3303,8 @@ setInterval(function () { return g.quickGraph(); }, 100);
 var blockly_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("workspace");
 var code_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("codeText");
 var webgl_div = _Utility_WindowManager__WEBPACK_IMPORTED_MODULE_0__["WindowManager"].eById("webgl");
+Blockly.JavaScript.STATEMENT_PREFIX = "__highlightBlock(%1);\n";
+Blockly.JavaScript.addReservedWords("__highlightBlock");
 var playground = new _Playground__WEBPACK_IMPORTED_MODULE_3__["Playground"](webgl_div);
 var players = {};
 var background = playground.create_sprite("__background", "__background", "background", _config__WEBPACK_IMPORTED_MODULE_8__["default"].paths.background, function () { return __drawFrame(); });

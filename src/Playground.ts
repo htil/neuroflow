@@ -9,7 +9,7 @@ export type load_callback = (sprite: Sprite) => void;
 
 /**
  * @interface ShaderBundle
- * 
+ *
  * A simple shader bundle to contain the shaders in a program.
  */
 export interface ShaderBundle {
@@ -22,12 +22,12 @@ export interface ShaderBundle {
 
 /**
  * @class Playground
- * 
+ *
  * A simpole WebGL playground.
  */
 export class Playground {
 	gl: WebGLRenderingContext;
-	
+
 	program:    WebGLProgram;
 	attributes: dictionary<number> = {};
 	uniforms:   dictionary<WebGLUniformLocation> = {};
@@ -37,9 +37,9 @@ export class Playground {
 
 	/**
 	 * @constructor
-	 * 
+	 *
 	 * Default constructor.
-	 * 
+	 *
 	 * @param {HTMLCanvasElement} element - The HTML canvas for rendering.
 	 * @param {ShaderBundle} [bundle] - A set of shaders to use instead of the defaults.
 	 * @throws {Error} Throws an error if the web browser does not allow for WebGL.
@@ -130,7 +130,7 @@ export class Playground {
 
 	/**
 	 * @function create_sprite
-	 * 
+	 *
 	 * @param {String} id - The unique identifier of the sprite.
 	 * @param {String} name - The name for the sprite.
 	 * @param {String} type - The type of sprite.
@@ -141,7 +141,7 @@ export class Playground {
 	create_sprite(id: string, name: string, type: string, path: string, cb: load_callback): Sprite {
 		let s = new Sprite(id, name, type);
 		let i = document.createElement("img");
-		
+
 		// Allow for CORS images
 		i.crossOrigin = "anonymous";
 
@@ -151,11 +151,17 @@ export class Playground {
 			this.gl.bindTexture(this.gl.TEXTURE_2D, t);
 			this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, i);
 
-			this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-			this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-			this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-			this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
-			this.gl.generateMipmap(this.gl.TEXTURE_2D);
+			let is_power_2 = (x: number) => (x & (x - 1)) == 0;
+
+			// WebGL only allows mipmapping for images with a power of 2
+			if (is_power_2(i.width) && is_power_2(i.height)) {
+				this.gl.generateMipmap(this.gl.TEXTURE_2D);
+			} else {
+				this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+				this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+
+				this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+			}
 
 			s.set_texture(t);
 			cb(s);
@@ -163,15 +169,15 @@ export class Playground {
 
 		// Start the loading of the image
 		i.src = WindowManager.origin() + "/" + path;
-	
+
 		return s;
 	}
 
 	/**
 	 * @function draw
-	 * 
+	 *
 	 * Draws the given sprites in order.
-	 * 
+	 *
 	 * @param {Sprite[]} sprites - The sprites to draw.
 	 */
 	draw(sprites: Sprite[]): void {
@@ -267,13 +273,13 @@ export namespace Shader {
 
 	export function compile(gl: WebGLRenderingContext, code: string, type: number): WebGLShader {
 		let sha = gl.createShader(type);
-		
+
 		gl.shaderSource(sha, code);
 		gl.compileShader(sha);
 
 		if (!gl.getShaderParameter(sha, gl.COMPILE_STATUS)) {
 			let msg = "Could not compile shader: " + gl.getShaderInfoLog(sha);
-			
+
 			gl.deleteShader(sha);
 			throw new Error(msg);
 		}

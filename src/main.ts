@@ -59,9 +59,9 @@ let blockly_div = WindowManager.eById("workspace");
 let code_div = WindowManager.eById("codeText");
 let webgl_div = <HTMLCanvasElement>WindowManager.eById("webgl");
 
-// Highligh blocks
-//Blockly.JavaScript.STATEMENT_PREFIX = "__highlightBlock(%1);\n";
-//Blockly.JavaScript.addReservedWords("__highlightBlock");
+// Highlight blocks
+Blockly.JavaScript.STATEMENT_PREFIX = "__highlightBlock(%1);\n";
+Blockly.JavaScript.addReservedWords("__highlightBlock");
 
 // =============================================================================
 // WebGL set up

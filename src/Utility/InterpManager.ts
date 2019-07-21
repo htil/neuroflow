@@ -78,9 +78,8 @@ export class InterpManager {
         this.step();
         this.handler = setTimeout(do_run, this.handlerDelay);
       } else {
-        this.handler = setTimeout(do_run, this.handlerDelay);
-        //cb();
-        //this.stop();
+        cb();
+        this.stop();
       }
     };
 
@@ -89,7 +88,12 @@ export class InterpManager {
     let blocks_as_code = blocks.map(block => {
       return Blockly.JavaScript.blockToCode(block);
     });
-    code = `${blocks_as_code.join(";\n")};\n${code}`;
+	code = `${blocks_as_code.join(";\n")};\n${code}`;
+
+	// Don't end early if there are event blocks
+	if (blocks.length != 0) {
+		code += "\nwhile (true);";
+	}
 
     // Create the main interpreter code
     console.log("CODE:", code);
@@ -97,11 +101,6 @@ export class InterpManager {
 
     // Store the global scope
     this.main_scope = this.interpreters[this.MAIN].global;
-
-    // Loop forever if needed
-    if (should_block) {
-      this.interpreters[this.MAIN].appendCode("while (true);");
-    }
 
     // Create the event handler
     window.onkeydown = (ev: KeyboardEvent) => {
